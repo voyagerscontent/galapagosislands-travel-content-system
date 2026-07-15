@@ -1,0 +1,66 @@
+# SITE_CONFIG — content production system
+
+This is the **only** file you edit to redeploy the system for a different brand.
+Change the BRAND BLOCK below and every guardrail, fact file, and prompt adjusts,
+because they reference the tokens `{{BRAND}}`, `{{DOMAIN}}`, `{{BRAND_ALT}}`,
+`{{PRIMARY_CTA}}` and `{{CONTRIBUTORS}}` instead of hard-coded names.
+
+The engine (status model, orchestrator, schema, workflow) stays identical and is
+NOT edited here. `status_values` are byte-for-byte identical across every site.
+
+---
+
+## BRAND BLOCK  (edit these to re-brand the whole system)
+
+```yaml
+# --- identity -------------------------------------------------------------
+BRAND: "Galapagos Islands.Travel"          # display name used in copy
+BRAND_ALT: "galapagosislands.travel"       # spoken/alt form; also the domain label
+DOMAIN: "galapagosislands.travel"          # canonical domain (links, emails, citations)
+TAGLINE: "an independent editorial travel guide to the Galápagos"
+
+# --- publisher / relationship --------------------------------------------
+# The site is the brand itself. If a parent agency or operator exists, name it
+# here; leave blank to keep the guide purely brand-first with no parent.
+PUBLISHER: "Galapagos Islands.Travel"      # was "Voyagers Travel Company" — now brand-first
+PUBLISHER_NOTE: ""                          # optional transparency line; blank = none
+
+# --- conversion -----------------------------------------------------------
+PRIMARY_CTA: "Talk to a Galápagos Specialist"   # a lead/enquiry, never "Book Now"
+
+# --- contributors (optional) ---------------------------------------------
+# Named expert voices to attribute where authorship is shown. Leave empty to
+# run brand-voice only (no named contributors). Reusable: swap per brand.
+CONTRIBUTORS: []            # e.g. ["Jane Doe (Naturalist)"] — default: none
+
+# --- automation (hard-coded for one-trigger redeploy; see engine/DEPLOYMENT.md)
+site_id: galapagosislands-travel-v1
+airtable_base: ""           # appXXXX — fill from your Airtable base
+airtable_table: ""          # tblXXXX — Pages Master
+airtable_pat: ""            # Airtable Personal Access Token (hard-coded per deploy)
+n8n_base_url: ""            # e.g. https://your-n8n.example.com
+n8n_intake_webhook: ""      # full webhook URL that creates a Backlog record
+n8n_api_key: ""             # n8n API key (hard-coded per deploy)
+n8n_poll_minutes: 5
+
+# --- pipeline contract (DO NOT CHANGE — shared across all sites) ----------
+status_field: Status
+status_values: [Backlog, Scoring, Brief Ready, Drafting, Truth Check, Humanizing, Polishing, Auditor Review, Editor Review, Ready to Publish, Published, Needs Attention]
+```
+
+---
+
+## Hard entity rules (brand-agnostic; enforced by ENTITY_RULES.md)
+
+- **Domain** is always `{{DOMAIN}}`. Never write `galapagosislands.com` in links, emails, or citations.
+- **Brand name**: refer to the site as `{{BRAND}}` (spoken form `{{BRAND_ALT}}`). Never "Galapagos Travel Center".
+- **Editorial independence**: an independent editorial guide, NEVER a single-operator marketing vehicle.
+- **No operator favoritism**: name vessels/operators factually and comparatively; never favor one operator; luxury is judged on the vessel's full experience, not which islands it visits (see HARD TRUTHS).
+- **Guardian of Truth**: every fact traces to `MASTER_FACTS_FILE`, `GALAPAGOS_FACTS_ADDENDUM.md`, or the linked source-of-truth data; no uncited numbers, no rounded marketing claims.
+- **Conversion**: primary CTA is `{{PRIMARY_CTA}}` (a lead/enquiry); never instant "Book Now".
+- **HARD TRUTHS** (timing/seasonality and islands/cruises/luxury) in `GALAPAGOS_FACTS_ADDENDUM.md` §0 always apply.
+
+## Fork note
+To clone for another brand: edit the BRAND BLOCK above (and the automation values).
+Keep `status_values` identical. Do not edit `engine/` logic. The source-of-truth,
+guardrails, and fact files are brand-neutral and resolve the `{{TOKENS}}` at load time.

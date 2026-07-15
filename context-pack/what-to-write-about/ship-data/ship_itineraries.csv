@@ -1,0 +1,257 @@
+ship_id,ship_name,itinerary_name,number_of_days,depart_from,start_day,rating,url
+1271,AIDA MARIA,Itinerary A,8 days,Baltra Island Airport,Sunday,63.0,https://www.galapagosadvisor.com/ships/aida-maria/itineraries/itinerary-a/
+1271,AIDA MARIA,Itinerary B,8 days,San Cristóbal Island Airport,Sunday,70.0,https://www.galapagosadvisor.com/ships/aida-maria/itineraries/itinerary-b/
+1271,AIDA MARIA,Itinerary C,5 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/aida-maria/itineraries/itinerary-c/
+1271,AIDA MARIA,Itinerary D,4 days,Baltra Island Airport,Thursday,63.0,https://www.galapagosadvisor.com/ships/aida-maria/itineraries/itinerary-d/
+1271,AIDA MARIA,Itinerary E,6 days,Baltra Island Airport,Thursday,64.0,https://www.galapagosadvisor.com/ships/aida-maria/itineraries/itinerary-e/
+1271,AIDA MARIA,Itinerary F,6 days,Baltra Island Airport,Tuesday,71.0,https://www.galapagosadvisor.com/ships/aida-maria/itineraries/itinerary-f/
+3223,ALYA,Itinerary A,8 days,San Cristóbal Island Airport,Tuesday,69.0,https://www.galapagosadvisor.com/ships/alya/itineraries/itinerary-a/
+3223,ALYA,Itinerary A4,4 days,San Cristóbal Island Airport,Saturday,70.0,https://www.galapagosadvisor.com/ships/alya/itineraries/itinerary-a4/
+3223,ALYA,Itinerary A5,5 days,Baltra Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/alya/itineraries/itinerary-a5/
+3223,ALYA,Itinerary B,8 days,Baltra Island Airport,Tuesday,66.0,https://www.galapagosadvisor.com/ships/alya/itineraries/itinerary-b/
+1272,ANAHI,C (11 Days),Unknown,San Cristóbal Island Airport,Unknown,66.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/c-11-days/
+1272,ANAHI,D (12 DAYS),Unknown,Baltra Island Airport,Unknown,69.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/d-12-days/
+1272,ANAHI,E1 (15 DAYS),Unknown,Baltra Island Airport,Unknown,68.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/e1-15-days/
+1272,ANAHI,E2 (15 DAYS),Unknown,Baltra Island Airport,Unknown,67.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/e2-15-days/
+1272,ANAHI,E3 (15 DAYS),Unknown,San Cristóbal Island Airport,Unknown,68.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/e3-15-days/
+1272,ANAHI,Itinerary A1,4 days,San Cristóbal Island Airport,Tuesday,60.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/itinerary-a1/
+1272,ANAHI,Itinerary A2,5 days,Baltra Island Airport,Friday,70.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/itinerary-a2/
+1272,ANAHI,Itinerary B1 (West),8 days,Baltra Island Airport,Friday,69.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/itinerary-b1-west/
+1272,ANAHI,Itinerary B2 (East),8 days,Baltra Island Airport,Friday,66.0,https://www.galapagosadvisor.com/ships/anahi/itineraries/itinerary-b2-east/
+1273,ANGELITO,Itinerary A,8 days,Baltra Island Airport,Sunday,73.0,https://www.galapagosadvisor.com/ships/angelito/itineraries/itinerary-a/
+1273,ANGELITO,Itinerary A4,4 days,Baltra Island Airport,Thursday,76.0,https://www.galapagosadvisor.com/ships/angelito/itineraries/itinerary-a4/
+1273,ANGELITO,Itinerary A5,5 days,Baltra Island Airport,Sunday,71.0,https://www.galapagosadvisor.com/ships/angelito/itineraries/itinerary-a5/
+1273,ANGELITO,Itinerary B,8 days,Baltra Island Airport,Sunday,57.0,https://www.galapagosadvisor.com/ships/angelito/itineraries/itinerary-b/
+3757,Aqua,A 8Days,8 days,Baltra Island Airport,Tuesday,75.0,https://www.galapagosadvisor.com/ships/aqua/itineraries/a-8days/
+3757,Aqua,B 8Days,8 days,Baltra Island Airport,Tuesday,66.0,https://www.galapagosadvisor.com/ships/aqua/itineraries/b-8days/
+3757,Aqua,C 4Days,4 days,Baltra Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/aqua/itineraries/c-4days/
+3757,Aqua,D 5Days,5 days,Baltra Island Airport,Friday,64.0,https://www.galapagosadvisor.com/ships/aqua/itineraries/d-5days/
+1274,ARCHIPELL I,Itinerary A,8 days,San Cristóbal Island Airport,Monday,64.0,https://www.galapagosadvisor.com/ships/archipell-i/itineraries/itinerary-a/
+1274,ARCHIPELL I,Itinerary A4,4 days,San Cristóbal Island Airport,Monday,64.0,https://www.galapagosadvisor.com/ships/archipell-i/itineraries/itinerary-a4/
+1274,ARCHIPELL I,Itinerary A5,5 days,Baltra Island Airport,Thursday,66.0,https://www.galapagosadvisor.com/ships/archipell-i/itineraries/itinerary-a5/
+1274,ARCHIPELL I,Itinerary B,8 days,Baltra Island Airport,Monday,67.0,https://www.galapagosadvisor.com/ships/archipell-i/itineraries/itinerary-b/
+1274,ARCHIPELL I,Itinerary B4,4 days,Baltra Island Airport,Monday,71.0,https://www.galapagosadvisor.com/ships/archipell-i/itineraries/itinerary-b4/
+1274,ARCHIPELL I,Itinerary B5,5 days,Baltra Island Airport,Thursday,64.0,https://www.galapagosadvisor.com/ships/archipell-i/itineraries/itinerary-b5/
+1275,ARCHIPELL II,Itinerary A,8 days,San Cristóbal Island Airport,Monday,66.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-a/
+1275,ARCHIPELL II,Itinerary A1,5 days,San Cristóbal Island Airport,Monday,63.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-a1/
+1275,ARCHIPELL II,Itinerary A2,5 days,Baltra Island Airport,Thursday,66.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-a2/
+1275,ARCHIPELL II,Itinerary B,8 days,Baltra Island Airport,Monday,68.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-b/
+1275,ARCHIPELL II,Itinerary B1,5 days,Baltra Island Airport,Monday,69.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-b1/
+1275,ARCHIPELL II,Itinerary B2,5 days,Baltra Island Airport,Thursday,66.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-b2/
+1275,ARCHIPELL II,Itinerary C,8 days,Baltra Island Airport,Thursday,68.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-c/
+1275,ARCHIPELL II,Itinerary D,8 days,Baltra Island Airport,Monday,65.0,https://www.galapagosadvisor.com/ships/archipell-ii/itineraries/itinerary-d/
+1606,BELUGA,Española,5 days,Baltra Island Airport,Friday,68.0,https://www.galapagosadvisor.com/ships/beluga/itineraries/española/
+1606,BELUGA,Fernandina,8 days,Baltra Island Airport,Friday,66.0,https://www.galapagosadvisor.com/ships/beluga/itineraries/fernandina/
+1606,BELUGA,Isabela,6 days,Baltra Island Airport,Sunday,73.0,https://www.galapagosadvisor.com/ships/beluga/itineraries/isabela/
+1606,BELUGA,San Cristobal,6 days,San Cristóbal Island Airport,Sunday,70.0,https://www.galapagosadvisor.com/ships/beluga/itineraries/san-cristobal/
+1606,BELUGA,Santiago,4 days,Baltra Island Airport,Tuesday,68.0,https://www.galapagosadvisor.com/ships/beluga/itineraries/santiago/
+1606,BELUGA,Tower,8 days,Baltra Island Airport,Friday,68.0,https://www.galapagosadvisor.com/ships/beluga/itineraries/tower/
+1607,Cachalote Explorer,Fernandina Itinerary,8 days,Baltra Island Airport,Wednesday,68.0,https://www.galapagosadvisor.com/ships/cachalote-explorer/itineraries/fernandina-itinerary/
+1607,Cachalote Explorer,Tower Itinerary,8 days,Baltra Island Airport,Wednesday,66.0,https://www.galapagosadvisor.com/ships/cachalote-explorer/itineraries/tower-itinerary/
+3794,Camila,A 8Days,8 days,Baltra Island Airport,Saturday,64.0,https://www.galapagosadvisor.com/ships/camila/itineraries/a-8days/
+3794,Camila,B 8Days,8 days,San Cristóbal Island Airport,Saturday,70.0,https://www.galapagosadvisor.com/ships/camila/itineraries/b-8days/
+3794,Camila,C 4Days,4 days,San Cristóbal Island Airport,Saturday,68.0,https://www.galapagosadvisor.com/ships/camila/itineraries/c-4days/
+3794,Camila,D 5Days,5 days,Baltra Island Airport,Tuesday,71.0,https://www.galapagosadvisor.com/ships/camila/itineraries/d-5days/
+1278,Carina,Itinerary A,8 days,Baltra Island Airport,Sunday,61.0,https://www.galapagosadvisor.com/ships/carina/itineraries/itinerary-a/
+1278,Carina,Itinerary B,8 days,San Cristóbal Island Airport,Sunday,65.0,https://www.galapagosadvisor.com/ships/carina/itineraries/itinerary-b/
+1583,Coral I,Itinerary B,5 days,Baltra Island Airport,Wednesday,68.0,https://www.galapagosadvisor.com/ships/coral-i/itineraries/itinerary-b/
+1583,Coral I,Itinerary A,4 days,Baltra Island Airport,Sunday,59.0,https://www.galapagosadvisor.com/ships/coral-i/itineraries/itinerary-a/
+1583,Coral I,Itinerary A + B,8 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/coral-i/itineraries/itinerary-a-plus-b/
+1583,Coral I,Itinerary C,4 days,Baltra Island Airport,Sunday,68.0,https://www.galapagosadvisor.com/ships/coral-i/itineraries/itinerary-c/
+1583,Coral I,Itinerary C + D,8 days,Baltra Island Airport,Sunday,65.0,https://www.galapagosadvisor.com/ships/coral-i/itineraries/itinerary-c-plus-d/
+1583,Coral I,Itinerary D,5 days,San Cristóbal Island Airport,Wednesday,62.0,https://www.galapagosadvisor.com/ships/coral-i/itineraries/itinerary-d/
+1279,Coral II,Itinerary B,5 days,Baltra Island Airport,Wednesday,68.0,https://www.galapagosadvisor.com/ships/coral-ii/itineraries/itinerary-b/
+1279,Coral II,Itinerary A,4 days,Baltra Island Airport,Sunday,59.0,https://www.galapagosadvisor.com/ships/coral-ii/itineraries/itinerary-a/
+1279,Coral II,Itinerary A + B,8 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/coral-ii/itineraries/itinerary-a-plus-b/
+1279,Coral II,Itinerary C,4 days,Baltra Island Airport,Sunday,68.0,https://www.galapagosadvisor.com/ships/coral-ii/itineraries/itinerary-c/
+1279,Coral II,Itinerary C + D,8 days,Baltra Island Airport,Sunday,65.0,https://www.galapagosadvisor.com/ships/coral-ii/itineraries/itinerary-c-plus-d/
+1279,Coral II,Itinerary D,5 days,San Cristóbal Island Airport,Wednesday,62.0,https://www.galapagosadvisor.com/ships/coral-ii/itineraries/itinerary-d/
+1280,Cormorant,Itinerary A,8 days,Baltra Island Airport,Saturday,64.0,https://www.galapagosadvisor.com/ships/cormorant/itineraries/itinerary-a/
+1280,Cormorant,Itinerary A4,4 days,San Cristóbal Island Airport,Wednesday,62.0,https://www.galapagosadvisor.com/ships/cormorant/itineraries/itinerary-a4/
+1280,Cormorant,Itinerary A5,5 days,Baltra Island Airport,Saturday,66.0,https://www.galapagosadvisor.com/ships/cormorant/itineraries/itinerary-a5/
+1280,Cormorant,Itinerary B,8 days,Baltra Island Airport,Saturday,69.0,https://www.galapagosadvisor.com/ships/cormorant/itineraries/itinerary-b/
+1282,Daphne,Itinerary A,8 days,Baltra Island Airport,Wednesday,64.0,https://www.galapagosadvisor.com/ships/daphne/itineraries/itinerary-a/
+1282,Daphne,Itinerary B,8 days,Baltra Island Airport,Wednesday,67.0,https://www.galapagosadvisor.com/ships/daphne/itineraries/itinerary-b/
+1282,Daphne,Itinerary B1,4 days,Baltra Island Airport,Wednesday,64.0,https://www.galapagosadvisor.com/ships/daphne/itineraries/itinerary-b1/
+1282,Daphne,Itinerary B2,5 days,San Cristóbal Island Airport,Saturday,69.0,https://www.galapagosadvisor.com/ships/daphne/itineraries/itinerary-b2/
+1283,Darwin,8A,8 days,Baltra Island Airport,Thursday,62.0,https://www.galapagosadvisor.com/ships/darwin/itineraries/8a/
+1283,Darwin,8b,8 days,Baltra Island Airport,Thursday,65.0,https://www.galapagosadvisor.com/ships/darwin/itineraries/8b/
+1283,Darwin,A4 Días/3 Noches,4 days,Baltra Island Airport,Thursday,62.0,https://www.galapagosadvisor.com/ships/darwin/itineraries/a4-días3-noches/
+1283,Darwin,A5 Días/4 Noches,5 days,Baltra Island Airport,Sunday,62.0,https://www.galapagosadvisor.com/ships/darwin/itineraries/a5-días4-noches/
+1283,Darwin,b4,4 days,Baltra Island Airport,Monday,64.0,https://www.galapagosadvisor.com/ships/darwin/itineraries/b4/
+1283,Darwin,b5,5 days,Baltra Island Airport,Thursday,65.0,https://www.galapagosadvisor.com/ships/darwin/itineraries/b5/
+1754,Ecogalaxy,Itinerary A,5 days,San Cristóbal Island Airport,Tuesday,72.0,https://www.galapagosadvisor.com/ships/ecogalaxy/itineraries/itinerary-a/
+1754,Ecogalaxy,Itinerary B,6 days,Baltra Island Airport,Saturday,69.0,https://www.galapagosadvisor.com/ships/ecogalaxy/itineraries/itinerary-b/
+1754,Ecogalaxy,Itinerary C,6 days,Baltra Island Airport,Thursday,60.0,https://www.galapagosadvisor.com/ships/ecogalaxy/itineraries/itinerary-c/
+1754,Ecogalaxy,Itinerary D,8 days,Baltra Island Airport,Saturday,66.0,https://www.galapagosadvisor.com/ships/ecogalaxy/itineraries/itinerary-d/
+1754,Ecogalaxy,Itinerary E,4 days,Baltra Island Airport,Saturday,60.0,https://www.galapagosadvisor.com/ships/ecogalaxy/itineraries/itinerary-e/
+1284,Eden,Itinerary 1,8 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/eden/itineraries/itinerary-1/
+1284,Eden,Itinerary 1A,5 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/eden/itineraries/itinerary-1a/
+1284,Eden,Itinerary 1B,4 days,Baltra Island Airport,Thursday,64.0,https://www.galapagosadvisor.com/ships/eden/itineraries/itinerary-1b/
+1284,Eden,Itinerary 2,8 days,San Cristóbal Island Airport,Sunday,69.0,https://www.galapagosadvisor.com/ships/eden/itineraries/itinerary-2/
+1284,Eden,Itinerary 2A,3 days,San Cristóbal Island Airport,Sunday,69.0,https://www.galapagosadvisor.com/ships/eden/itineraries/itinerary-2a/
+1284,Eden,Itinerary 2B,6 days,Baltra Island Airport,Tuesday,69.0,https://www.galapagosadvisor.com/ships/eden/itineraries/itinerary-2b/
+3734,Elite,A 8Days,8 days,San Cristóbal Island Airport,Saturday,65.0,https://www.galapagosadvisor.com/ships/elite/itineraries/a-8days/
+3734,Elite,B 8Days,8 days,San Cristóbal Island Airport,Saturday,63.0,https://www.galapagosadvisor.com/ships/elite/itineraries/b-8days/
+3734,Elite,C 4Days,4 days,San Cristóbal Island Airport,Saturday,62.0,https://www.galapagosadvisor.com/ships/elite/itineraries/c-4days/
+3734,Elite,D 5Days,5 days,Baltra Island Airport,Tuesday,64.0,https://www.galapagosadvisor.com/ships/elite/itineraries/d-5days/
+3719,Endemic,A 8Days,8 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/endemic/itineraries/a-8days/
+3719,Endemic,B 8Days,8 days,Baltra Island Airport,Sunday,66.0,https://www.galapagosadvisor.com/ships/endemic/itineraries/b-8days/
+3719,Endemic,C 5Days,5 days,Baltra Island Airport,Sunday,70.0,https://www.galapagosadvisor.com/ships/endemic/itineraries/c-5days/
+3719,Endemic,D 4Days,4 days,Baltra Island Airport,Thursday,62.0,https://www.galapagosadvisor.com/ships/endemic/itineraries/d-4days/
+3719,Endemic,E 6Days,6 days,Baltra Island Airport,Thursday,65.0,https://www.galapagosadvisor.com/ships/endemic/itineraries/e-6days/
+3719,Endemic,F 6Days,6 days,Baltra Island Airport,Tuesday,62.0,https://www.galapagosadvisor.com/ships/endemic/itineraries/f-6days/
+1290,Equinox,Itinerary A,8 days,Baltra Island Airport,Tuesday,63.0,https://www.galapagosadvisor.com/ships/equinox/itineraries/itinerary-a/
+1290,Equinox,Itinerary A4,4 days,Baltra Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/equinox/itineraries/itinerary-a4/
+1290,Equinox,Itinerary A5,5 days,Baltra Island Airport,Friday,60.0,https://www.galapagosadvisor.com/ships/equinox/itineraries/itinerary-a5/
+1290,Equinox,Itinerary B,8 days,San Cristóbal Island Airport,Tuesday,69.0,https://www.galapagosadvisor.com/ships/equinox/itineraries/itinerary-b/
+1286,Estrella de Mar,Itinerary A,8 days,Baltra Island Airport,Monday,63.0,https://www.galapagosadvisor.com/ships/estrella-de-mar/itineraries/itinerary-a/
+1286,Estrella de Mar,Itinerary B,8 days,San Cristóbal Island Airport,Monday,70.0,https://www.galapagosadvisor.com/ships/estrella-de-mar/itineraries/itinerary-b/
+1286,Estrella de Mar,Itinerary B4,4 days,Baltra Island Airport,Friday,75.0,https://www.galapagosadvisor.com/ships/estrella-de-mar/itineraries/itinerary-b4/
+1286,Estrella de Mar,Itinerary B5,5 days,San Cristóbal Island Airport,Monday,66.0,https://www.galapagosadvisor.com/ships/estrella-de-mar/itineraries/itinerary-b5/
+1609,Evolution,Itinerary A,8 days,Baltra Island Airport,Saturday,68.0,https://www.galapagosadvisor.com/ships/evolution/itineraries/itinerary-a/
+1609,Evolution,Itinerary B,8 days,San Cristóbal Island Airport,Saturday,66.0,https://www.galapagosadvisor.com/ships/evolution/itineraries/itinerary-b/
+1287,Flamingo,Itinerary A,8 days,Baltra Island Airport,Tuesday,62.0,https://www.galapagosadvisor.com/ships/flamingo/itineraries/itinerary-a/
+1287,Flamingo,Itinerary A1,4 days,Baltra Island Airport,Tuesday,61.0,https://www.galapagosadvisor.com/ships/flamingo/itineraries/itinerary-a1/
+1287,Flamingo,Itinerary A2,5 days,San Cristóbal Island Airport,Friday,63.0,https://www.galapagosadvisor.com/ships/flamingo/itineraries/itinerary-a2/
+1287,Flamingo,Itinerary B,8 days,Baltra Island Airport,Tuesday,62.0,https://www.galapagosadvisor.com/ships/flamingo/itineraries/itinerary-b/
+1287,Flamingo,Itinerary B1,4 days,Baltra Island Airport,Tuesday,63.0,https://www.galapagosadvisor.com/ships/flamingo/itineraries/itinerary-b1/
+1287,Flamingo,Itinerary B2,5 days,Baltra Island Airport,Friday,62.0,https://www.galapagosadvisor.com/ships/flamingo/itineraries/itinerary-b2/
+1288,Floreana,North Itinerary,8 days,Baltra Island Airport,Thursday,68.0,https://www.galapagosadvisor.com/ships/floreana/itineraries/north-itinerary/
+1288,Floreana,South Itinerary,8 days,Baltra Island Airport,Thursday,62.0,https://www.galapagosadvisor.com/ships/floreana/itineraries/south-itinerary/
+1289,Fragata,Itinerary A,4 days,Baltra Island Airport,Tuesday,60.0,https://www.galapagosadvisor.com/ships/fragata/itineraries/itinerary-a/
+1289,Fragata,Itinerary B,5 days,Baltra Island Airport,Friday,69.0,https://www.galapagosadvisor.com/ships/fragata/itineraries/itinerary-b/
+1289,Fragata,Itinerary C,8 days,Baltra Island Airport,Friday,70.0,https://www.galapagosadvisor.com/ships/fragata/itineraries/itinerary-c/
+1289,Fragata,Itinerary D,8 days,Baltra Island Airport,Friday,65.0,https://www.galapagosadvisor.com/ships/fragata/itineraries/itinerary-d/
+1293,GALAPAGOS SEA STAR,Itinerary A,6 days,San Cristóbal Island Airport,Tuesday,65.0,https://www.galapagosadvisor.com/ships/galapagos-sea-star/itineraries/itinerary-a/
+1293,GALAPAGOS SEA STAR,Itinerary B,5 days,Baltra Island Airport,Sunday,66.0,https://www.galapagosadvisor.com/ships/galapagos-sea-star/itineraries/itinerary-b/
+1293,GALAPAGOS SEA STAR,Itinerary C,6 days,Baltra Island Airport,Thursday,65.0,https://www.galapagosadvisor.com/ships/galapagos-sea-star/itineraries/itinerary-c/
+1291,Galaxy,Itinerary A,5 days,San Cristóbal Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/galaxy/itineraries/itinerary-a/
+1291,Galaxy,Itinerary B,6 days,Baltra Island Airport,Saturday,65.0,https://www.galapagosadvisor.com/ships/galaxy/itineraries/itinerary-b/
+1291,Galaxy,Itinerary C,6 days,Baltra Island Airport,Thursday,67.0,https://www.galapagosadvisor.com/ships/galaxy/itineraries/itinerary-c/
+1291,Galaxy,Itinerary D,8 days,Baltra Island Airport,Saturday,66.0,https://www.galapagosadvisor.com/ships/galaxy/itineraries/itinerary-d/
+1291,Galaxy,Itinerary E,4 days,Baltra Island Airport,Saturday,65.0,https://www.galapagosadvisor.com/ships/galaxy/itineraries/itinerary-e/
+1292,Golondrina,Itinerary A,4 days,Baltra Island Airport,Tuesday,60.0,https://www.galapagosadvisor.com/ships/golondrina/itineraries/itinerary-a/
+1292,Golondrina,Itinerary B,5 days,Baltra Island Airport,Friday,69.0,https://www.galapagosadvisor.com/ships/golondrina/itineraries/itinerary-b/
+1292,Golondrina,Itinerary C,8 days,Baltra Island Airport,Friday,70.0,https://www.galapagosadvisor.com/ships/golondrina/itineraries/itinerary-c/
+1292,Golondrina,Itinerary D,8 days,Baltra Island Airport,Friday,65.0,https://www.galapagosadvisor.com/ships/golondrina/itineraries/itinerary-d/
+1292,Golondrina,Itinerary H,5 days,Baltra Island Airport,Friday,60.0,https://www.galapagosadvisor.com/ships/golondrina/itineraries/itinerary-h/
+1587,Grace,Itinerary A,8 days,Baltra Island Airport,Saturday,69.0,https://www.galapagosadvisor.com/ships/grace/itineraries/itinerary-a/
+1587,Grace,Itinerary B,8 days,San Cristóbal Island Airport,Saturday,64.0,https://www.galapagosadvisor.com/ships/grace/itineraries/itinerary-b/
+1299,Grand Majestic,A,8 days,San Cristóbal Island Airport,Monday,64.0,https://www.galapagosadvisor.com/ships/grand-majestic/itineraries/a/
+1299,Grand Majestic,A 4day,4 days,San Cristóbal Island Airport,Monday,62.0,https://www.galapagosadvisor.com/ships/grand-majestic/itineraries/a-4day/
+1299,Grand Majestic,A 5day,5 days,Baltra Island Airport,Thursday,66.0,https://www.galapagosadvisor.com/ships/grand-majestic/itineraries/a-5day/
+1299,Grand Majestic,B,8 days,San Cristóbal Island Airport,Monday,66.0,https://www.galapagosadvisor.com/ships/grand-majestic/itineraries/b/
+3782,Infinity,A 8Days,8 days,Baltra Island Airport,Tuesday,63.0,https://www.galapagosadvisor.com/ships/infinity/itineraries/a-8days/
+3782,Infinity,B 8Days,8 days,San Cristóbal Island Airport,Tuesday,72.0,https://www.galapagosadvisor.com/ships/infinity/itineraries/b-8days/
+3782,Infinity,C 4Days,4 days,Baltra Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/infinity/itineraries/c-4days/
+3782,Infinity,D 5Days,5 days,Baltra Island Airport,Friday,60.0,https://www.galapagosadvisor.com/ships/infinity/itineraries/d-5days/
+1295,Integrity,The Eastern Route,8 days,Baltra Island Airport,Saturday,70.0,https://www.galapagosadvisor.com/ships/integrity/itineraries/the-eastern-route/
+1295,Integrity,The Western Route,8 days,Baltra Island Airport,Saturday,64.0,https://www.galapagosadvisor.com/ships/integrity/itineraries/the-western-route/
+1296,ISABELA II,Central Islands,5 days,Baltra Island Airport,Monday,68.0,https://www.galapagosadvisor.com/ships/isabela-ii/itineraries/central-islands/
+1296,ISABELA II,Northern Islands,7 days,San Cristóbal Island Airport,Tuesday,70.0,https://www.galapagosadvisor.com/ships/isabela-ii/itineraries/northern-islands/
+1296,ISABELA II,Southern Islands,5 days,Baltra Island Airport,Friday,63.0,https://www.galapagosadvisor.com/ships/isabela-ii/itineraries/southern-islands/
+1297,King of the Sea,Itinerary A,8 days,Baltra Island Airport,Monday,65.0,https://www.galapagosadvisor.com/ships/king-of-the-sea/itineraries/itinerary-a/
+1297,King of the Sea,Itinerary A1,4 days,San Cristóbal Island Airport,Friday,63.0,https://www.galapagosadvisor.com/ships/king-of-the-sea/itineraries/itinerary-a1/
+1297,King of the Sea,Itinerary A2,5 days,Baltra Island Airport,Monday,66.0,https://www.galapagosadvisor.com/ships/king-of-the-sea/itineraries/itinerary-a2/
+1297,King of the Sea,Itinerary B,8 days,Baltra Island Airport,Monday,61.0,https://www.galapagosadvisor.com/ships/king-of-the-sea/itineraries/itinerary-b/
+1297,King of the Sea,Itinerary B1,4 days,Baltra Island Airport,Monday,60.0,https://www.galapagosadvisor.com/ships/king-of-the-sea/itineraries/itinerary-b1/
+1297,King of the Sea,Itinerary B2,5 days,Baltra Island Airport,Thursday,63.0,https://www.galapagosadvisor.com/ships/king-of-the-sea/itineraries/itinerary-b2/
+1298,LA PINTA,Eastern Islands,5 days,Baltra Island Airport,Thursday,69.0,https://www.galapagosadvisor.com/ships/la-pinta/itineraries/eastern-islands/
+1298,LA PINTA,Northern Islands,5 days,Baltra Island Airport,Monday,66.0,https://www.galapagosadvisor.com/ships/la-pinta/itineraries/northern-islands/
+1298,LA PINTA,Western Islands,7 days,Baltra Island Airport,Friday,65.0,https://www.galapagosadvisor.com/ships/la-pinta/itineraries/western-islands/
+1589,LEGEND,Itinerary A,4 days,Baltra Island Airport,Monday,68.0,https://www.galapagosadvisor.com/ships/legend/itineraries/itinerary-a/
+1589,LEGEND,Itinerary A + B,8 days,Baltra Island Airport,Monday,69.0,https://www.galapagosadvisor.com/ships/legend/itineraries/itinerary-a-plus-b/
+1589,LEGEND,Itinerary B,5 days,Baltra Island Airport,Thursday,69.0,https://www.galapagosadvisor.com/ships/legend/itineraries/itinerary-b/
+1589,LEGEND,Itinerary C,4 days,Baltra Island Airport,Monday,69.0,https://www.galapagosadvisor.com/ships/legend/itineraries/itinerary-c/
+1589,LEGEND,Itinerary C + D,8 days,Baltra Island Airport,Monday,63.0,https://www.galapagosadvisor.com/ships/legend/itineraries/itinerary-c-plus-d/
+1589,LEGEND,Itinerary D,5 days,San Cristóbal Island Airport,Thursday,58.0,https://www.galapagosadvisor.com/ships/legend/itineraries/itinerary-d/
+1773,Lonesome George,Itinerary 8E,8 days,Baltra Island Airport,Friday,62.0,https://www.galapagosadvisor.com/ships/lonesome-george/itineraries/itinerary-8e/
+1300,MARY ANNE,Eastern Islands,8 days,Baltra Island Airport,Saturday,70.0,https://www.galapagosadvisor.com/ships/mary-anne/itineraries/eastern-islands/
+1300,MARY ANNE,Western Islands,8 days,Baltra Island Airport,Saturday,57.0,https://www.galapagosadvisor.com/ships/mary-anne/itineraries/western-islands/
+1301,MERAK,Itinerary A,8 days,Baltra Island Airport,Monday,66.0,https://www.galapagosadvisor.com/ships/merak/itineraries/itinerary-a/
+1301,MERAK,Itinerary B,5 days,Baltra Island Airport,Monday,65.0,https://www.galapagosadvisor.com/ships/merak/itineraries/itinerary-b/
+1301,MERAK,Itinerary C,4 days,Baltra Island Airport,Friday,67.0,https://www.galapagosadvisor.com/ships/merak/itineraries/itinerary-c/
+1590,MONSERRAT,Itinerary A,8 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-a/
+1590,MONSERRAT,Itinerary A4,4 days,Baltra Island Airport,Thursday,66.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-a4/
+1590,MONSERRAT,Itinerary A5,5 days,Baltra Island Airport,Sunday,63.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-a5/
+1590,MONSERRAT,Itinerary B,8 days,San Cristóbal Island Airport,Sunday,62.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-b/
+1590,MONSERRAT,Itinerary B4,4 days,Baltra Island Airport,Thursday,60.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-b4/
+1590,MONSERRAT,Itinerary B5,5 days,San Cristóbal Island Airport,Sunday,63.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-b5/
+1590,MONSERRAT,Itinerary C,8 days,Baltra Island Airport,Thursday,62.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-c/
+1590,MONSERRAT,Itinerary D,8 days,Baltra Island Airport,Thursday,64.0,https://www.galapagosadvisor.com/ships/monserrat/itineraries/itinerary-d/
+1758,NATURAL PARADISE,Itinerary A,8 days,San Cristóbal Island Airport,Tuesday,66.0,https://www.galapagosadvisor.com/ships/natural-paradise/itineraries/itinerary-a/
+1758,NATURAL PARADISE,Itinerary A4,4 days,Baltra Island Airport,Saturday,65.0,https://www.galapagosadvisor.com/ships/natural-paradise/itineraries/itinerary-a4/
+1758,NATURAL PARADISE,Itinerary A5,5 days,San Cristóbal Island Airport,Tuesday,66.0,https://www.galapagosadvisor.com/ships/natural-paradise/itineraries/itinerary-a5/
+1758,NATURAL PARADISE,Itinerary B,8 days,Baltra Island Airport,Tuesday,63.0,https://www.galapagosadvisor.com/ships/natural-paradise/itineraries/itinerary-b/
+1303,NEMO I,A5 + B5 (9 Days),Unknown,Baltra Island Airport,Thursday,64.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/a5-plus-b5-9-days/
+1303,NEMO I,B4 + A4 (7 Days),7 days,Baltra Island Airport,Friday,70.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/b4-plus-a4-7-days/
+1303,NEMO I,Itinerary A,8 days,Baltra Island Airport,Monday,70.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/itinerary-a/
+1303,NEMO I,Itinerary A4,4 days,Baltra Island Airport,Monday,73.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/itinerary-a4/
+1303,NEMO I,Itinerary A5,Unknown,Baltra Island Airport,Thursday,66.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/itinerary-a5/
+1303,NEMO I,Itinerary B,8 days,Baltra Island Airport,Monday,64.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/itinerary-b/
+1303,NEMO I,Itinerary B4,4 days,Baltra Island Airport,Friday,67.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/itinerary-b4/
+1303,NEMO I,Itinerary B5,5 days,Baltra Island Airport,Monday,61.0,https://www.galapagosadvisor.com/ships/nemo-i/itineraries/itinerary-b5/
+1304,NEMO II,North itinerary,8 days,Baltra Island Airport,Sunday,68.0,https://www.galapagosadvisor.com/ships/nemo-ii/itineraries/north-itinerary/
+1304,NEMO II,South Itinerary B,8 days,Baltra Island Airport,Sunday,65.0,https://www.galapagosadvisor.com/ships/nemo-ii/itineraries/south-itinerary-b/
+1304,NEMO II,South Itinerary B4,4 days,Baltra Island Airport,Thursday,58.0,https://www.galapagosadvisor.com/ships/nemo-ii/itineraries/south-itinerary-b4/
+1304,NEMO II,South Itinerary B5,5 days,Baltra Island Airport,Sunday,70.0,https://www.galapagosadvisor.com/ships/nemo-ii/itineraries/south-itinerary-b5/
+1305,NEMO III,Itinerary A,8 days,Baltra Island Airport,Sunday,65.0,https://www.galapagosadvisor.com/ships/nemo-iii/itineraries/itinerary-a/
+1305,NEMO III,Itinerary A4,4 days,Baltra Island Airport,Sunday,64.0,https://www.galapagosadvisor.com/ships/nemo-iii/itineraries/itinerary-a4/
+1305,NEMO III,Itinerary A5,5 days,Baltra Island Airport,Wednesday,66.0,https://www.galapagosadvisor.com/ships/nemo-iii/itineraries/itinerary-a5/
+1305,NEMO III,Itinerary B,8 days,Baltra Island Airport,Sunday,66.0,https://www.galapagosadvisor.com/ships/nemo-iii/itineraries/itinerary-b/
+1305,NEMO III,Itinerary B4,4 days,Baltra Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/nemo-iii/itineraries/itinerary-b4/
+1305,NEMO III,Itinerary B5,8 days,Baltra Island Airport,Sunday,66.0,https://www.galapagosadvisor.com/ships/nemo-iii/itineraries/itinerary-b5/
+1307,OCEAN SPRAY,Itinerary A,8 days,Baltra Island Airport,Saturday,70.0,https://www.galapagosadvisor.com/ships/ocean-spray/itineraries/itinerary-a/
+1307,OCEAN SPRAY,Itinerary A6,6 days,Baltra Island Airport,Saturday,70.0,https://www.galapagosadvisor.com/ships/ocean-spray/itineraries/itinerary-a6/
+1307,OCEAN SPRAY,Itinerary B,8 days,San Cristóbal Island Airport,Saturday,64.0,https://www.galapagosadvisor.com/ships/ocean-spray/itineraries/itinerary-b/
+1307,OCEAN SPRAY,Itinerary B4,4 days,San Cristóbal Island Airport,Saturday,59.0,https://www.galapagosadvisor.com/ships/ocean-spray/itineraries/itinerary-b4/
+1307,OCEAN SPRAY,Itinerary B5,5 days,Baltra Island Airport,Tuesday,68.0,https://www.galapagosadvisor.com/ships/ocean-spray/itineraries/itinerary-b5/
+1307,OCEAN SPRAY,Itinerary B6,6 days,Baltra Island Airport,Tuesday,65.0,https://www.galapagosadvisor.com/ships/ocean-spray/itineraries/itinerary-b6/
+1306,ODYSSEY,Itinerary A,6 days,San Cristóbal Island Airport,Tuesday,65.0,https://www.galapagosadvisor.com/ships/odyssey/itineraries/itinerary-a/
+1306,ODYSSEY,Itinerary B,Unknown,Baltra Island Airport,Sunday,67.0,https://www.galapagosadvisor.com/ships/odyssey/itineraries/itinerary-b/
+1306,ODYSSEY,Itinerary C,6 days,Baltra Island Airport,Thursday,64.0,https://www.galapagosadvisor.com/ships/odyssey/itineraries/itinerary-c/
+1751,Origin Theory & Evolve,Itinerary A - SE,8 days,San Cristóbal Island Airport,Sunday,65.0,https://www.galapagosadvisor.com/ships/origin-theory-evolve/itineraries/itinerary-a-se/
+1751,Origin Theory & Evolve,Itinerary B - NW,Unknown,San Cristóbal Island Airport,Sunday,67.0,https://www.galapagosadvisor.com/ships/origin-theory-evolve/itineraries/itinerary-b-nw/
+1308,PASSION,East,8 days,Baltra Island Airport,Saturday,70.0,https://www.galapagosadvisor.com/ships/passion/itineraries/east/
+1308,PASSION,West,8 days,Baltra Island Airport,Saturday,57.0,https://www.galapagosadvisor.com/ships/passion/itineraries/west/
+1571,PETREL,Itinerary A,8 days,Baltra Island Airport,Friday,70.0,https://www.galapagosadvisor.com/ships/petrel/itineraries/itinerary-a/
+1571,PETREL,Itinerary A6,6 days,Baltra Island Airport,Friday,69.0,https://www.galapagosadvisor.com/ships/petrel/itineraries/itinerary-a6/
+1571,PETREL,Itinerary B,8 days,San Cristóbal Island Airport,Friday,63.0,https://www.galapagosadvisor.com/ships/petrel/itineraries/itinerary-b/
+1571,PETREL,Itinerary B4,4 days,San Cristóbal Island Airport,Friday,60.0,https://www.galapagosadvisor.com/ships/petrel/itineraries/itinerary-b4/
+1571,PETREL,Itinerary B5,Unknown,Baltra Island Airport,Unknown,65.0,https://www.galapagosadvisor.com/ships/petrel/itineraries/itinerary-b5/
+1571,PETREL,Itinerary B6,6 days,Baltra Island Airport,Wednesday,64.0,https://www.galapagosadvisor.com/ships/petrel/itineraries/itinerary-b6/
+1311,REINA SILVIA,Eastern Route,8 days,Baltra Island Airport,Saturday,71.0,https://www.galapagosadvisor.com/ships/reina-silvia/itineraries/eastern-route/
+1311,REINA SILVIA,Western Route,8 days,Baltra Island Airport,Saturday,63.0,https://www.galapagosadvisor.com/ships/reina-silvia/itineraries/western-route/
+1312,SAMBA,North West,8 days,Baltra Island Airport,Tuesday,68.0,https://www.galapagosadvisor.com/ships/samba/itineraries/north-west/
+1312,SAMBA,South East,8 days,Baltra Island Airport,Tuesday,64.0,https://www.galapagosadvisor.com/ships/samba/itineraries/south-east/
+1313,SANTA CRUZ II,Eastern Islands,7 days,Baltra Island Airport,Friday,67.0,https://www.galapagosadvisor.com/ships/santa-cruz-ii/itineraries/eastern-islands/
+1313,SANTA CRUZ II,Northern Islands,5 days,Baltra Island Airport,Monday,68.0,https://www.galapagosadvisor.com/ships/santa-cruz-ii/itineraries/northern-islands/
+1313,SANTA CRUZ II,Western Islands,5 days,Baltra Island Airport,Thursday,60.0,https://www.galapagosadvisor.com/ships/santa-cruz-ii/itineraries/western-islands/
+1592,SEA MAN JOURNEY,Itinerary A,4 days,Baltra Island Airport,Friday,76.0,https://www.galapagosadvisor.com/ships/sea-man-journey/itineraries/itinerary-a/
+1592,SEA MAN JOURNEY,Itinerary B,5 days,San Cristóbal Island Airport,Monday,61.0,https://www.galapagosadvisor.com/ships/sea-man-journey/itineraries/itinerary-b/
+1592,SEA MAN JOURNEY,Itinerary C,8 days,Baltra Island Airport,Friday,66.0,https://www.galapagosadvisor.com/ships/sea-man-journey/itineraries/itinerary-c/
+1592,SEA MAN JOURNEY,Itinerary C1,8 days,Baltra Island Airport,Friday,68.0,https://www.galapagosadvisor.com/ships/sea-man-journey/itineraries/itinerary-c1/
+3763,Solaris,Itinerary A 8Days,8 days,Baltra Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/solaris/itineraries/itinerary-a-8days/
+3763,Solaris,itinerary B 8Days,8 days,Baltra Island Airport,Tuesday,67.0,https://www.galapagosadvisor.com/ships/solaris/itineraries/itinerary-b-8days/
+3763,Solaris,itinerary C 4Days,4 days,Baltra Island Airport,Tuesday,73.0,https://www.galapagosadvisor.com/ships/solaris/itineraries/itinerary-c-4days/
+3763,Solaris,itinerary D 5Days,5 days,San Cristóbal Island Airport,Friday,63.0,https://www.galapagosadvisor.com/ships/solaris/itineraries/itinerary-d-5days/
+1315,TIP TOP II,Itinerary 2 4D,4 days,Baltra Island Airport,Friday,72.0,https://www.galapagosadvisor.com/ships/tip-top-ii/itineraries/itinerary-2-4d/
+1315,TIP TOP II,Itinerary 2 5D,5 days,Baltra Island Airport,Monday,61.0,https://www.galapagosadvisor.com/ships/tip-top-ii/itineraries/itinerary-2-5d/
+1315,TIP TOP II,Option 1,8 days,Baltra Island Airport,Friday,66.0,https://www.galapagosadvisor.com/ships/tip-top-ii/itineraries/option-1/
+1315,TIP TOP II,Option 2,8 days,Baltra Island Airport,Friday,63.0,https://www.galapagosadvisor.com/ships/tip-top-ii/itineraries/option-2/
+1317,TIP TOP IV,Itinerary 1,8 days,Baltra Island Airport,Friday,68.0,https://www.galapagosadvisor.com/ships/tip-top-iv/itineraries/itinerary-1/
+1317,TIP TOP IV,Itinerary 2,8 days,Baltra Island Airport,Friday,67.0,https://www.galapagosadvisor.com/ships/tip-top-iv/itineraries/itinerary-2/
+1317,TIP TOP IV,Itinerary 2 4D,4 days,Baltra Island Airport,Friday,67.0,https://www.galapagosadvisor.com/ships/tip-top-iv/itineraries/itinerary-2-4d/
+1317,TIP TOP IV,Itinerary 2 5D,5 days,Baltra Island Airport,Monday,66.0,https://www.galapagosadvisor.com/ships/tip-top-iv/itineraries/itinerary-2-5d/
+1318,TREASURE OF GALAPAGOS,A,5 days,Baltra Island Airport,Friday,63.0,https://www.galapagosadvisor.com/ships/treasure-of-galapagos/itineraries/a/
+1318,TREASURE OF GALAPAGOS,B,5 days,San Cristóbal Island Airport,Tuesday,66.0,https://www.galapagosadvisor.com/ships/treasure-of-galapagos/itineraries/b/
+1318,TREASURE OF GALAPAGOS,C,7 days,Baltra Island Airport,Saturday,61.0,https://www.galapagosadvisor.com/ships/treasure-of-galapagos/itineraries/c/
+1584,XPERIENCE,Northern Itinerary,8 days,Baltra Island Airport,Saturday,69.0,https://www.galapagosadvisor.com/ships/xperience/itineraries/northern-itinerary/
+1584,XPERIENCE,Southern Itinerary,8 days,Baltra Island Airport,Saturday,66.0,https://www.galapagosadvisor.com/ships/xperience/itineraries/southern-itinerary/
+1580,XPLORATION,Northern Itinerary,8 days,Baltra Island Airport,Saturday,69.0,https://www.galapagosadvisor.com/ships/xploration/itineraries/northern-itinerary/
+1580,XPLORATION,Southern Itinerary,8 days,Baltra Island Airport,Saturday,66.0,https://www.galapagosadvisor.com/ships/xploration/itineraries/southern-itinerary/
+1608,YOLITA II,Itinerary A,8 days,Baltra Island Airport,Sunday,65.0,https://www.galapagosadvisor.com/ships/yolita-ii/itineraries/itinerary-a/
+1608,YOLITA II,Itinerary B,8 days,Baltra Island Airport,Sunday,66.0,https://www.galapagosadvisor.com/ships/yolita-ii/itineraries/itinerary-b/
+1608,YOLITA II,Itinerary B4,4 days,Baltra Island Airport,Thursday,57.0,https://www.galapagosadvisor.com/ships/yolita-ii/itineraries/itinerary-b4/
+1608,YOLITA II,Itinerary B5,5 days,Baltra Island Airport,Sunday,74.0,https://www.galapagosadvisor.com/ships/yolita-ii/itineraries/itinerary-b5/

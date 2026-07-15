@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>New Page Request — galapagosislands.travel content system</title>
+<!-- ════════════════════════════════════════════════════════════════════
+  HOSTED INTAKE FORM. Any team member fills this to activate the pipeline:
+  on submit it creates an Airtable record with Status = "Backlog", which the
+  n8n poll picks up and runs through the sequence.
+
+  SECURITY: do NOT put an Airtable PAT in this file. Point WEBHOOK_URL at an
+  n8n / Make webhook that creates the record server-side (see
+  AIRTABLE_INTAKE_FORM.md → "Hosted form via webhook"). The webhook keeps the
+  token server-side. Host this file on Netlify/Vercel/GitHub Pages/S3.
+  ════════════════════════════════════════════════════════════════════ -->
+<style>
+  :root{--navy:#15324f;--gold:#c08a2d;--cream:#faf7f1;--line:#dfd9cd;--ink:#26303a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 system-ui,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 80px}
+  h1{font-family:Georgia,serif;color:var(--navy);font-size:28px;margin:0 0 4px}
+  p.sub{color:#5b6873;margin:0 0 28px}
+  fieldset{border:1px solid var(--line);border-radius:10px;padding:18px 18px 6px;margin:0 0 22px;background:#fff}
+  legend{font-weight:600;color:var(--navy);padding:0 8px}
+  legend small{font-weight:400;color:#8a93a0}
+  label{display:block;font-weight:600;font-size:14px;margin:14px 0 5px}
+  label .opt{font-weight:400;color:#8a93a0}
+  input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff}
+  textarea{min-height:90px;resize:vertical}
+  .hint{font-size:12.5px;color:#8a93a0;margin:4px 0 0}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  button{margin-top:8px;background:var(--gold);color:#fff;border:0;border-radius:8px;padding:13px 22px;font-size:16px;font-weight:600;cursor:pointer}
+  button:disabled{opacity:.5;cursor:default}
+  .msg{margin-top:16px;padding:12px 14px;border-radius:8px;display:none}
+  .msg.ok{display:block;background:#e7f4ea;color:#1f6b39;border:1px solid #b7e0c2}
+  .msg.err{display:block;background:#fceaea;color:#9b2c2c;border:1px solid #f0bcbc}
+  @media(max-width:560px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>New Page Request</h1>
+  <p class="sub">Submit a page for the galapagosislands.travel content pipeline. Filling this <strong>activates the sequence</strong> — the engine scores, briefs, drafts, truth-checks, humanizes, polishes, and routes it for review.</p>
+
+  <form id="f">
+    <!-- ── Required: what to produce ───────────────────────────────── -->
+    <fieldset>
+      <legend>The page <small>required</small></legend>
+      <label>Page title</label>
+      <input name="Page Title" required placeholder="Galápagos Cruises: How to Choose + Ship Types" />
+      <div class="row">
+        <div><label>Target URL / slug</label><input name="Target URL" placeholder="/galapagos-cruises" /></div>
+        <div><label>Page type</label>
+          <select name="Page Type" required>
+            <option value="">Choose…</option>
+            <option>hub page</option><option>vessel/operator profile</option>
+            <option>comparison</option><option>guide</option><option>FAQ</option>
+          </select>
+        </div>
+      </div>
+      <label>Topic / angle <span class="opt">— what should this page answer?</span></label>
+      <textarea name="Topic" required placeholder="Help first-timers compare the four cruise tiers and choose; cover real price ranges and trade-offs."></textarea>
+    </fieldset>
+
+    <!-- ── Required: audience + conversion ─────────────────────────── -->
+    <fieldset>
+      <legend>Audience &amp; conversion <small>required</small></legend>
+      <div class="row">
+        <div><label>Target persona</label>
+          <select name="Persona" required>
+            <option value="">Choose…</option>
+            <option value="first_timer">First-time / overwhelmed researcher</option>
+            <option value="wildlife_lover">Nature &amp; wildlife lover</option>
+            <option value="luxury_seeker">Luxury / status seeker</option>
+            <option value="family">Family / multigenerational</option>
+            <option value="solo">Solo traveler</option>
+            <option value="eco_purpose">Eco / purpose-driven</option>
+          </select>
+        </div>
+        <div><label>Funnel stage</label>
+          <select name="Funnel Stage" required>
+            <option value="">Choose…</option>
+            <option>awareness</option><option>consideration</option><option>decision</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div><label>Primary CTA</label>
+          <input name="Primary CTA" value="Talk to a Galápagos Specialist" />
+        </div>
+        <div><label>Priority <span class="opt">(optional)</span></label>
+          <select name="Priority"><option value="">—</option><option>High</option><option>Medium</option><option>Low</option></select>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ── Optional: human enrichment ──────────────────────────────── -->
+    <fieldset>
+      <legend>Human enrichment <small>optional — woven in verbatim, attributed, never rewritten</small></legend>
+      <p class="hint">Anything here is treated as <strong>human-authored add-ons</strong> that enrich the AI draft. The writer places them as-is (lightly fitted), the auditor preserves them, and the Guardian of Truth treats quotes/anecdotes as human-attributed (not requiring a source-of-truth citation).</p>
+      <label>Human paragraph(s) <span class="opt">(optional)</span></label>
+      <textarea name="Human Paragraphs" placeholder="A first-hand paragraph you want included, e.g. a field observation or expert framing."></textarea>
+      <label>Human quote(s) <span class="opt">(optional — one per line, add “— Name, role”)</span></label>
+      <textarea name="Human Quotes" placeholder="&quot;The wildlife is indifferent to what you paid for your berth.&quot; — Juan Magallanes, Naturalist"></textarea>
+      <label>Anecdotes / stories <span class="opt">(optional)</span></label>
+      <textarea name="Anecdotes" placeholder="A short true story that illustrates the point."></textarea>
+      <label>Contributor name(s) for attribution <span class="opt">(optional)</span></label>
+      <input name="Contributor" placeholder="Marcel Perkins (Latin Trails field contributor)" />
+    </fieldset>
+
+    <input type="hidden" name="Status" value="Backlog" />
+    <button id="btn" type="submit">Submit &amp; activate pipeline</button>
+    <div id="msg" class="msg"></div>
+  </form>
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────────────────
+  // Point this at your n8n / Make "intake" webhook (keeps the Airtable token
+  // server-side). The webhook creates one Airtable record from the JSON body.
+  const WEBHOOK_URL = "{{INTAKE_WEBHOOK_URL}}";   // e.g. https://n8n.example.com/webhook/git-intake
+  // ────────────────────────────────────────────────────────────────────
+  const f = document.getElementById('f'), btn = document.getElementById('btn'), msg = document.getElementById('msg');
+  f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.className = 'msg'; msg.textContent = '';
+    const data = Object.fromEntries(new FormData(f).entries());
+    if (WEBHOOK_URL.indexOf('{{') === 0) { msg.className='msg err'; msg.textContent='Set WEBHOOK_URL in this file before use.'; return; }
+    btn.disabled = true; btn.textContent = 'Submitting…';
+    try {
+      const r = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      msg.className = 'msg ok'; msg.textContent = '✓ Submitted. The page is in Backlog and the pipeline will pick it up.';
+      f.reset();
+    } catch (err) {
+      msg.className = 'msg err'; msg.textContent = 'Could not submit: ' + err.message + '. Check the webhook URL.';
+    } finally { btn.disabled = false; btn.textContent = 'Submit & activate pipeline'; }
+  });
+</script>
+</body>
+</html>

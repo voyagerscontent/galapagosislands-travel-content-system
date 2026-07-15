@@ -1,0 +1,10 @@
+# rendered (hydrated) artifacts — regenerate with engine/hydrate_placeholders.py
+*.rendered
+# local secrets (if you choose .env over hard-coding in SITE_CONFIG)
+.env
+*.local
+# OS/editor cruft
+~$*.xlsx
+.DS_Store
+*.pyc
+__pycache__/

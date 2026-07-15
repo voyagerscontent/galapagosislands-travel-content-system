@@ -1,0 +1,257 @@
+# ════════════════════════════════════════════════════════════════════════
+# AUDIENCE & CONVERSION ARCHITECTURE — filled for {{BRAND}}
+# Conversion model: independent editorial guide → qualified ENQUIRY routed to
+# {{BRAND}}. Voice DEFERS to the brand-style-guide (honest,
+# no-hype, every claim sourced — the three Editorial Guardians).
+# Benchmarked against: galapagosislands.com, galapatours, aquaexpeditions,
+# metropolitan-touring, quasarex, ecoventura, celebritycruises, galapagos.org,
+# expeditions(Lindblad), intrepidtravel.
+# ════════════════════════════════════════════════════════════════════════
+
+meta:
+  site: "{{DOMAIN}}"
+  segment: "Galápagos expedition cruise (research-stage editorial)"
+  reference_set: ["galapagosislands.com","galapatours.com","aquaexpeditions.com","metropolitan-touring.com","quasarex.com","ecoventura.com","celebritycruises.com","galapagos.org","expeditions.com","intrepidtravel.com"]
+  conversion_goal: "qualified enquiry (contact form) routed to {{BRAND}}"
+  locale: "en-US"
+  last_updated: "2026-06-26"
+
+# ── 1. PERSONAS ─────────────────────────────────────────────────────────
+personas:
+  - id: first_timer
+    label: "First-time, overwhelmed researcher (PRIMARY)"
+    snapshot: "Has decided on Galápagos but is drowning in near-identical ships, tiers and dates, and is afraid of choosing wrong or overpaying."
+    demographics: "35–65, US/UK/EU, couples & small parties, comfortable income, high research intent"
+    motivators: ["getting it right / no regrets", "confidence in the decision", "bucket-list wildlife"]
+    stressors: ["decision-paralysis (which ship/itinerary)", "getting-scammed/overpaying", "logistics (flights, fees)", "missing-wildlife"]
+    budget_tier: "any ($2,500–$20,000+)"
+    decision_drivers: ["a straight, comparative answer", "honest trade-offs", "a human expert who isn't pushing one boat"]
+    top_objections: [choosing_wrong, hidden_fees, trust, safety]
+    messaging_angles: ["'the honest answer' to the question they actually asked", "real numbers + real trade-offs", "what changes the experience vs what doesn't"]
+    proof_that_resonates: ["cited figures", "named experts/naturalists", "cross-operator independence"]
+    vocabulary: ["how do I choose", "is it worth it", "cruise vs land", "how many days", "best value"]
+    primary_persona_cta: "Talk to a Galápagos Specialist"
+  - id: wildlife_lover
+    label: "Nature & wildlife lover (base layer)"
+    snapshot: "Here for up-close, fearless wildlife; wants the itinerary/season that maximizes encounters."
+    demographics: "broad; all party types"
+    motivators: ["wildlife-intimacy", "bucket-list", "natural wonder"]
+    stressors: ["missing key species/islands", "wasting limited time"]
+    budget_tier: "any"
+    decision_drivers: ["itinerary wildlife coverage", "right season for target species"]
+    top_objections: [choosing_wrong]
+    messaging_angles: ["which islands/seasons deliver which species", "outer islands need a cruise, not day trips"]
+    proof_that_resonates: ["specific species/season facts", "island access facts"]
+    vocabulary: ["see the most wildlife", "blue-footed boobies", "best season", "Fernandina/Genovesa"]
+    primary_persona_cta: "Download the Free Galápagos Guide (PDF)"
+  - id: luxury_seeker
+    label: "Luxury / status seeker"
+    snapshot: "Wants the best, smallest, most refined vessel; sensitive to overpaying for the wrong tier."
+    demographics: "45–70, higher income"
+    motivators: ["status & exclusivity", "comfort/refinement"]
+    stressors: ["overpaying for wrong tier", "crowds / lack of intimacy"]
+    budget_tier: "premium-to-ultra ($7,500–$20,000+)"
+    decision_drivers: ["genuine small-ship intimacy", "verified quality (not marketing 'luxury')"]
+    top_objections: [hidden_fees, crowds, choosing_wrong]
+    messaging_angles: ["what actually distinguishes the top tier (ratio, access) vs amenities", "tier ≠ wildlife quality — set honest expectations"]
+    proof_that_resonates: ["guest:guide ratios", "verified-active vessel facts", "Relais & Châteaux-type certifications"]
+    vocabulary: ["small-ship", "all-suite", "intimate", "private charter"]
+    primary_persona_cta: "Talk to a Galápagos Specialist"
+  - id: family
+    label: "Family / multigenerational"
+    snapshot: "Traveling with kids/grandkids; needs reassurance on ages, safety, and logistics."
+    demographics: "parents 35–55 + kids; grandparents"
+    motivators: ["shared discovery", "kids' education & wonder", "togetherness"]
+    stressors: ["logistics with kids", "minimum-age limits", "child safety/boredom"]
+    budget_tier: "mid-to-premium"
+    decision_drivers: ["family-friendly vessels & cabins", "kid-appropriate activities", "minimum ages"]
+    top_objections: [safety, accessibility, choosing_wrong]
+    messaging_angles: ["which ships welcome families and from what age", "triple/connecting cabins, family departures"]
+    proof_that_resonates: ["stated minimum ages", "family-departure facts"]
+    vocabulary: ["family-friendly", "minimum age", "kids", "connecting cabins"]
+    primary_persona_cta: "Talk to a Galápagos Specialist"
+  - id: solo
+    label: "Solo traveler"
+    snapshot: "Independent; wary of the solo supplement and of feeling isolated."
+    demographics: "30–65, independent"
+    motivators: ["freedom", "like-minded community", "enrichment"]
+    stressors: ["solo-supplement penalty", "feeling alone / safety"]
+    budget_tier: "mid-to-premium"
+    decision_drivers: ["low/waived solo supplement", "sociable small-group vibe"]
+    top_objections: [solo_penalty, safety]
+    messaging_angles: ["which operators waive/reduce the solo supplement and when", "small-group sociability"]
+    proof_that_resonates: ["specific solo-supplement facts/departures"]
+    vocabulary: ["solo supplement", "single traveler", "small group"]
+    primary_persona_cta: "Talk to a Galápagos Specialist"
+  - id: eco_purpose
+    label: "Eco / purpose-driven traveler"
+    snapshot: "Wants the trip to do good and to avoid greenwashing."
+    demographics: "broad; values-led"
+    motivators: ["conservation impact", "cultural-education", "travel that gives back"]
+    stressors: ["eco-guilt", "greenwashing / authenticity"]
+    budget_tier: "any"
+    decision_drivers: ["evidenced conservation", "GNPS compliance", "where the money goes"]
+    top_objections: [greenwashing, trust]
+    messaging_angles: ["concrete conservation evidence, not slogans", "GNPS rules as a baseline, not a badge"]
+    proof_that_resonates: ["quantified impact", "named programs/certifications"]
+    vocabulary: ["sustainable", "conservation", "give back", "carbon neutral"]
+    primary_persona_cta: "Download the Free Galápagos Guide (PDF)"
+
+# ── 2. FUNNEL STAGES (declared per page/section) ────────────────────────
+funnel_stages:
+  - stage: awareness
+    intent: "learn / get inspired — not ready to buy"
+    content_types: ["destination & wildlife guides", "when-to-visit/season", "history", "photo stories"]
+    primary_cta_options: ["Download the Free Galápagos Guide (PDF)", "Subscribe"]
+    tone: "useful, honest, low-pressure (Guardian of Content: no padding)"
+    preempt_objections: [trust]
+  - stage: consideration
+    intent: "compare ships/tiers/itineraries, narrow the choice"
+    content_types: ["'how to choose' guide", "vessel/tier comparisons", "itinerary pages", "reviews"]
+    primary_cta_options: ["Talk to a Galápagos Specialist", "View Vessel / Compare"]
+    tone: "honest, comparative, myth-busting (no operator favoritism)"
+    preempt_objections: [choosing_wrong, hidden_fees, crowds, solo_penalty, accessibility]
+  - stage: decision
+    intent: "ready to enquire"
+    content_types: ["pricing & what's-included", "FAQ", "closing enquiry band"]
+    primary_cta_options: ["Talk to a Galápagos Specialist", "Check Availability"]
+    tone: "confident, frictionless, human"
+    preempt_objections: [safety, cancellation, hidden_fees, weather_flight, trust]
+  - stage: retention
+    intent: "stay engaged post-enquiry / pre-trip"
+    content_types: ["newsletter", "pre-trip prep guides"]
+    primary_cta_options: ["Subscribe"]
+    tone: "warm, insider"
+    preempt_objections: []
+
+# ── 3. CTA SYSTEM ───────────────────────────────────────────────────────
+cta_system:
+  rules:
+    - "ONE primary CTA per page, reused verbatim"
+    - "primary = lead/enquiry (this is an editorial guide, not a booking engine) — never instant 'Book Now'"
+    - "one secondary lead magnet (free guide)"
+    - "always offer the human fallback — reassurance converts this high-ticket, research-heavy buyer"
+    - "navigational CTAs (View Vessel/Compare) don't count toward the limit"
+    - "CTA must match the page's stage"
+  primary_lead: "Talk to a Galápagos Specialist"
+  secondary_magnet: "Download the Free Galápagos Guide (PDF)"
+  human_fallback: "Chat with a specialist  /  Call us"
+  navigational: ["View Vessel", "Compare Cruises", "See Itinerary"]
+
+# ── 4. OBJECTION LIBRARY (honest, sourced — defer to brand Guardian of Truth) ──
+objection_library:
+  - id: choosing_wrong
+    objection: "I'll pick the wrong ship or itinerary"
+    stage: consideration
+    defuse: "Frame the four real variables (tier, length, island region, season); state honest trade-offs; offer expert matching across operators, not one boat."
+    proof: ["cross-operator independence", "the four-variable decision model"]
+    example_copy: "There's no single 'best' cruise — only the best fit. It comes down to four things: vessel tier, trip length, island region, and season. We'll walk you through the trade-offs and match you to the right one, whichever operator runs it."
+  - id: hidden_fees
+    objection: "Hidden fees / am I overpaying?"
+    stage: consideration
+    defuse: "State real price ranges and what's excluded (mainland flights ~$400–$500, $200 park fee, $20 transit card); explain that tier ≠ wildlife quality."
+    proof: ["published tier ranges $2,500–$20,000+", "explicit exclusions"]
+    example_copy: "Cruises run roughly $2,500–$20,000+ per person depending on tier. Flights from the mainland (~$400–$500), the $200 national park fee and the $20 transit card are extra everywhere — here's exactly what each fare does and doesn't include."
+  - id: safety
+    objection: "Is it safe?"
+    stage: decision
+    defuse: "GNPS-certified guides, regulated landings, vessel safety standards; note doctor-on-board where it's true; state it plainly, no overclaiming."
+    proof: ["GNPS guide certification", "vessel safety facts"]
+    example_copy: "Galápagos travel is tightly regulated. Every vessel runs GNPS-certified guides, fixed landing schedules and biosecurity rules; several ships carry a doctor on board. We'll tell you which do."
+  - id: cancellation
+    objection: "What if my plans change?"
+    stage: decision
+    defuse: "Explain typical deposit/cancellation terms honestly per operator; recommend trip-cancellation insurance; flag any flexible-deposit options."
+    proof: ["operator deposit/cancellation facts"]
+    example_copy: "Deposit and cancellation terms vary by operator — some offer flexible or reduced deposits. We'll lay out the actual terms before you commit, and we always recommend trip-cancellation insurance."
+  - id: weather_flight
+    objection: "A weather or flight disruption could ruin it"
+    stage: decision
+    defuse: "Advise arriving a day early; explain that mainland-flight cancellations are outside operator control; recommend insurance."
+    proof: ["logistics facts (arrive 1 day early)"]
+    example_copy: "Always fly to the mainland a day before your cruise — missed connections are the most common avoidable problem, and most operators can't refund a missed departure. Travel insurance covers the rest."
+  - id: crowds
+    objection: "It'll be crowded / not intimate"
+    stage: consideration
+    defuse: "Explain group-size reality by tier and guest:guide ratio; note that all vessels visit the same regulated sites."
+    proof: ["guest:guide ratios", "site-quota facts"]
+    example_copy: "Every ship visits the same National Park-authorized sites on a managed schedule — the difference is group size. A 16-guest yacht and a 100-guest ship feel very different ashore; here's how each tier actually plays out."
+  - id: solo_penalty
+    objection: "The solo supplement / I'll be alone"
+    stage: consideration
+    defuse: "Identify operators/departures that waive or reduce the solo supplement; note sociable small-group vibe."
+    proof: ["solo-supplement facts by operator"]
+    example_copy: "Solo supplements are real, but not universal — some operators waive them on select departures. Tell us your dates and we'll find the ones that don't penalize solo travelers."
+  - id: accessibility
+    objection: "Too physical / accessibility concerns"
+    stage: consideration
+    defuse: "Give honest activity levels; note wet/dry landings; invite a conversation about specific needs."
+    proof: ["activity-level facts", "landing-type facts"]
+    example_copy: "Most days involve wet or dry landings from a panga and some walking on uneven volcanic terrain. Several ships suit active seniors well; tell us your mobility needs and we'll match the right vessel."
+  - id: greenwashing
+    objection: "Is it actually sustainable?"
+    stage: any
+    defuse: "Cite concrete conservation evidence per operator; treat GNPS compliance as a baseline, not a badge; avoid vague claims."
+    proof: ["quantified impact / named programs"]
+    example_copy: "GNPS rules are the floor, not a green badge. Where an operator does more — carbon-neutral sailings, a funded foundation, citizen science — we'll show the specifics, not the slogans."
+  - id: trust
+    objection: "Can I trust this guide / company?"
+    stage: any
+    defuse: "Lead with editorial independence, named experts, and the citation standard; disclose the {{BRAND}} relationship transparently."
+    proof: ["named editorial team", "20+ yrs {{BRAND}} booking", "every fact sourced"]
+    example_copy: "This is an independent guide maintained by {{BRAND}}, written by named naturalists and specialists, with every fact sourced. We'll give you the same answer whether or not you book through us."
+
+# ── 5. TRUST & URGENCY ──────────────────────────────────────────────────
+trust_urgency:
+  trust: ["named editorial team & GNPS-certified contributors", "20+ years of {{BRAND}} booking experience", "every fact sourced (Guardian of Truth)", "cross-operator independence", "transparent {{BRAND}} relationship"]
+  urgency: ["seasonal booking-window notes only (e.g. 'popular departures book 6–12 months out')", "NO fake countdown timers (off-brand for an honest editorial guide)"]
+
+# ── 6. PAGE DIRECTIVES (worked from the site's real pages) ──────────────
+page_directive_schema:
+  fields: ["url_or_working_title","stage","primary_persona","secondary_personas","primary_cta","secondary_cta","objections_to_preempt","tone_note"]
+  section_override: "Decision-stage enquiry band may be appended to an awareness/consideration page; declare the override on that section."
+  examples:
+    - url_or_working_title: "Home — 'The Ultimate Guide to Visiting the Galápagos'"
+      stage: awareness
+      primary_persona: first_timer
+      secondary_personas: [wildlife_lover, eco_purpose]
+      primary_cta: "Download the Free Galápagos Guide (PDF)"
+      secondary_cta: "Talk to a Galápagos Specialist"
+      objections_to_preempt: [trust]
+      tone_note: "useful, scannable, honest; lead with the answer"
+    - url_or_working_title: "/galapagos-cruises — 'Ultimate Guide to Galápagos Cruises' (tiers + how to choose)"
+      stage: consideration
+      primary_persona: first_timer
+      secondary_personas: [luxury_seeker, family, wildlife_lover]
+      primary_cta: "Talk to a Galápagos Specialist"
+      secondary_cta: "Download the Free Galápagos Guide (PDF)"
+      objections_to_preempt: [choosing_wrong, hidden_fees, crowds, solo_penalty, accessibility]
+      tone_note: "comparative, myth-busting, no operator favoritism"
+    - url_or_working_title: "Vessel profile page (e.g. a specific yacht)"
+      stage: consideration
+      primary_persona: luxury_seeker
+      secondary_personas: [family, wildlife_lover]
+      primary_cta: "Talk to a Galápagos Specialist"
+      secondary_cta: "Compare Cruises"
+      objections_to_preempt: [choosing_wrong, crowds, hidden_fees]
+      tone_note: "factual, distinct per vessel; capacity + ratio + what makes it different; mark 'VERIFIED ACTIVE <year>'"
+    - url_or_working_title: "FAQ + closing enquiry band"
+      stage: decision
+      primary_persona: first_timer
+      secondary_personas: [family, solo]
+      primary_cta: "Talk to a Galápagos Specialist"
+      secondary_cta: "Chat with a specialist / Call us"
+      objections_to_preempt: [safety, cancellation, weather_flight, hidden_fees, trust]
+      tone_note: "answer-first 40–60 word FAQ answers; confident, human close"
+
+# ── 7. GLOBAL THINGS TO AVOID ───────────────────────────────────────────
+global_avoid:
+  - "No clear next action, or competing primary CTAs"
+  - "Hero-blocking modal on load"
+  - "Burying the price ranges (forces the 'how much?' bounce)"
+  - "Leaving safety/cancellation objections unanswered until the enquiry form"
+  - "Generic one-size copy that targets no persona"
+  - "Fake scarcity / countdown timers (off-brand for an honest editorial guide)"
+  - "Walls of text with no scannable answer (Guardian of Design)"
+  - "Hard 'Book Now' CTA on an awareness-stage guide"
+  - "Operator favoritism in comparative content"

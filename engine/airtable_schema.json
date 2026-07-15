@@ -1,0 +1,57 @@
+{
+  "table_name": "Pages Master",
+  "note": "Single Status field drives the pipeline. ASCII values only (no em-dashes). Guard fields prevent re-processing loops. Build with build_airtable_base.py (computed fields skipped; create them in the UI).",
+  "fields": [
+    { "name": "Page #", "type": "number", "precision": 0 },
+    { "name": "Page Name", "type": "singleLineText" },
+    { "name": "URL Slug", "type": "singleLineText" },
+    { "name": "Site Config ID", "type": "singleLineText" },
+    { "name": "Pillar", "type": "singleLineText" },
+    { "name": "Page Type", "type": "singleSelect", "options": ["Hub", "Pillar", "Vessel", "Cabin", "Itinerary", "Region", "Wildlife", "FAQ", "Press", "Trade", "Blog"] },
+    { "name": "Reader Funnel", "type": "singleSelect", "options": ["B2C direct", "B2B trade", "press", "LLM-citation"] },
+    { "name": "Primary Keyword", "type": "singleLineText" },
+    { "name": "Search Intent", "type": "singleLineText" },
+
+    { "name": "Status", "type": "singleSelect", "options": [
+      "Backlog",
+      "Scoring",
+      "Brief Ready",
+      "Drafting",
+      "Truth Check",
+      "Humanizing",
+      "Polishing",
+      "Auditor Review",
+      "Editor Review",
+      "Ready to Publish",
+      "Published",
+      "Needs Attention"
+    ] },
+
+    { "name": "Buyer Intent", "type": "number", "precision": 0 },
+    { "name": "Search Demand", "type": "number", "precision": 0 },
+    { "name": "Ranking Chance", "type": "number", "precision": 0 },
+    { "name": "Conversion Value", "type": "number", "precision": 0 },
+    { "name": "ROI Score", "type": "number", "precision": 0 },
+
+    { "name": "Brief Link", "type": "url" },
+    { "name": "Draft Link", "type": "url" },
+    { "name": "Humanized Link", "type": "url" },
+    { "name": "Polished Link", "type": "url" },
+    { "name": "Published URL", "type": "url" },
+
+    { "name": "Auditor Result", "type": "singleSelect", "options": ["", "PASS", "FAIL"] },
+    { "name": "NeuronWriter Score", "type": "number", "precision": 0 },
+    { "name": "Originality AI Score", "type": "number", "precision": 0 },
+
+    { "name": "Attempt Count", "type": "number", "precision": 0 },
+    { "name": "Return To", "type": "singleSelect", "options": [
+      "Scoring", "Brief Ready", "Drafting", "Truth Check", "Humanizing", "Polishing", "Auditor Review", "Editor Review"
+    ] },
+    { "name": "Last Error", "type": "multilineText" },
+    { "name": "Notes", "type": "multilineText" },
+    { "name": "Source URLs Logged", "type": "multilineText" }
+  ],
+  "computed_fields_create_in_ui": [
+    { "name": "Last Modified", "type": "lastModifiedTime", "why": "Airtable REST API rejects creating computed fields (INVALID_FIELD_TYPE). Optional here because the corrected n8n uses schedule polling, not a Last-Modified trigger." }
+  ]
+}

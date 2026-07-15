@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SEO / AIO HEAD  ·  fill {{slots}}.  Keep title <60 chars, desc <155.
+       ════════════════════════════════════════════════════════════════════ -->
+  <title>{{META_TITLE — e.g. "Galápagos Cruises: Find Your Perfect Expedition"}}</title>
+  <meta name="description" content="{{META_DESCRIPTION — 150 chars, lead with the answer/value}}" />
+  <link rel="canonical" href="{{CANONICAL_URL}}" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- ── JSON-LD: Organization / TravelAgency ───────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "name": "{{BRAND_NAME}}",
+    "url": "{{SITE_URL}}",
+    "logo": "{{LOGO_URL}}",
+    "sameAs": ["{{FACEBOOK_URL}}", "{{INSTAGRAM_URL}}"],
+    "contactPoint": { "@type": "ContactPoint", "telephone": "{{PHONE}}", "contactType": "reservations" }
+  }
+  </script>
+
+  <!-- ── JSON-LD: BreadcrumbList ────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{SITE_URL}}" },
+      { "@type": "ListItem", "position": 2, "name": "Galápagos Cruises", "item": "{{CANONICAL_URL}}" }
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: ItemList of itineraries (Trip + Offer) ────────────────────
+       Repeat one ListItem per featured itinerary card in §9. priceCurrency
+       + price come straight from the card. ─────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem", "position": 1,
+        "item": {
+          "@type": "TouristTrip",
+          "name": "{{ITINERARY_1_NAME}}",
+          "description": "{{ITINERARY_1_SHORT}}",
+          "touristType": "Expedition cruise",
+          "offers": { "@type": "Offer", "price": "{{PRICE_FROM_1}}", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+        }
+      }
+      /* , { ...position 2... }, { ...position 3... } */
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: AggregateRating + Review  (NO competitor does this) ────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{BRAND_NAME}} Galápagos Cruises",
+    "image": "{{HERO_IMAGE_URL}}",
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "{{RATING}}", "reviewCount": "{{REVIEW_COUNT}}" },
+    "review": [
+      { "@type": "Review", "author": {"@type":"Person","name":"{{REVIEWER_1}}"},
+        "reviewRating": {"@type":"Rating","ratingValue":"5"}, "reviewBody": "{{REVIEW_1_TEXT}}" }
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: FAQPage  (mirror EXACTLY the visible §16 accordion) ─────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "{{FAQ_Q1}}",
+        "acceptedAnswer": { "@type": "Answer", "text": "{{FAQ_A1 — 40–60 words, answer-first}}" } },
+      { "@type": "Question", "name": "{{FAQ_Q2}}",
+        "acceptedAnswer": { "@type": "Answer", "text": "{{FAQ_A2}}" } }
+      /* …8–12 total, identical to the on-page accordion… */
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: VideoObject (experiential video, §17 or §4) ───────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "VideoObject",
+    "name": "{{VIDEO_TITLE}}", "description": "{{VIDEO_DESC}}",
+    "thumbnailUrl": "{{VIDEO_POSTER_URL}}", "uploadDate": "{{YYYY-MM-DD}}", "contentUrl": "{{VIDEO_URL}}"
+  }
+  </script>
+</head>
+
+<body>
+<!-- Remove the class below + all .slot-note spans for production:  <body class="is-production"> -->
+
+<!-- ═══════════════════ §0  STICKY GLOBAL NAV ═══════════════════ -->
+<header class="siteheader">
+  <div class="container">
+    <a class="brand" href="/">{{BRAND_NAME}}</a>
+    <nav class="mainnav" aria-label="Primary">
+      <span class="nav-links">
+        <a href="#itineraries">Itineraries</a>
+        <a href="#ships">Ships</a>
+        <a href="#best-time">Best Time</a>
+        <a href="#faq">FAQ</a>
+      </span>
+      <a class="btn btn--primary btn--sm" href="#enquire">{{PRIMARY_CTA — reuse verbatim everywhere}}</a>
+    </nav>
+  </div>
+</header>
+
+<!-- breadcrumb -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <div class="container">
+    <ol><li><a href="/">Home</a></li><li>Galápagos Cruises</li></ol>
+  </div>
+</nav>
+
+<!-- ═══════════════════ §1  HERO ═══════════════════ -->
+<section class="hero" id="overview">
+  <!-- slot: HERO IMAGE — wildlife/aerial seascape, ~50–75vh, compressed, preload -->
+  <img class="hero__bg" src="assets/hero.jpg" alt="{{HERO_ALT — e.g. Marine iguana on lava rock, Galápagos}}" fetchpriority="high" />
+  <div class="hero__inner">
+    <div class="container">
+      <span class="slot-note">data-slot: hero.headline (Title Case, place+benefit)</span>
+      <h1 data-slot="hero.headline">Galápagos Expedition Cruises</h1>
+      <p class="subhead" data-slot="hero.subhead">{{≤12-word evocative line tying biodiversity + experience}}</p>
+      <p class="rating"><span class="stars">★★★★★</span> {{RATING}}/5 · {{REVIEW_COUNT}} verified reviews</p>
+
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#enquire">{{PRIMARY_CTA}}</a>
+        <a class="btn btn--ghost" href="#guide">Download the Free Galápagos Guide</a>
+      </div>
+
+      <!-- trip-fact micro-band (steal: oceanicsociety #9) -->
+      <div class="tripfacts" data-slot="hero.tripfacts">
+        <div><b>From ${{PRICE_FROM}}</b><span>per person</span></div>
+        <div><b>{{4–8}} days</b><span>itineraries</span></div>
+        <div><b>Year-round</b><span>departures</span></div>
+        <div><b>{{N}} ships</b><span>to compare</span></div>
+      </div>
+
+      <!-- quick-filter pills (steal: metropolitan #10) -->
+      <div class="pills" data-slot="hero.pills">
+        <a class="pill" href="#itineraries">Luxury yachts</a>
+        <a class="pill" href="#itineraries">Family cruises</a>
+        <a class="pill" href="#itineraries">Diving &amp; snorkelling</a>
+        <a class="pill" href="#itineraries">4–5 day trips</a>
+        <a class="pill" href="#itineraries">7+ day trips</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §2  IN-PAGE ANCHOR SUB-NAV (sticky) ═══════════════════ -->
+<nav class="subnav" id="subnav" aria-label="On this page">
+  <div class="container">
+    <div class="subnav__links">
+      <a href="#overview">Overview</a>
+      <a href="#included">What's Included</a>
+      <a href="#choose">How to Choose</a>
+      <a href="#best-time">Best Time</a>
+      <a href="#itineraries">Itineraries</a>
+      <a href="#ships">Ships</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn--primary btn--sm" href="#enquire">{{PRIMARY_CTA}}</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ §3  QUANTIFIED-TRUST STRIP ═══════════════════ -->
+<div class="truststrip" data-slot="trust.strip">
+  <div class="item"><b>{{60+}}</b> years of expeditions</div>
+  <div class="item"><b>{{100,000+}}</b> travellers</div>
+  <div class="item"><b>{{4.9}}/5</b> · {{N}} reviews</div>
+  <div class="item"><b>✓</b> Best-price guarantee</div>
+  <div class="item"><b>✓</b> Park-certified guides</div>
+</div>
+
+<!-- ═══════════════════ §4  WHAT TO EXPECT (intro desire copy) ═══════════════════ -->
+<section class="section">
+  <div class="container split">
+    <div class="split__copy">
+      <span class="eyebrow">What to Expect</span>
+      <span class="slot-note">data-slot: intro.body — 120–180 words, 2 short paras, answer-first</span>
+      <h2 data-slot="intro.heading">{{Question- or benefit-led H2}}</h2>
+      <p data-slot="intro.p1">{{Lead with the payoff sentence, then set the scene. ≤60 words.}}</p>
+      <p data-slot="intro.p2">{{Second short paragraph. ≤60 words.}}</p>
+    </div>
+    <div class="split__media"><img src="assets/expect.jpg" alt="{{ALT}}" loading="lazy" /></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §5  WHY GALÁPAGOS + WHAT'S INCLUDED ═══════════════════ -->
+<section class="section band-cream" id="included">
+  <div class="container">
+    <span class="eyebrow">Why a Galápagos Cruise</span>
+    <h2 data-slot="why.heading">{{Why cruising beats land-based — answer-first H2}}</h2>
+    <p data-slot="why.body">{{80–150 words justifying the trip + price.}}</p>
+
+    <h3 style="margin-top:2rem">What's Included</h3>
+    <div class="iconrow" data-slot="included.icons">
+      <!-- Repeat 4–6 tiles. Swap inline SVGs for your icon set. -->
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12h20M12 2v20"/></svg></div><p>Round-trip flights</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg></div><p>Daily shore excursions</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20c4-8 12-8 16 0"/></svg></div><p>Certified naturalist guides</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/></svg></div><p>All meals on board</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 13a10 10 0 0 1 14 0"/></svg></div><p>Wi-Fi &amp; gear</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §6  "GREAT CRUISE FOR" (audience self-qualification) ═══════════════════ -->
+<section class="section">
+  <div class="container">
+    <span class="eyebrow">Find Your Fit</span>
+    <h2>Great cruise for…</h2>
+    <div class="grid cols-4 audience" data-slot="audience.cards">
+      <article class="card"><div class="card__body"><h3>Nature lovers</h3><p>{{one-line promise}}</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+      <article class="card"><div class="card__body"><h3>Families</h3><p>{{…}}</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+      <article class="card"><div class="card__body"><h3>Divers &amp; snorkelers</h3><p>{{…}}</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+      <article class="card"><div class="card__body"><h3>Luxury &amp; solo</h3><p>{{…}}</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §7  HOW TO CHOOSE (decision guide) ═══════════════════ -->
+<section class="section band-grey" id="choose">
+  <div class="container">
+    <span class="eyebrow">Buyer's Guide</span>
+    <h2 data-slot="choose.heading">How to Choose the Best Galápagos Cruise</h2>
+    <span class="slot-note">data-slot: choose.list — numbered, 200–300 words, AIO bait</span>
+    <ol data-slot="choose.list" style="max-width:var(--measure)">
+      <li><strong>Pick your ship class.</strong> {{luxury vs mid vs budget}}</li>
+      <li><strong>Decide trip length.</strong> {{4/5 vs 7/8 days}}</li>
+      <li><strong>Choose east vs west islands.</strong> {{wildlife differences}}</li>
+      <li><strong>Match the season.</strong> {{see Best Time below}}</li>
+      <li><strong>Set your budget &amp; what's included.</strong> {{park fees, flights}}</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════ §8  BEST TIME TO VISIT ═══════════════════ -->
+<section class="section" id="best-time">
+  <div class="container split reverse">
+    <div class="split__media"><img src="assets/best-time.jpg" alt="{{ALT}}" loading="lazy" /></div>
+    <div class="split__copy">
+      <span class="eyebrow">Seasonality</span>
+      <h2 data-slot="besttime.heading">What is the best time to cruise the Galápagos?</h2>
+      <p data-slot="besttime.body">{{Answer-first: "The Galápagos is a year-round destination…" 180–280 words; cite months, species, weather.}}</p>
+      <!-- secondary lead-magnet CTA lives here -->
+      <a class="btn btn--ghost" id="guide" href="#enquire">Download the Free Wildlife Calendar (PDF)</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §9  FEATURED ITINERARIES (core conversion unit) ═══════════════════ -->
+<section class="section band-cream" id="itineraries">
+  <div class="container">
+    <span class="eyebrow">Choose Your Cruise</span>
+    <h2>Featured Galápagos Itineraries</h2>
+    <span class="slot-note">data-slot: itinerary.cards — each card needs a UNIQUE descriptive heading; mirror into ItemList JSON-LD</span>
+    <div class="grid cols-3" data-slot="itinerary.cards">
+      <!-- Repeat one <article> per itinerary -->
+      <article class="card">
+        <div class="card__media"><img src="assets/itin-1.jpg" alt="{{ALT}}" loading="lazy" /></div>
+        <div class="card__body">
+          <h3>{{Unique itinerary name — e.g. "Western Islands Aboard MV Origin"}}</h3>
+          <div class="card__meta"><span>📅 {{7 days}}</span><span>🧭 {{West &amp; Central}}</span><span class="stars">★★★★★ {{4.9}}</span></div>
+          <p>{{1–2 line blurb}}</p>
+          <div class="card__price">From ${{PRICE}} <small>per person</small></div>
+          <a class="btn btn--ghost btn--sm" href="{{ITIN_URL}}">View Itinerary</a>
+        </div>
+      </article>
+      <article class="card"><div class="card__media"><img src="assets/itin-2.jpg" alt="{{ALT}}" loading="lazy" /></div><div class="card__body"><h3>{{Itinerary 2}}</h3><div class="card__meta"><span>📅 {{5 days}}</span><span>🧭 {{East}}</span><span class="stars">★★★★★ {{4.8}}</span></div><p>{{blurb}}</p><div class="card__price">From ${{PRICE}} <small>per person</small></div><a class="btn btn--ghost btn--sm" href="#">View Itinerary</a></div></article>
+      <article class="card"><div class="card__media"><img src="assets/itin-3.jpg" alt="{{ALT}}" loading="lazy" /></div><div class="card__body"><h3>{{Itinerary 3}}</h3><div class="card__meta"><span>📅 {{8 days}}</span><span>🧭 {{Grand tour}}</span><span class="stars">★★★★★ {{5.0}}</span></div><p>{{blurb}}</p><div class="card__price">From ${{PRICE}} <small>per person</small></div><a class="btn btn--ghost btn--sm" href="#">View Itinerary</a></div></article>
+    </div>
+    <div style="text-align:center; margin-top:2rem"><a class="btn btn--primary" href="#enquire">{{PRIMARY_CTA}}</a></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §10  SHIPS / FLEET (tabbed by vessel) ═══════════════════ -->
+<section class="section" id="ships">
+  <div class="container">
+    <span class="eyebrow">The Fleet</span>
+    <h2>Ships &amp; Life On Board</h2>
+    <div class="tabs" data-slot="ships.tabs">
+      <div class="tabs__btns" role="tablist">
+        <button class="tabs__btn" role="tab" aria-selected="true" aria-controls="tab-fleet" id="t-fleet">Fleet</button>
+        <button class="tabs__btn" role="tab" aria-selected="false" aria-controls="tab-cabins" id="t-cabins">Staterooms</button>
+        <button class="tabs__btn" role="tab" aria-selected="false" aria-controls="tab-excursions" id="t-excursions">Excursions</button>
+        <button class="tabs__btn" role="tab" aria-selected="false" aria-controls="tab-cuisine" id="t-cuisine">Cuisine</button>
+      </div>
+      <div class="tabs__panel" id="tab-fleet" role="tabpanel" aria-labelledby="t-fleet">
+        <div class="grid cols-3">
+          <article class="card"><div class="card__media"><img src="assets/ship-1.jpg" alt="{{ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{Ship name}}</h3><p>{{class · guests · cabins}}</p><a class="btn btn--ghost btn--sm" href="#">View Ship</a></div></article>
+          <article class="card"><div class="card__media"><img src="assets/ship-2.jpg" alt="{{ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{Ship name}}</h3><p>{{…}}</p><a class="btn btn--ghost btn--sm" href="#">View Ship</a></div></article>
+          <article class="card"><div class="card__media"><img src="assets/ship-3.jpg" alt="{{ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{Ship name}}</h3><p>{{…}}</p><a class="btn btn--ghost btn--sm" href="#">View Ship</a></div></article>
+        </div>
+      </div>
+      <div class="tabs__panel" id="tab-cabins" role="tabpanel" aria-labelledby="t-cabins" hidden><p>{{Stateroom copy + real cabin photos.}}</p></div>
+      <div class="tabs__panel" id="tab-excursions" role="tabpanel" aria-labelledby="t-excursions" hidden><p>{{Excursion copy.}}</p></div>
+      <div class="tabs__panel" id="tab-cuisine" role="tabpanel" aria-labelledby="t-cuisine" hidden><p>{{Cuisine copy.}}</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §11  NATURALIST GUIDES ═══════════════════ -->
+<section class="section band-grey">
+  <div class="container">
+    <span class="eyebrow">Your Experts</span>
+    <h2>Galápagos National Park-Certified Naturalist Guides</h2>
+    <div class="grid cols-4" data-slot="guides.cards">
+      <article class="card"><div class="card__media"><img src="assets/guide-1.jpg" alt="{{ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{Name}}</h3><p>{{credential, years, specialty}}</p></div></article>
+      <article class="card"><div class="card__media"><img src="assets/guide-2.jpg" alt="{{ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{Name}}</h3><p>{{…}}</p></div></article>
+      <article class="card"><div class="card__media"><img src="assets/guide-3.jpg" alt="{{ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{Name}}</h3><p>{{…}}</p></div></article>
+      <article class="card"><div class="card__media"><img src="assets/guide-4.jpg" alt="{{ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{Name}}</h3><p>{{…}}</p></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §12  CONSERVATION & SUSTAINABILITY ═══════════════════ -->
+<section class="section band-navy">
+  <div class="container">
+    <span class="eyebrow" style="color:#e9c97a">Travel That Gives Back</span>
+    <h2>Our Conservation Impact</h2>
+    <p data-slot="conservation.body" style="color:#cdd9e6">{{80–140 words — concrete, not vague.}}</p>
+    <div class="statcounters" data-slot="conservation.stats" style="margin-top:1.5rem">
+      <div><div class="n">{{200 lbs}}</div><p style="color:#cdd9e6">trash removed / trip</p></div>
+      <div><div class="n">{{3}}</div><p style="color:#cdd9e6">trees planted / guest</p></div>
+      <div><div class="n">${{13k}}</div><p style="color:#cdd9e6">conservation grants / yr</p></div>
+      <div><div class="n">100%</div><p style="color:#cdd9e6">carbon neutral</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §14  REVIEWS (immediately before the ask) ═══════════════════ -->
+<section class="section" id="reviews">
+  <div class="container">
+    <span class="eyebrow">Social Proof</span>
+    <h2>{{REVIEW_COUNT}} Verified Reviews · {{RATING}}/5 <span class="stars" style="color:var(--c-star)">★★★★★</span></h2>
+    <div class="grid cols-3" data-slot="reviews.cards">
+      <article class="card"><div class="card__body"><div class="stars">★★★★★</div><p>"{{Review quote}}"</p><strong>{{Reviewer name}}</strong><small>{{Country · date}}</small></div></article>
+      <article class="card"><div class="card__body"><div class="stars">★★★★★</div><p>"{{Review quote}}"</p><strong>{{Reviewer name}}</strong><small>{{Country · date}}</small></div></article>
+      <article class="card"><div class="card__body"><div class="stars">★★★★★</div><p>"{{Review quote}}"</p><strong>{{Reviewer name}}</strong><small>{{Country · date}}</small></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §15  WHY US + PRE-BOOKING CHECKLIST ═══════════════════ -->
+<section class="section band-cream">
+  <div class="container split">
+    <div class="split__copy">
+      <span class="eyebrow">Why Travel With Us</span>
+      <h2>Why book your Galápagos cruise with {{BRAND_NAME}}</h2>
+      <ul data-slot="whyus.points">
+        <li>{{Proof point — years/awards}}</li>
+        <li>{{Multilingual naturalist guides}}</li>
+        <li>{{Doctor on board / safety}}</li>
+        <li>{{Best island coverage}}</li>
+      </ul>
+    </div>
+    <div class="split__copy">
+      <h3>Pre-Booking Checklist</h3>
+      <ul data-slot="checklist.items">
+        <li>✓ {{Valid passport (6+ months)}}</li>
+        <li>✓ {{Travel insurance}}</li>
+        <li>✓ {{Galápagos National Park fee}}</li>
+        <li>✓ {{Transit control card}}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §16  FAQ (8–12 Q&A · mirror into FAQPage JSON-LD) ═══════════════════ -->
+<section class="section" id="faq">
+  <div class="container">
+    <span class="eyebrow">Answers</span>
+    <h2>Frequently Asked Questions About Galápagos Cruises</h2>
+    <span class="slot-note">data-slot: faq.items — 8–12 verbatim PAA questions; answers 40–60 words, answer-first; keep identical to the FAQPage JSON-LD in &lt;head&gt;</span>
+    <div class="accordion" data-slot="faq.items">
+      <details open><summary>How much does a Galápagos cruise cost?</summary><div class="answer"><p>{{40–60 word answer, lead with a figure range.}}</p></div></details>
+      <details><summary>What is the best month to cruise the Galápagos?</summary><div class="answer"><p>{{…}}</p></div></details>
+      <details><summary>How many days do you need in the Galápagos?</summary><div class="answer"><p>{{…}}</p></div></details>
+      <details><summary>How do I choose the best Galápagos cruise?</summary><div class="answer"><p>{{…}}</p></div></details>
+      <details><summary>Galápagos cruise vs land-based tour — which is better?</summary><div class="answer"><p>{{Own this PAA query competitors under-serve.}}</p></div></details>
+      <details><summary>What should I pack for a Galápagos cruise?</summary><div class="answer"><p>{{…}}</p></div></details>
+      <details><summary>Are Galápagos cruises worth it?</summary><div class="answer"><p>{{…}}</p></div></details>
+      <details><summary>Are Galápagos cruises family-friendly?</summary><div class="answer"><p>{{…}}</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §17  CLOSING CONVERSION BAND (single CTA) ═══════════════════ -->
+<section class="section band-navy closing" id="enquire">
+  <div class="container">
+    <h2>Talk to an Expert That's Sailed Aboard</h2>
+    <p style="margin-inline:auto">{{30–60 words human reassurance — one ask, no stacking.}}</p>
+    <form class="leadform" data-slot="lead.form" onsubmit="return false">
+      <input class="full" type="text" placeholder="Full name" aria-label="Full name" />
+      <input type="email" placeholder="Email" aria-label="Email" />
+      <input type="tel" placeholder="Phone (optional)" aria-label="Phone" />
+      <select class="full" aria-label="When do you want to travel"><option>When do you want to travel?</option><option>Next 3 months</option><option>3–6 months</option><option>6–12 months</option><option>Just researching</option></select>
+      <button class="btn btn--primary full" type="submit">{{PRIMARY_CTA}}</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════════ §18  FOOTER ═══════════════════ -->
+<footer class="sitefooter">
+  <div class="container grid cols-4">
+    <div><h4>{{BRAND_NAME}}</h4><p style="color:#c3d2e0">{{One-line positioning + phone}}</p></div>
+    <div><h4>Cruises</h4><ul><li><a href="#">Luxury yachts</a></li><li><a href="#">Family cruises</a></li><li><a href="#">Diving cruises</a></li></ul></div>
+    <div><h4>Plan</h4><ul><li><a href="#best-time">Best time to go</a></li><li><a href="#choose">How to choose</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+    <div><h4>Newsletter</h4><p style="color:#c3d2e0">Get deals &amp; the free guide.</p><a class="btn btn--ghost btn--sm" href="#">Subscribe</a></div>
+  </div>
+  <div class="container footer-bottom">© {{YEAR}} {{BRAND_NAME}}. All rights reserved.</div>
+</footer>
+
+<!-- ═══════════════════ Minimal vanilla JS: tabs · accordion-sync · active anchor ═══════════════════ -->
+<script>
+  // Tabs
+  document.querySelectorAll('.tabs').forEach(function (tabs) {
+    var btns = tabs.querySelectorAll('.tabs__btn');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btns.forEach(function (b) { b.setAttribute('aria-selected', 'false'); });
+        tabs.querySelectorAll('.tabs__panel').forEach(function (p) { p.hidden = true; });
+        btn.setAttribute('aria-selected', 'true');
+        tabs.querySelector('#' + btn.getAttribute('aria-controls')).hidden = false;
+      });
+    });
+  });
+
+  // Sub-nav active-section highlighting
+  var links = Array.from(document.querySelectorAll('.subnav__links a'));
+  var map = {};
+  links.forEach(function (a) { var el = document.querySelector(a.getAttribute('href')); if (el) map[el.id] = a; });
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        links.forEach(function (a) { a.classList.remove('is-active'); });
+        if (map[e.target.id]) map[e.target.id].classList.add('is-active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  Object.keys(map).forEach(function (id) { obs.observe(document.getElementById(id)); });
+</script>
+</body>
+</html>

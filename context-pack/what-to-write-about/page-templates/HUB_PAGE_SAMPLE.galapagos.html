@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       IDEAL GALÁPAGOS BUILD (option 2) — the filled reference page.
+       Authored copy is hard-coded (Galápagos = the base destination).
+       {{ACF_TOKENS}} = business/inventory values supplied per-page in WordPress.
+       The blank reusable skeleton lives in index.html.
+       Title <60 chars · description <155 chars.
+       ════════════════════════════════════════════════════════════════════ -->
+  <title>Galápagos Cruises | Find Your Ideal Expedition</title>
+  <meta name="description" content="Compare the best Galápagos expedition cruises — ships, itineraries, prices and the best time to go. Plan your voyage with certified naturalist guides." />
+  <link rel="canonical" href="{{CANONICAL_URL}}" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- ── JSON-LD: Organization / TravelAgency ───────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    "name": "{{BRAND_NAME}}",
+    "url": "{{SITE_URL}}",
+    "logo": "{{LOGO_URL}}",
+    "sameAs": ["{{FACEBOOK_URL}}", "{{INSTAGRAM_URL}}"],
+    "contactPoint": { "@type": "ContactPoint", "telephone": "{{PHONE}}", "contactType": "reservations" }
+  }
+  </script>
+
+  <!-- ── JSON-LD: BreadcrumbList ────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{SITE_URL}}" },
+      { "@type": "ListItem", "position": 2, "name": "Galápagos Cruises", "item": "{{CANONICAL_URL}}" }
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: ItemList of itineraries (Trip + Offer) ────────────────────
+       One ListItem per featured itinerary card in §9. ACF repeater → mirror
+       here. price/priceCurrency/availability come straight from each card. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem", "position": 1,
+        "item": {
+          "@type": "TouristTrip",
+          "name": "{{ITIN_1_NAME}}",
+          "description": "{{ITIN_1_SHORT}}",
+          "touristType": "Expedition cruise",
+          "offers": { "@type": "Offer", "price": "{{ITIN_1_PRICE}}", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "{{ITIN_1_URL}}" }
+        }
+      },
+      {
+        "@type": "ListItem", "position": 2,
+        "item": {
+          "@type": "TouristTrip",
+          "name": "{{ITIN_2_NAME}}",
+          "description": "{{ITIN_2_SHORT}}",
+          "touristType": "Expedition cruise",
+          "offers": { "@type": "Offer", "price": "{{ITIN_2_PRICE}}", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "{{ITIN_2_URL}}" }
+        }
+      },
+      {
+        "@type": "ListItem", "position": 3,
+        "item": {
+          "@type": "TouristTrip",
+          "name": "{{ITIN_3_NAME}}",
+          "description": "{{ITIN_3_SHORT}}",
+          "touristType": "Expedition cruise",
+          "offers": { "@type": "Offer", "price": "{{ITIN_3_PRICE}}", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "{{ITIN_3_URL}}" }
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: AggregateRating + Review  (NO competitor does this) ───────
+       IMPORTANT: {{RATING}} / {{REVIEW_COUNT}} / review entries MUST be real,
+       verifiable review data before publishing (Google policy + honesty). -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{BRAND_NAME}} Galápagos Cruises",
+    "image": "{{HERO_IMAGE_URL}}",
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "{{RATING}}", "reviewCount": "{{REVIEW_COUNT}}" },
+    "review": [
+      { "@type": "Review", "author": {"@type":"Person","name":"{{REVIEW_1_AUTHOR}}"},
+        "reviewRating": {"@type":"Rating","ratingValue":"5"}, "reviewBody": "{{REVIEW_1_TEXT}}" },
+      { "@type": "Review", "author": {"@type":"Person","name":"{{REVIEW_2_AUTHOR}}"},
+        "reviewRating": {"@type":"Rating","ratingValue":"5"}, "reviewBody": "{{REVIEW_2_TEXT}}" },
+      { "@type": "Review", "author": {"@type":"Person","name":"{{REVIEW_3_AUTHOR}}"},
+        "reviewRating": {"@type":"Rating","ratingValue":"5"}, "reviewBody": "{{REVIEW_3_TEXT}}" }
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: FAQPage  (mirrors the visible §16 accordion verbatim) ───── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "How much does a Galápagos cruise cost?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Most Galápagos cruises cost between $3,000 and $8,000 per person for a 4-to-8-day voyage, excluding international flights. Budget tourist-class yachts start near $2,500; luxury first-class ships exceed $9,000. Fares include your cabin, meals, daily excursions and certified naturalist guides, but not the $200 national park entrance fee." } },
+      { "@type": "Question", "name": "What is the best month to cruise the Galápagos?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The Galápagos is a year-round destination, so there is no bad month. The warm, wetter season (December to May) brings calm seas, sunshine and active marine life; the cool, dry season (June to November) delivers nutrient-rich waters, seabird courtship and the best snorkelling. Choose by the wildlife you most want to see." } },
+      { "@type": "Question", "name": "How many days do you need in the Galápagos?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Plan at least a 4-to-5-day cruise to see the central islands, and 7-to-8 days to reach the wildlife-rich western and outer islands. Shorter trips suit tight schedules; longer voyages visit more landing sites with less repetition. Add one or two days on the mainland for connecting flights." } },
+      { "@type": "Question", "name": "How do I choose the best Galápagos cruise?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Match four things: ship class (luxury, mid-range or budget), trip length (4 to 8 days), island region (eastern, western or a grand tour) and travel season. Smaller yachts feel intimate and reach remote sites; larger ships offer more amenities. Always confirm what's included — flights, park fees and gear vary widely." } },
+      { "@type": "Question", "name": "Galápagos cruise vs land-based tour — which is better?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A cruise reaches remote, uninhabited islands and maximises wildlife per day, with guided excursions from a moving base. Land-based tours cost less and let you sleep on solid ground, but you re-visit the same nearby sites by day-trip. For the fullest Galápagos experience, choose a cruise." } },
+      { "@type": "Question", "name": "What should I pack for a Galápagos cruise?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Pack light, quick-dry clothing, a wide-brim hat, reef-safe sunscreen, sturdy water shoes and a refillable bottle. Bring a swimsuit, a light rain layer and seasickness remedies. Most ships supply wetsuits, snorkel gear and kayaks. Leave drones at home — they are banned in the national park." } },
+      { "@type": "Question", "name": "Are Galápagos cruises worth it?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Galápagos offers wildlife encounters found nowhere else on Earth — fearless sea lions, marine iguanas, giant tortoises and blue-footed boobies at arm's length. A cruise reaches islands day-trippers cannot, with expert naturalists interpreting every landing. For most travellers it is a genuine once-in-a-lifetime trip." } },
+      { "@type": "Question", "name": "Are Galápagos cruises family-friendly?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Many ships welcome families, with triple cabins, kid-friendly excursions and naturalists who engage young explorers. Minimum ages vary by vessel — some require children to be seven or older. Family departures, snorkelling lessons and interconnecting cabins make multigenerational travel easy. Confirm age policies and family rates when booking." } }
+    ]
+  }
+  </script>
+
+  <!-- ── JSON-LD: VideoObject (experiential video, §17 or §4) ───────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org", "@type": "VideoObject",
+    "name": "{{VIDEO_TITLE}}", "description": "{{VIDEO_DESC}}",
+    "thumbnailUrl": "{{VIDEO_POSTER_URL}}", "uploadDate": "{{VIDEO_UPLOAD_DATE}}", "contentUrl": "{{VIDEO_URL}}"
+  }
+  </script>
+</head>
+
+<body class="is-production">
+
+<!-- ═══════════════════ §0  STICKY GLOBAL NAV ═══════════════════ -->
+<header class="siteheader">
+  <div class="container">
+    <a class="brand" href="/">{{BRAND_NAME}}</a>
+    <nav class="mainnav" aria-label="Primary">
+      <span class="nav-links">
+        <a href="#itineraries">Itineraries</a>
+        <a href="#ships">Ships</a>
+        <a href="#best-time">Best Time</a>
+        <a href="#faq">FAQ</a>
+      </span>
+      <a class="btn btn--primary btn--sm" href="#enquire">Talk to a Galápagos Expert</a>
+    </nav>
+  </div>
+</header>
+
+<!-- breadcrumb -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <div class="container">
+    <ol><li><a href="/">Home</a></li><li>Galápagos Cruises</li></ol>
+  </div>
+</nav>
+
+<!-- ═══════════════════ §1  HERO ═══════════════════ -->
+<section class="hero" id="overview">
+  <!-- ACF: hero_image — wildlife/aerial seascape, ~50–75vh, compressed, preload -->
+  <img class="hero__bg" src="assets/hero.jpg" alt="{{HERO_ALT}}" fetchpriority="high" />
+  <div class="hero__inner">
+    <div class="container">
+      <h1>Galápagos Expedition Cruises</h1>
+      <p class="subhead">The world's greatest wildlife voyage, aboard a small expedition ship.</p>
+      <p class="rating"><span class="stars">★★★★★</span> {{RATING}}/5 · {{REVIEW_COUNT}} verified reviews</p>
+
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#enquire">Talk to a Galápagos Expert</a>
+        <a class="btn btn--ghost" href="#guide">Download the Free Galápagos Guide</a>
+      </div>
+
+      <!-- trip-fact micro-band (steal: oceanicsociety #9) -->
+      <div class="tripfacts">
+        <div><b>From ${{PRICE_FROM}}</b><span>per person</span></div>
+        <div><b>{{DURATION_RANGE}} days</b><span>itineraries</span></div>
+        <div><b>Year-round</b><span>departures</span></div>
+        <div><b>{{SHIP_COUNT}} ships</b><span>to compare</span></div>
+      </div>
+
+      <!-- quick-filter pills (steal: metropolitan #10) -->
+      <div class="pills">
+        <a class="pill" href="#itineraries">Luxury yachts</a>
+        <a class="pill" href="#itineraries">Family cruises</a>
+        <a class="pill" href="#itineraries">Diving &amp; snorkelling</a>
+        <a class="pill" href="#itineraries">4–5 day trips</a>
+        <a class="pill" href="#itineraries">7+ day trips</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §2  IN-PAGE ANCHOR SUB-NAV (sticky) ═══════════════════ -->
+<nav class="subnav" id="subnav" aria-label="On this page">
+  <div class="container">
+    <div class="subnav__links">
+      <a href="#overview">Overview</a>
+      <a href="#included">What's Included</a>
+      <a href="#choose">How to Choose</a>
+      <a href="#best-time">Best Time</a>
+      <a href="#itineraries">Itineraries</a>
+      <a href="#ships">Ships</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn--primary btn--sm" href="#enquire">Talk to a Galápagos Expert</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ §3  QUANTIFIED-TRUST STRIP ═══════════════════ -->
+<div class="truststrip">
+  <div class="item"><b>{{YEARS}}+</b> years of expeditions</div>
+  <div class="item"><b>{{TRAVELLERS}}</b> travellers hosted</div>
+  <div class="item"><b>{{RATING}}/5</b> · {{REVIEW_COUNT}} reviews</div>
+  <div class="item"><b>✓</b> Best-price guarantee</div>
+  <div class="item"><b>✓</b> Park-certified guides</div>
+</div>
+
+<!-- ═══════════════════ §4  WHAT TO EXPECT (intro desire copy) ═══════════════════ -->
+<section class="section">
+  <div class="container split">
+    <div class="split__copy">
+      <span class="eyebrow">What to Expect</span>
+      <h2>What is a Galápagos cruise really like?</h2>
+      <p>Imagine waking each morning anchored off a different island, stepping onto beaches where sea lions doze beside your path and blue-footed boobies dance just metres away. A Galápagos cruise turns the archipelago's scattered wonders into one seamless voyage.</p>
+      <p>While you sleep, your ship repositions to the next landing site — so every day brings new wildlife, snorkelling and guided walks, with no repeated day-trips and no hours lost in transit.</p>
+    </div>
+    <div class="split__media"><img src="assets/expect.jpg" alt="{{EXPECT_IMG_ALT}}" loading="lazy" /></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §5  WHY GALÁPAGOS + WHAT'S INCLUDED ═══════════════════ -->
+<section class="section band-cream" id="included">
+  <div class="container">
+    <span class="eyebrow">Why a Galápagos Cruise</span>
+    <h2>Why choose a cruise over a land-based tour?</h2>
+    <p style="max-width:var(--measure)">Only a cruise reaches the Galápagos' remote, uninhabited islands — Fernandina, Genovesa, Española — where the rarest wildlife lives. You travel overnight and wake at each new site, maximising time ashore with certified naturalists. Everything is handled: cabins, meals, excursions and gear, so you simply explore.</p>
+
+    <h3 style="margin-top:2rem">What's Included</h3>
+    <div class="iconrow">
+      <!-- ACF repeater: included_items (icon + label). 4–6 tiles. -->
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12h20M12 2v20"/></svg></div><p>Round-trip flights</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg></div><p>Daily shore excursions</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20c4-8 12-8 16 0"/></svg></div><p>Certified naturalist guides</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/></svg></div><p>All meals on board</p></div>
+      <div class="ic-item"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 13a10 10 0 0 1 14 0"/></svg></div><p>Wi-Fi &amp; snorkel gear</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §6  "GREAT CRUISE FOR" (audience self-qualification) ═══════════════════ -->
+<section class="section">
+  <div class="container">
+    <span class="eyebrow">Find Your Fit</span>
+    <h2>Great cruise for…</h2>
+    <div class="grid cols-4 audience">
+      <!-- ACF repeater: audience_cards (title + promise + anchor) -->
+      <article class="card"><div class="card__body"><h3>Nature lovers</h3><p>Get within arm's reach of giant tortoises, penguins and marine iguanas.</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+      <article class="card"><div class="card__body"><h3>Families</h3><p>Triple cabins, snorkelling lessons and guides who captivate young explorers.</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+      <article class="card"><div class="card__body"><h3>Divers &amp; snorkelers</h3><p>Swim with sea lions, sharks and rays at the world's top dive sites.</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+      <article class="card"><div class="card__body"><h3>Luxury &amp; solo</h3><p>Premium yachts, chef-led dining and easy small-group camaraderie.</p><a class="btn btn--ghost btn--sm" href="#itineraries">Explore</a></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §7  HOW TO CHOOSE (decision guide) ═══════════════════ -->
+<section class="section band-grey" id="choose">
+  <div class="container">
+    <span class="eyebrow">Buyer's Guide</span>
+    <h2>How to choose the best Galápagos cruise</h2>
+    <ol style="max-width:var(--measure)">
+      <li><strong>Pick your ship class.</strong> Choose luxury, mid-range or budget tourist class — smaller yachts feel intimate and reach remote sites, while larger ships add space and amenities.</li>
+      <li><strong>Decide your trip length.</strong> 4–5 days covers the central islands; 7–8 days reaches the wildlife-rich western and outer isles with far less repetition.</li>
+      <li><strong>Choose east vs west islands.</strong> Western routes (Isabela, Fernandina) offer dramatic landscapes and endemic species; eastern and central routes pack in the classic icons.</li>
+      <li><strong>Match the season.</strong> The warm season (Dec–May) means calm seas and sunshine; the cool season (Jun–Nov) brings active seabirds and the best snorkelling.</li>
+      <li><strong>Set your budget &amp; confirm what's included.</strong> Check whether flights from Quito or Guayaquil, the $200 park fee, wetsuits and gratuities are extra.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════════ §8  BEST TIME TO VISIT ═══════════════════ -->
+<section class="section" id="best-time">
+  <div class="container split reverse">
+    <div class="split__media"><img src="assets/best-time.jpg" alt="{{BESTTIME_IMG_ALT}}" loading="lazy" /></div>
+    <div class="split__copy">
+      <span class="eyebrow">Seasonality</span>
+      <h2>What is the best time to cruise the Galápagos?</h2>
+      <p>The Galápagos is a year-round destination — wildlife thrives in every season. The warm, wetter season (December to May) brings calm crossings, warmer water and active courtship displays, ideal for first-timers and families.</p>
+      <p>The cool, dry "garúa" season (June to November) stirs nutrient-rich currents that draw whales, seabirds and the richest marine life, rewarding snorkellers and divers. Sea-lion pups appear from August, waved albatrosses nest on Española from April to December, and giant tortoises are visible year-round — so there is no wrong time, only different wildlife highlights.</p>
+      <!-- secondary lead-magnet CTA lives here -->
+      <a class="btn btn--ghost" id="guide" href="#enquire">Download the Free Wildlife Calendar (PDF)</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §9  FEATURED ITINERARIES (core conversion unit) ═══════════════════ -->
+<section class="section band-cream" id="itineraries">
+  <div class="container">
+    <span class="eyebrow">Choose Your Cruise</span>
+    <h2>Featured Galápagos Itineraries</h2>
+    <!-- ACF repeater: itineraries (image, name [UNIQUE], days, route, rating, blurb, price, url) — mirror into ItemList JSON-LD -->
+    <div class="grid cols-3">
+      <article class="card">
+        <div class="card__media"><img src="assets/itin-1.jpg" alt="{{ITIN_1_IMG_ALT}}" loading="lazy" /></div>
+        <div class="card__body">
+          <h3>{{ITIN_1_NAME}}</h3>
+          <div class="card__meta"><span>📅 {{ITIN_1_DAYS}} days</span><span>🧭 {{ITIN_1_ROUTE}}</span><span class="stars">★★★★★ {{ITIN_1_RATING}}</span></div>
+          <p>{{ITIN_1_SHORT}}</p>
+          <div class="card__price">From ${{ITIN_1_PRICE}} <small>per person</small></div>
+          <a class="btn btn--ghost btn--sm" href="{{ITIN_1_URL}}">View Itinerary</a>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__media"><img src="assets/itin-2.jpg" alt="{{ITIN_2_IMG_ALT}}" loading="lazy" /></div>
+        <div class="card__body">
+          <h3>{{ITIN_2_NAME}}</h3>
+          <div class="card__meta"><span>📅 {{ITIN_2_DAYS}} days</span><span>🧭 {{ITIN_2_ROUTE}}</span><span class="stars">★★★★★ {{ITIN_2_RATING}}</span></div>
+          <p>{{ITIN_2_SHORT}}</p>
+          <div class="card__price">From ${{ITIN_2_PRICE}} <small>per person</small></div>
+          <a class="btn btn--ghost btn--sm" href="{{ITIN_2_URL}}">View Itinerary</a>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__media"><img src="assets/itin-3.jpg" alt="{{ITIN_3_IMG_ALT}}" loading="lazy" /></div>
+        <div class="card__body">
+          <h3>{{ITIN_3_NAME}}</h3>
+          <div class="card__meta"><span>📅 {{ITIN_3_DAYS}} days</span><span>🧭 {{ITIN_3_ROUTE}}</span><span class="stars">★★★★★ {{ITIN_3_RATING}}</span></div>
+          <p>{{ITIN_3_SHORT}}</p>
+          <div class="card__price">From ${{ITIN_3_PRICE}} <small>per person</small></div>
+          <a class="btn btn--ghost btn--sm" href="{{ITIN_3_URL}}">View Itinerary</a>
+        </div>
+      </article>
+    </div>
+    <div style="text-align:center; margin-top:2rem"><a class="btn btn--primary" href="#enquire">Talk to a Galápagos Expert</a></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §10  SHIPS / FLEET (tabbed by vessel) ═══════════════════ -->
+<section class="section" id="ships">
+  <div class="container">
+    <span class="eyebrow">The Fleet</span>
+    <h2>Ships &amp; Life On Board</h2>
+    <div class="tabs">
+      <div class="tabs__btns" role="tablist">
+        <button class="tabs__btn" role="tab" aria-selected="true" aria-controls="tab-fleet" id="t-fleet">Fleet</button>
+        <button class="tabs__btn" role="tab" aria-selected="false" aria-controls="tab-cabins" id="t-cabins">Staterooms</button>
+        <button class="tabs__btn" role="tab" aria-selected="false" aria-controls="tab-excursions" id="t-excursions">Excursions</button>
+        <button class="tabs__btn" role="tab" aria-selected="false" aria-controls="tab-cuisine" id="t-cuisine">Cuisine</button>
+      </div>
+      <!-- ACF repeater: ships (image, name, class/guests/cabins, url) -->
+      <div class="tabs__panel" id="tab-fleet" role="tabpanel" aria-labelledby="t-fleet">
+        <div class="grid cols-3">
+          <article class="card"><div class="card__media"><img src="assets/ship-1.jpg" alt="{{SHIP_1_IMG_ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{SHIP_1_NAME}}</h3><p>{{SHIP_1_SPEC}}</p><a class="btn btn--ghost btn--sm" href="{{SHIP_1_URL}}">View Ship</a></div></article>
+          <article class="card"><div class="card__media"><img src="assets/ship-2.jpg" alt="{{SHIP_2_IMG_ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{SHIP_2_NAME}}</h3><p>{{SHIP_2_SPEC}}</p><a class="btn btn--ghost btn--sm" href="{{SHIP_2_URL}}">View Ship</a></div></article>
+          <article class="card"><div class="card__media"><img src="assets/ship-3.jpg" alt="{{SHIP_3_IMG_ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{SHIP_3_NAME}}</h3><p>{{SHIP_3_SPEC}}</p><a class="btn btn--ghost btn--sm" href="{{SHIP_3_URL}}">View Ship</a></div></article>
+        </div>
+      </div>
+      <div class="tabs__panel" id="tab-cabins" role="tabpanel" aria-labelledby="t-cabins" hidden><p>{{SHIPS_CABINS_COPY}}</p></div>
+      <div class="tabs__panel" id="tab-excursions" role="tabpanel" aria-labelledby="t-excursions" hidden><p>{{SHIPS_EXCURSIONS_COPY}}</p></div>
+      <div class="tabs__panel" id="tab-cuisine" role="tabpanel" aria-labelledby="t-cuisine" hidden><p>{{SHIPS_CUISINE_COPY}}</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §11  NATURALIST GUIDES ═══════════════════ -->
+<section class="section band-grey">
+  <div class="container">
+    <span class="eyebrow">Your Experts</span>
+    <h2>Galápagos National Park-Certified Naturalist Guides</h2>
+    <!-- ACF repeater: guides (photo, name, credential/years/specialty) -->
+    <div class="grid cols-4">
+      <article class="card"><div class="card__media"><img src="assets/guide-1.jpg" alt="{{GUIDE_1_IMG_ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{GUIDE_1_NAME}}</h3><p>{{GUIDE_1_CRED}}</p></div></article>
+      <article class="card"><div class="card__media"><img src="assets/guide-2.jpg" alt="{{GUIDE_2_IMG_ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{GUIDE_2_NAME}}</h3><p>{{GUIDE_2_CRED}}</p></div></article>
+      <article class="card"><div class="card__media"><img src="assets/guide-3.jpg" alt="{{GUIDE_3_IMG_ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{GUIDE_3_NAME}}</h3><p>{{GUIDE_3_CRED}}</p></div></article>
+      <article class="card"><div class="card__media"><img src="assets/guide-4.jpg" alt="{{GUIDE_4_IMG_ALT}}" loading="lazy"/></div><div class="card__body"><h3>{{GUIDE_4_NAME}}</h3><p>{{GUIDE_4_CRED}}</p></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §12  CONSERVATION & SUSTAINABILITY ═══════════════════ -->
+<section class="section band-navy">
+  <div class="container">
+    <span class="eyebrow" style="color:#e9c97a">Travel That Gives Back</span>
+    <h2>Our Conservation Impact</h2>
+    <p style="color:#cdd9e6; max-width:var(--measure)">Every voyage helps protect the archipelago. A share of each fare funds national-park conservation, invasive-species control and local community projects, while our ships follow strict low-impact protocols. We remove marine debris on every trip, run on cleaner fuel, and our guides actively monitor wildlife for park scientists.</p>
+    <!-- ACF repeater: impact_stats (number + label) -->
+    <div class="statcounters" style="margin-top:1.5rem">
+      <div><div class="n">{{IMPACT_1_NUM}}</div><p style="color:#cdd9e6">{{IMPACT_1_LABEL}}</p></div>
+      <div><div class="n">{{IMPACT_2_NUM}}</div><p style="color:#cdd9e6">{{IMPACT_2_LABEL}}</p></div>
+      <div><div class="n">{{IMPACT_3_NUM}}</div><p style="color:#cdd9e6">{{IMPACT_3_LABEL}}</p></div>
+      <div><div class="n">100%</div><p style="color:#cdd9e6">carbon neutral</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §14  REVIEWS (immediately before the ask) ═══════════════════ -->
+<section class="section" id="reviews">
+  <div class="container">
+    <span class="eyebrow">Social Proof</span>
+    <h2>{{REVIEW_COUNT}} Verified Reviews · {{RATING}}/5 <span class="stars" style="color:var(--c-star)">★★★★★</span></h2>
+    <!-- ACF repeater: reviews (quote, author, country, date) — MUST mirror Review JSON-LD; use only genuine reviews -->
+    <div class="grid cols-3">
+      <article class="card"><div class="card__body"><div class="stars">★★★★★</div><p>"{{REVIEW_1_TEXT}}"</p><strong>{{REVIEW_1_AUTHOR}}</strong><small>{{REVIEW_1_META}}</small></div></article>
+      <article class="card"><div class="card__body"><div class="stars">★★★★★</div><p>"{{REVIEW_2_TEXT}}"</p><strong>{{REVIEW_2_AUTHOR}}</strong><small>{{REVIEW_2_META}}</small></div></article>
+      <article class="card"><div class="card__body"><div class="stars">★★★★★</div><p>"{{REVIEW_3_TEXT}}"</p><strong>{{REVIEW_3_AUTHOR}}</strong><small>{{REVIEW_3_META}}</small></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §15  WHY US + PRE-BOOKING CHECKLIST ═══════════════════ -->
+<section class="section band-cream">
+  <div class="container split">
+    <div class="split__copy">
+      <span class="eyebrow">Why Travel With Us</span>
+      <h2>Why book your Galápagos cruise with {{BRAND_NAME}}</h2>
+      <ul>
+        <li>Over {{YEARS}} years operating expedition cruises in the Galápagos.</li>
+        <li>Multilingual, national-park-certified naturalist guides.</li>
+        <li>Doctor on call and rigorous small-ship safety standards.</li>
+        <li>Itineraries covering both the eastern and remote western islands.</li>
+      </ul>
+    </div>
+    <div class="split__copy">
+      <h3>Pre-Booking Checklist</h3>
+      <ul>
+        <li>✓ Valid passport (6+ months validity)</li>
+        <li>✓ Travel insurance with medical coverage</li>
+        <li>✓ $200 Galápagos National Park entrance fee (cash, USD)</li>
+        <li>✓ $20 INGALA transit control card</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §16  FAQ (mirror EXACTLY into the FAQPage JSON-LD in <head>) ═══════════════════ -->
+<section class="section" id="faq">
+  <div class="container">
+    <span class="eyebrow">Answers</span>
+    <h2>Frequently Asked Questions About Galápagos Cruises</h2>
+    <div class="accordion">
+      <details open><summary>How much does a Galápagos cruise cost?</summary><div class="answer"><p>Most Galápagos cruises cost between $3,000 and $8,000 per person for a 4-to-8-day voyage, excluding international flights. Budget tourist-class yachts start near $2,500; luxury first-class ships exceed $9,000. Fares include your cabin, meals, daily excursions and certified naturalist guides, but not the $200 national park entrance fee.</p></div></details>
+      <details><summary>What is the best month to cruise the Galápagos?</summary><div class="answer"><p>The Galápagos is a year-round destination, so there is no bad month. The warm, wetter season (December to May) brings calm seas, sunshine and active marine life; the cool, dry season (June to November) delivers nutrient-rich waters, seabird courtship and the best snorkelling. Choose by the wildlife you most want to see.</p></div></details>
+      <details><summary>How many days do you need in the Galápagos?</summary><div class="answer"><p>Plan at least a 4-to-5-day cruise to see the central islands, and 7-to-8 days to reach the wildlife-rich western and outer islands. Shorter trips suit tight schedules; longer voyages visit more landing sites with less repetition. Add one or two days on the mainland for connecting flights.</p></div></details>
+      <details><summary>How do I choose the best Galápagos cruise?</summary><div class="answer"><p>Match four things: ship class (luxury, mid-range or budget), trip length (4 to 8 days), island region (eastern, western or a grand tour) and travel season. Smaller yachts feel intimate and reach remote sites; larger ships offer more amenities. Always confirm what's included — flights, park fees and gear vary widely.</p></div></details>
+      <details><summary>Galápagos cruise vs land-based tour — which is better?</summary><div class="answer"><p>A cruise reaches remote, uninhabited islands and maximises wildlife per day, with guided excursions from a moving base. Land-based tours cost less and let you sleep on solid ground, but you re-visit the same nearby sites by day-trip. For the fullest Galápagos experience, choose a cruise.</p></div></details>
+      <details><summary>What should I pack for a Galápagos cruise?</summary><div class="answer"><p>Pack light, quick-dry clothing, a wide-brim hat, reef-safe sunscreen, sturdy water shoes and a refillable bottle. Bring a swimsuit, a light rain layer and seasickness remedies. Most ships supply wetsuits, snorkel gear and kayaks. Leave drones at home — they are banned in the national park.</p></div></details>
+      <details><summary>Are Galápagos cruises worth it?</summary><div class="answer"><p>Yes. The Galápagos offers wildlife encounters found nowhere else on Earth — fearless sea lions, marine iguanas, giant tortoises and blue-footed boobies at arm's length. A cruise reaches islands day-trippers cannot, with expert naturalists interpreting every landing. For most travellers it is a genuine once-in-a-lifetime trip.</p></div></details>
+      <details><summary>Are Galápagos cruises family-friendly?</summary><div class="answer"><p>Many ships welcome families, with triple cabins, kid-friendly excursions and naturalists who engage young explorers. Minimum ages vary by vessel — some require children to be seven or older. Family departures, snorkelling lessons and interconnecting cabins make multigenerational travel easy. Confirm age policies and family rates when booking.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ §17  CLOSING CONVERSION BAND (single CTA) ═══════════════════ -->
+<section class="section band-navy closing" id="enquire">
+  <div class="container">
+    <h2>Talk to an Expert That's Sailed Aboard</h2>
+    <p style="margin-inline:auto">Speak with a Galápagos specialist who has sailed these waters. We'll match you to the right ship, itinerary and season — no pressure, just honest expert advice. Most enquiries get a personal reply within one business day.</p>
+    <form class="leadform" data-acf="lead_form" onsubmit="return false">
+      <input class="full" type="text" placeholder="Full name" aria-label="Full name" />
+      <input type="email" placeholder="Email" aria-label="Email" />
+      <input type="tel" placeholder="Phone (optional)" aria-label="Phone" />
+      <select class="full" aria-label="When do you want to travel"><option>When do you want to travel?</option><option>Next 3 months</option><option>3–6 months</option><option>6–12 months</option><option>Just researching</option></select>
+      <button class="btn btn--primary full" type="submit">Talk to a Galápagos Expert</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════════ §18  FOOTER ═══════════════════ -->
+<footer class="sitefooter">
+  <div class="container grid cols-4">
+    <div><h4>{{BRAND_NAME}}</h4><p style="color:#c3d2e0">{{FOOTER_POSITIONING}} · {{PHONE}}</p></div>
+    <div><h4>Cruises</h4><ul><li><a href="#">Luxury yachts</a></li><li><a href="#">Family cruises</a></li><li><a href="#">Diving cruises</a></li></ul></div>
+    <div><h4>Plan</h4><ul><li><a href="#best-time">Best time to go</a></li><li><a href="#choose">How to choose</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+    <div><h4>Newsletter</h4><p style="color:#c3d2e0">Get deals &amp; the free guide.</p><a class="btn btn--ghost btn--sm" href="#">Subscribe</a></div>
+  </div>
+  <div class="container footer-bottom">© {{YEAR}} {{BRAND_NAME}}. All rights reserved.</div>
+</footer>
+
+<!-- ═══════════════════ Minimal vanilla JS: tabs · accordion-sync · active anchor ═══════════════════ -->
+<script>
+  // Tabs
+  document.querySelectorAll('.tabs').forEach(function (tabs) {
+    var btns = tabs.querySelectorAll('.tabs__btn');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btns.forEach(function (b) { b.setAttribute('aria-selected', 'false'); });
+        tabs.querySelectorAll('.tabs__panel').forEach(function (p) { p.hidden = true; });
+        btn.setAttribute('aria-selected', 'true');
+        tabs.querySelector('#' + btn.getAttribute('aria-controls')).hidden = false;
+      });
+    });
+  });
+
+  // Sub-nav active-section highlighting
+  var links = Array.from(document.querySelectorAll('.subnav__links a'));
+  var map = {};
+  links.forEach(function (a) { var el = document.querySelector(a.getAttribute('href')); if (el) map[el.id] = a; });
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        links.forEach(function (a) { a.classList.remove('is-active'); });
+        if (map[e.target.id]) map[e.target.id].classList.add('is-active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  Object.keys(map).forEach(function (id) { obs.observe(document.getElementById(id)); });
+</script>
+</body>
+</html>

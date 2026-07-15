@@ -1,0 +1,126 @@
+# ════════════════════════════════════════════════════════════════════════
+# BRAND STYLE GUIDE — LLM WRITER GUARDRAIL  (filled)
+# Brand: {{BRAND}}  (www.{{DOMAIN}})
+# Source: scraped /about, /galapagos-cruises, home (see profiles/galapagosislands_travel.json)
+# Values are grounded in the site's own copy — not invented.
+# ════════════════════════════════════════════════════════════════════════
+
+meta:
+  brand_slug: "galapagosislands-travel"
+  assessment_set: "galapagos-expedition-cruise"
+  locale: "en-US"
+  last_updated: "2026-06-25"
+
+# ── 1. IDENTITY ─────────────────────────────────────────────────────────
+identity:
+  brand_name: "{{BRAND}}"
+  archetype: "editorial-guide"   # independent publisher backed by {{BRAND}} (agency)
+  one_line_positioning: "The independent, citation-backed editorial guide to Galápagos travel — 20+ years of real booking experience giving travelers the honest facts, whether or not they book with {{BRAND}}."
+  brand_essence: "Two decades of real Galápagos booking experience distilled into a fiercely independent, fact-checked guide that tells travelers the truth instead of selling them a trip."
+  mission: "Give every traveler the clearest, most accurate picture of what Galápagos travel actually involves — facts that live without being shaped to fit a sale."
+
+# ── 2. AUDIENCE ─────────────────────────────────────────────────────────
+audience:
+  primary: ["independent Galápagos researchers who distrust marketing", "serious travelers comparing vessels and itineraries"]
+  secondary: ["travelers wanting straight answers and real trade-offs", "trade & press seeking an authoritative reference"]
+  reader_knowledge_level: "researching"
+  jobs_to_be_done: ["decide cruise vs land-based", "pick the right vessel tier for budget + wildlife access", "time the trip to the right season", "avoid being upsold"]
+
+# ── 3. VOICE & TONE ─────────────────────────────────────────────────────
+voice_and_tone:
+  adjectives: ["honest", "plain-spoken", "rigorous", "concise", "myth-busting"]
+  we_sound_like: "A veteran travel specialist telling a friend the unvarnished truth — candid, comparative, every claim backed by a real number."
+  we_do_not_sound_like: "A brochure, an affiliate site, or a single operator's marketing department."
+  person: "first-person-plural (the editorial 'we'); address the reader as 'you'"
+  formality: 3
+  reading_level: "Grade 8–10"
+  sentence_style: "answer-first; one idea per sentence; cut anything that doesn't earn its place; lead with the number or the trade-off"
+
+# ── 4. VALUES & PROMISE ─────────────────────────────────────────────────
+values:
+  core_values: ["editorial independence", "verifiable truth", "concision", "clarity / scannability", "traveler-first usefulness"]
+  emotional_promise: "The relief of finally getting the unvarnished truth — confidence you're deciding on facts, not a sales pitch."
+
+# ── 5. AUTHORITY (E-E-A-T engine) ───────────────────────────────────────
+authority:
+  authority_basis: ["named-experts", "heritage", "inventory-breadth", "certifications"]
+  differentiation_claim: "An independent editorial guide governed by three Editorial Guardians — Truth, Content, Design — with facts unshaped by any single operator's sale."
+  proof_points:
+    - "Maintained by {{BRAND}}, a US agency founded in 2002 with 20+ years of Galápagos booking experience."
+    - "Content authored by a named editorial team + a cross-operator network of GNPS-certified naturalist guides."
+    - "Not a booking site and not a single-operator marketing vehicle — editorial independence is stated policy."
+    - "Offices in Quito, Ecuador and Easton, PA / Budd Lake, NJ, USA."
+    - "Concrete, comparative data: cruise tiers span $2,500–$20,000+ and 4–15 days; mainland flights ~$400–$500 / ~3 hrs."
+  named_experts: "{{CONTRIBUTORS}}"   # from SITE_CONFIG; empty = brand voice only, no named contributor
+  certifications: ["editorial network of GNPS-certified naturalist guides"]
+  transparency_artifacts: ["explicit editorial-independence disclosure", "parent agency disclosed per SITE_CONFIG PUBLISHER"]
+  sustainability:
+    role: "supporting"
+    evidence:
+      - "GNPS compliance framed as a 'license to work' — guide ratios, visitor-site quotas, landing schedules, biosecurity."
+
+# ── 6. LEXICON ──────────────────────────────────────────────────────────
+lexicon:
+  signature_vocabulary:
+    - "independent editorial guide"
+    - "give it to them straight"
+    - "real numbers, real seasonal caveats"
+    - "no padding, no filler"
+    - "every fact traceable to a verifiable source"
+    - "whether you book with {{BRAND}} or not"
+    - "the honest answer"
+    - "VERIFIED ACTIVE"
+  banned_words: ["#1", "best", "world-class", "paradise", "hidden gem", "luxury (as filler)", "unforgettable", "must-see", "dream vacation"]
+  cliche_blocklist: ["journey of a lifetime", "once-in-a-lifetime (unless load-bearing)", "Enchanted Islands", "living laboratory of evolution", "bucket list"]
+  brand_name_rules: "Always accent 'Galápagos' in body copy. Brand styled '{{BRAND}}'. Credit {{BRAND}} on authorship/about contexts. Mark verified vessels 'VERIFIED ACTIVE <year>'."
+  spelling_locale: "en-US"
+
+# ── 7. CLAIMS POLICY (hard rules — the Guardian of Truth) ───────────────
+claims_policy:
+  superlatives_require_proof: true
+  no_fabricated_stats: true
+  source_every_fact: true                # no number without a citation/verifiable basis
+  pricing_format: "Give real ranges in USD per person (e.g. '$4,500–$7,500'); state what's excluded (flights, $200 park fee, transit card)."
+  competitor_mentions: "allowed — name operators/vessels factually and comparatively, but NEVER favor a single operator"
+  required_disclaimers: ["mainland flights, Galápagos National Park fee and transit control card excluded from cruise fares unless stated", "{{BRAND}} is the parent agency; the guide is editorially independent"]
+
+# ── 8. CONTENT-TYPE GUARDRAILS ──────────────────────────────────────────
+content_types:
+  - type: editorial_guide_page
+    goal: "Be the clearest, most accurate answer on the topic — useful whether or not the reader books."
+    must_include:
+      - "answer-first opening with the key number/trade-off"
+      - "real seasonal caveats and honest downsides"
+      - "scannable structure (a traveler gets the picture at a glance)"
+      - "≥1 named-expert or cited source"
+    avoid:
+      - "marketing superlatives or hype"
+      - "padding/filler sentences that don't earn their place"
+      - "any claim without a verifiable basis"
+  - type: vessel_or_operator_profile
+    goal: "Describe a vessel/operator factually and comparatively, with no favoritism."
+    must_include: ["capacity + guide ratio", "price range + itinerary lengths", "what genuinely distinguishes it", "'VERIFIED ACTIVE <year>' status"]
+    avoid: ["operator marketing copy pasted as fact", "ranking by price as if it were quality", "implying tier = wildlife quality"]
+  - type: comparison_page
+    goal: "Lay out real trade-offs (tier, length, season, island access) so the reader self-qualifies."
+    must_include: ["honest 'it depends' answer", "concrete numbers per option", "the myth being corrected, if any"]
+    avoid: ["false 'best overall' verdicts", "manufactured urgency", "hiding the downside of an option"]
+  - type: faq
+    goal: "Capture People-Also-Ask and AI Overviews with citable, answer-first responses."
+    must_include: ["verbatim PAA question headings", "40–60 word answer-first answers", "a real figure where one exists"]
+    avoid: ["vague non-answers", "'as above' cross-references", "rounded marketing numbers"]
+  - type: photo_story
+    goal: "Show the destination honestly through field imagery + concise captions."
+    must_include: ["real field photos with accurate location/species", "tight factual captions"]
+    avoid: ["stocky clichés", "captions that oversell", "misidentified wildlife/locations"]
+
+# ── 9. GLOBAL THINGS TO AVOID (apply to all content) ────────────────────
+global_avoid:
+  - "Undifferentiated superlatives ('#1','best','world-class') with no cited basis"
+  - "Any fact, number, or rating without a traceable source (Guardian of Truth)"
+  - "Padding, filler, or sentences written to fill space (Guardian of Content)"
+  - "Burying the answer; un-scannable walls of text (Guardian of Design)"
+  - "Favoring a single operator, or obscuring the {{BRAND}} relationship"
+  - "Category clichés used as substance"
+  - "Off-brand vocabulary from the banned_words list"
+  - "Fabricated or unverifiable statistics, ratings, or review counts"

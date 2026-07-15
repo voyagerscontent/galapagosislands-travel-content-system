@@ -1,0 +1,109 @@
+{
+  "name": "{{SITE_NAME}} - Content Pipeline (corrected stage template: Brief)",
+  "meta": { "templateNote": "Corrected stage pattern with production guard + explicit error route. Clone this node group for each stage (Scoring, Drafting, Truth Check, Humanizing, Polishing), changing the input Status, output Status, guard field, and LLM action. Do NOT remove the 'Needs Attention' branch - it is what stops the re-processing loop." },
+  "nodes": [
+    {
+      "parameters": { "rule": { "interval": [ { "field": "minutes", "minutesInterval": 5 } ] } },
+      "name": "Poll Every 5 Min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "baseId": "{{AIRTABLE_BASE_ID}}",
+        "tableId": "{{AIRTABLE_TABLE_ID}}",
+        "filterByFormula": "AND({Status} = 'Brief Ready', {Brief Link} = '')",
+        "maxRecords": 5,
+        "sort": [ { "field": "Page #", "direction": "asc" } ]
+      },
+      "name": "Find Brief-Ready (guarded)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [430, 300],
+      "credentials": { "airtableTokenApi": { "name": "Airtable API - {{SITE_NAME}}" } }
+    },
+    {
+      "parameters": { "conditions": { "number": [ { "value1": "={{ $items().length }}", "operation": "larger", "value2": 0 } ] } },
+      "name": "Any found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "resource": "text",
+        "operation": "message",
+        "modelId": "gpt-4o",
+        "messages": { "values": [ { "role": "system", "content": "Generate a page brief per the loaded rule files. Return STRICT JSON: {\"brief_markdown\": \"...\"}." } ] }
+      },
+      "name": "Generate Brief (LLM)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [890, 220]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate the LLM output. Never let a failure leave the record in its input status.\nconst rec = $items('Find Brief-Ready (guarded)')[0].json;\nlet ok = false, briefUrl = '', error = '';\ntry {\n  const raw = $json.message?.content ?? $json.text ?? $json.choices?.[0]?.message?.content ?? '';\n  const parsed = JSON.parse(raw);\n  if (parsed && typeof parsed.brief_markdown === 'string' && parsed.brief_markdown.length > 40) {\n    // (In production: write brief_markdown to Drive 03 Page Briefs and capture the file URL.)\n    briefUrl = parsed.brief_url || 'drive://03_Page_Briefs/PLACEHOLDER_SET_BY_DRIVE_NODE';\n    ok = true;\n  } else { error = 'Brief JSON missing brief_markdown'; }\n} catch (e) { error = 'Unparseable LLM output: ' + e.message; }\nreturn [{ json: { recordId: rec.id, ok, briefUrl, error } }];"
+      },
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 220]
+    },
+    {
+      "parameters": { "conditions": { "boolean": [ { "value1": "={{ $json.ok }}", "value2": true } ] } },
+      "name": "Output OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1350, 220]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "baseId": "{{AIRTABLE_BASE_ID}}",
+        "tableId": "{{AIRTABLE_TABLE_ID}}",
+        "id": "={{ $json.recordId }}",
+        "fields": { "fieldMappingOption": "mapBelowFields", "fields": { "value": [
+          { "fieldId": "Brief Link", "fieldValue": "={{ $json.briefUrl }}" },
+          { "fieldId": "Status", "fieldValue": "Drafting" },
+          { "fieldId": "Attempt Count", "fieldValue": "0" }
+        ] } }
+      },
+      "name": "Advance to Drafting",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [1580, 140],
+      "credentials": { "airtableTokenApi": { "name": "Airtable API - {{SITE_NAME}}" } }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "baseId": "{{AIRTABLE_BASE_ID}}",
+        "tableId": "{{AIRTABLE_TABLE_ID}}",
+        "id": "={{ $json.recordId }}",
+        "fields": { "fieldMappingOption": "mapBelowFields", "fields": { "value": [
+          { "fieldId": "Status", "fieldValue": "Needs Attention" },
+          { "fieldId": "Return To", "fieldValue": "Brief Ready" },
+          { "fieldId": "Last Error", "fieldValue": "={{ $json.error }}" }
+        ] } }
+      },
+      "name": "Route to Needs Attention",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [1580, 300],
+      "credentials": { "airtableTokenApi": { "name": "Airtable API - {{SITE_NAME}}" } }
+    }
+  ],
+  "connections": {
+    "Poll Every 5 Min": { "main": [ [ { "node": "Find Brief-Ready (guarded)", "type": "main", "index": 0 } ] ] },
+    "Find Brief-Ready (guarded)": { "main": [ [ { "node": "Any found?", "type": "main", "index": 0 } ] ] },
+    "Any found?": { "main": [ [ { "node": "Generate Brief (LLM)", "type": "main", "index": 0 } ], [] ] },
+    "Generate Brief (LLM)": { "main": [ [ { "node": "Validate Output", "type": "main", "index": 0 } ] ] },
+    "Validate Output": { "main": [ [ { "node": "Output OK?", "type": "main", "index": 0 } ] ] },
+    "Output OK?": { "main": [ [ { "node": "Advance to Drafting", "type": "main", "index": 0 } ], [ { "node": "Route to Needs Attention", "type": "main", "index": 0 } ] ] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

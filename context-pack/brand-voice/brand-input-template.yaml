@@ -1,0 +1,121 @@
+# ════════════════════════════════════════════════════════════════════════
+# BRAND STYLE GUIDE — LLM WRITER GUARDRAIL  (brand-agnostic input template)
+# ════════════════════════════════════════════════════════════════════════
+# WHAT THIS IS: a fillable template a brand completes once. The filled file is
+# injected verbatim into an LLM content writer as HARD CONSTRAINTS, keeping all
+# generated content strictly on-brand and optimised for SERP + LLM visibility.
+#
+# HOW IT WAS DERIVED: from a teardown of how 9 ranking Galápagos-cruise brands
+# present themselves (see README.md + .scrape/.work/brand-styleguide/). Every
+# field exists because it was a dimension on which strong and weak brands
+# diverged. Comments show the observed option ranges as guidance.
+#
+# RULES FOR FILLING:
+#  - Fill EVERY field. Empty = the writer has no guardrail there.
+#  - Proof points must be CONCRETE (dated / quantified / attributable). The #1
+#    finding: concrete facts win SERP + LLM; vague superlatives lose.
+#  - Lists are ranked most-important-first.
+# ════════════════════════════════════════════════════════════════════════
+
+meta:
+  brand_slug: ""               # kebab-case id, e.g. "latin-trails"
+  assessment_set: ""           # which competitor set this brand was assessed against
+  locale: ""                   # en-US | en-GB | es-EC ... (drives spelling)
+  last_updated: ""             # YYYY-MM-DD
+
+# ── 1. IDENTITY ─────────────────────────────────────────────────────────
+identity:
+  brand_name: ""
+  archetype: ""                # info-portal | OTA | comparison-engine | ship-owning-operator |
+                               # luxury-line | heritage-operator | expedition-line | editorial-agency | nonprofit
+  one_line_positioning: ""     # one sentence: who you serve + what you uniquely offer
+  brand_essence: ""            # 1–2 sentences: the core identity in plain words
+  mission: ""                  # why you exist beyond selling trips
+
+# ── 2. AUDIENCE ─────────────────────────────────────────────────────────
+audience:
+  primary: []                  # e.g. ["affluent experiential travelers"]
+  secondary: []
+  reader_knowledge_level: ""   # novice | researching | expert
+  jobs_to_be_done: []          # what the reader is trying to accomplish
+
+# ── 3. VOICE & TONE ─────────────────────────────────────────────────────
+voice_and_tone:
+  adjectives: []               # 3–5, e.g. ["refined","intimate","evidence-led"]
+  we_sound_like: ""            # one sentence
+  we_do_not_sound_like: ""     # the anti-voice (e.g. "a discount OTA hard-selling")
+  person: ""                   # first-person-plural ("we") | third-person | ...
+  formality: 3                 # 1 (casual) … 5 (formal)
+  reading_level: ""            # e.g. "Grade 7–9"
+  sentence_style: ""           # e.g. "answer-first, one idea per sentence, ≤25 words avg"
+
+# ── 4. VALUES & PROMISE ─────────────────────────────────────────────────
+values:
+  core_values: []              # 3–5 ranked: luxury | sustainability | expertise | value |
+                               # intimacy | adventure | heritage | service | mission
+  emotional_promise: ""        # the felt outcome — make it DISTINCT, not the category cliché
+
+# ── 5. AUTHORITY (E-E-A-T engine) ───────────────────────────────────────
+# These elements are what Google quality signals AND LLMs latch onto.
+authority:
+  authority_basis: []          # which you genuinely own: heritage | ownership |
+                               # inventory-breadth | named-experts | certifications | scale-impact
+  differentiation_claim: ""    # your defensible first/only/oldest/most (the anti-sameness asset)
+  proof_points: []             # CONCRETE facts: founding year, fleet names+capacity, guest:guide ratio,
+                               # award names+years, scale numbers, quantified impact. Each must be true & citable.
+  named_experts: []            # people the writer may name (founders, guides, board) + credential
+  certifications: []           # affiliations/certs + issuing body
+  transparency_artifacts: []   # published financials, annual reports, terms — cite when relevant
+  sustainability:
+    role: ""                   # central | supporting | token
+    evidence: []               # dated/quantified proof — REQUIRED if role is central/supporting (else omit claims)
+
+# ── 6. LEXICON ──────────────────────────────────────────────────────────
+lexicon:
+  signature_vocabulary: []     # on-brand words/phrases to reuse for consistency
+  banned_words: []             # never use (off-brand, over-promising, legally risky)
+  cliche_blocklist: []         # category-sameness traps to avoid UNLESS paired with own proof
+                               # (observed near-universal: "journey/trip of a lifetime",
+                               #  "Enchanted Islands", "living laboratory of evolution", "world-class", "#1", "best")
+  brand_name_rules: ""         # capitalisation, ship-name styling, accents (e.g. "Galápagos" with accent)
+  spelling_locale: ""          # en-US | en-GB ...
+
+# ── 7. CLAIMS POLICY (hard rules) ───────────────────────────────────────
+claims_policy:
+  superlatives_require_proof: true     # no "best/#1/world-class" without a cited basis
+  no_fabricated_stats: true            # never invent numbers, ratings, or review counts
+  pricing_format: ""                   # e.g. "From $X,XXX per person, USD; state what's excluded"
+  competitor_mentions: ""              # allowed | comparative-only | never
+  required_disclaimers: []             # e.g. park fees excluded, ages vary by vessel
+
+# ── 8. CONTENT-TYPE GUARDRAILS ──────────────────────────────────────────
+# Per content type: its goal, what it MUST include, and what to AVOID.
+# Duplicate a block for each content type you produce.
+content_types:
+  - type: destination_hub_page
+    goal: ""
+    must_include: []           # e.g. ["differentiation_claim above the fold","≥3 concrete proof_points","FAQ"]
+    avoid: []                  # e.g. ["cliché-only intros","superlatives without proof","UI/cookie text in body"]
+  - type: ship_or_product_page
+    goal: ""
+    must_include: []           # e.g. ["named ship + capacity","guest:guide ratio","unique cabin facts"]
+    avoid: []                  # e.g. ["generic 'luxury' filler","duplicate descriptions across ships"]
+  - type: blog_article
+    goal: ""
+    must_include: []           # e.g. ["answer-first opening","named expert insight","one proof_point"]
+    avoid: []                  # e.g. ["thin AI-sounding listicle","unsourced claims","keyword stuffing"]
+  - type: faq
+    goal: ""
+    must_include: []           # e.g. ["verbatim PAA question headings","40–60 word answer-first answers"]
+    avoid: []                  # e.g. ["vague non-answers","'as above' cross-references"]
+
+# ── 9. GLOBAL THINGS TO AVOID (apply to all content) ────────────────────
+global_avoid:
+  - "Undifferentiated superlatives ('#1','best','world-class') with no cited basis"
+  - "Category clichés as the ONLY differentiator (pair with own proof or cut)"
+  - "Fabricated or unverifiable statistics, ratings, or review counts"
+  - "Vague luxury/eco language with no evidence (greenwashing tone)"
+  - "Corporate jargon in consumer copy"
+  - "Off-brand vocabulary from the banned_words list"
+  - "Duplicate/near-identical blocks or headings"
+  - "Inconsistent brand/ship/person naming across pages"

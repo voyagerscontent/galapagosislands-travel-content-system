@@ -1,0 +1,20 @@
+{
+  "_comment": "Additive intake + human-enrichment fields for the Pages Master table. These DO NOT change the 12 Status values; the engine contract and validate_pipeline.py are unaffected. Add alongside the existing Status, guard fields (Attempt Count, Return To, Last Error, *_Link) and context fields.",
+  "table": "Pages Master",
+  "fields": [
+    {"name": "Page Title", "type": "singleLineText", "required": true},
+    {"name": "Target URL", "type": "singleLineText", "required": false},
+    {"name": "Page Type", "type": "singleSelect", "required": true, "options": ["hub page", "vessel/operator profile", "comparison", "guide", "FAQ"]},
+    {"name": "Topic", "type": "multilineText", "required": true},
+    {"name": "Persona", "type": "singleSelect", "required": true, "options": ["first_timer", "wildlife_lover", "luxury_seeker", "family", "solo", "diver_snorkeler", "photographer", "active_senior", "eco_purpose"]},
+    {"name": "Funnel Stage", "type": "singleSelect", "required": true, "options": ["awareness", "consideration", "decision"]},
+    {"name": "Primary CTA", "type": "singleLineText", "required": false, "default": "Talk to a Galápagos Specialist"},
+    {"name": "Priority", "type": "singleSelect", "required": false, "options": ["High", "Medium", "Low"]},
+    {"name": "Human Paragraphs", "type": "multilineText", "required": false, "enrichment": true, "rule": "placed verbatim, attributed, never rewritten"},
+    {"name": "Human Quotes", "type": "multilineText", "required": false, "enrichment": true, "rule": "one per line with '— Name, role'; verbatim"},
+    {"name": "Anecdotes", "type": "multilineText", "required": false, "enrichment": true, "rule": "true stories, verbatim"},
+    {"name": "Contributor", "type": "singleLineText", "required": false, "enrichment": true, "rule": "attribution name for the enrichment"},
+    {"name": "Created By", "type": "createdBy", "required": false}
+  ],
+  "on_create_rule": "Set Status = 'Backlog' (form default or an Airtable automation). That is the trigger."
+}

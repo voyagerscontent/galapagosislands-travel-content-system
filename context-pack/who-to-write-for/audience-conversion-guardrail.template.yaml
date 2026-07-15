@@ -1,0 +1,191 @@
+# ════════════════════════════════════════════════════════════════════════
+# AUDIENCE & CONVERSION ARCHITECTURE — LLM WRITER GUARDRAIL (site-agnostic)
+# ════════════════════════════════════════════════════════════════════════
+# WHAT THIS IS: a fillable template that tells an LLM writer WHO it is writing
+# for, WHERE the page sits in the booking funnel, WHAT action to drive, and
+# WHICH objections to defuse — so content engages, avoids bounces, and moves
+# the traveler toward booking. The filled file is injected as HARD CONSTRAINTS.
+#
+# DERIVED FROM: a conversion teardown of 10 converting sites in the segment
+# (see ../.scrape/.work/audience-conversion/synthesis.json). Comment defaults
+# show the cross-site consensus; replace them with this site's specifics.
+#
+# THE STAGE MODEL (key design decision):
+#   Funnel stage is declared PER PAGE, and may be overridden PER SECTION.
+#   A single site spans the whole funnel; each page/section declares its stage,
+#   which then selects the matched persona(s), tone, primary CTA, and the
+#   objections to pre-empt. (NOT one stage per whole project.)
+#
+# HOW IT COMBINES WITH THE OTHER GUARDRAILS:
+#   brand-style-guide (how to sound) + this (who + funnel + CTA) + page template
+#   (what to build). Voice always defers to the brand-style-guide.
+# ════════════════════════════════════════════════════════════════════════
+
+meta:
+  site: ""                     # e.g. "{{DOMAIN}}"
+  segment: ""                  # the sub-niche, e.g. "Galápagos expedition cruise"
+  reference_set: []            # the converting sites this was benchmarked against
+  conversion_goal: ""          # the ONE business action, e.g. "qualified enquiry / lead"
+  locale: ""
+  last_updated: ""
+
+# ── 1. PERSONAS (psychographic, not just demographic) ───────────────────
+# Fill the segments that matter for THIS site. Consensus library to draw from:
+#   wildlife_lover · luxury_seeker · family · honeymoon_couple · solo ·
+#   diver_snorkeler · photographer · active_senior · first_timer · eco_purpose
+personas:
+  - id: ""                     # kebab id, e.g. "first_timer"
+    label: ""
+    snapshot: ""               # one line: who they are
+    demographics: ""           # age band, origin, party type, income signal
+    motivators: []             # WHY they travel — status | relaxation | cultural-education |
+                               # wildlife-intimacy | bucket-list | romance | conservation-impact | connection
+    stressors: []              # what they FEAR — losing-time | getting-scammed/overpaying | FOMO/missing-wildlife |
+                               # decision-paralysis | safety | logistics | solo-penalty | physical-demands | eco-guilt
+    budget_tier: ""            # budget | mid | premium | ultra ($ range if known)
+    decision_drivers: []       # what tips them to book
+    top_objections: []         # the 2–4 they raise most (cross-ref objection_library ids)
+    messaging_angles: []       # how to speak to them (benefit framing)
+    proof_that_resonates: []   # the evidence type that converts THIS persona
+    vocabulary: []             # words they use / respond to
+    primary_persona_cta: ""    # the action most natural for them
+
+# ── 2. FUNNEL STAGES (stage is declared per page/section) ───────────────
+# Reference model — keep, trim, or retune per site. Each stage defines intent,
+# content types, tone, the primary CTA menu, and objections to pre-empt.
+funnel_stages:
+  - stage: awareness
+    intent: "learn / get inspired — NOT ready to buy"
+    content_types: ["destination & wildlife guides", "best-time/season", "why <destination>", "history", "blog/photo stories"]
+    primary_cta_options: ["Download the Free Guide (PDF)", "Subscribe", "Explore trips"]
+    tone: "useful, evocative, low-pressure"
+    preempt_objections: ["is it worth it", "best time to go"]
+  - stage: consideration
+    intent: "compare options, narrow the choice"
+    content_types: ["'how to choose' guides", "ship/vessel comparisons", "itinerary cards", "tier/length comparisons", "reviews"]
+    primary_cta_options: ["Request a Quote", "View Itinerary / Find Dates & Rates", "Compare", "Request Brochure"]
+    tone: "honest, comparative, reassuring"
+    preempt_objections: ["which ship/itinerary", "cruise vs land", "how many days", "value / price tiers", "crowds", "solo penalty", "accessibility"]
+  - stage: decision
+    intent: "ready to commit / enquire"
+    content_types: ["availability & pricing", "FAQ", "what's included", "closing enquiry band"]
+    primary_cta_options: ["Check Availability & Dates", "Talk to a Specialist", "Request a Quote", "Book a Call"]
+    tone: "confident, frictionless, human"
+    preempt_objections: ["safety", "cancellation / flexibility", "hidden fees", "weather/flight risk", "can I trust you"]
+  - stage: retention
+    intent: "stay engaged post-enquiry / post-trip"
+    content_types: ["newsletter", "pre-trip prep", "loyalty", "community"]
+    primary_cta_options: ["Subscribe", "Join the community"]
+    tone: "warm, insider"
+    preempt_objections: ["what's next", "how to prepare"]
+
+# ── 3. CTA SYSTEM ───────────────────────────────────────────────────────
+cta_system:
+  rules:
+    - "ONE primary CTA per page, reused verbatim"
+    - "primary = lead/soft-conversion for this high-ticket category (quote / availability / talk-to-expert), NOT instant 'Book Now'"
+    - "exactly one secondary lead magnet (free guide/brochure)"
+    - "always offer a HUMAN fallback (chat/call/specialist) — it converts the reassurance-seeking buyer"
+    - "navigational CTAs (View Itinerary/Explore) don't count toward the limit"
+    - "CTA must match the page's stage (no hard 'Book Now' on an awareness blog)"
+  primary_lead: ""             # the site's verbatim primary CTA
+  secondary_magnet: ""         # the lead magnet
+  human_fallback: ""           # chat/call/specialist label
+  navigational: []             # non-counting nav CTAs
+
+# ── 4. OBJECTION LIBRARY (pre-empt in copy, before the ask) ─────────────
+# id → defuse strategy + proof + a writer-ready example line. Reference the id
+# from each persona's top_objections and each page's objections_to_preempt.
+objection_library:
+  - id: safety
+    objection: "Is it safe?"
+    stage: decision
+    defuse: "certified guides, secure landings, modern navigation & emergency protocols, doctor on board where true, strict wildlife-distance rules"
+    proof: []
+    example_copy: ""
+  - id: choosing_wrong
+    objection: "I'll pick the wrong ship/itinerary"
+    stage: consideration
+    defuse: "decision guide, 'which option is right for you' matcher, expert matching, honest tier trade-offs"
+    proof: []
+    example_copy: ""
+  - id: hidden_fees
+    objection: "Hidden fees / am I overpaying?"
+    stage: consideration
+    defuse: "transparent what's-included + excluded (park fee, flights), real price ranges, best-price/price-match if offered"
+    proof: []
+    example_copy: ""
+  - id: cancellation
+    objection: "What if my plans change?"
+    stage: decision
+    defuse: "flexible/low deposit, book-now-pay-later, clear cancellation policy, recommend trip-cancellation insurance"
+    proof: []
+    example_copy: ""
+  - id: weather_flight
+    objection: "Weather/flight disruption could ruin it"
+    stage: decision
+    defuse: "explain logistics (arrive a day early), strongly recommend insurance, state the policy plainly"
+    proof: []
+    example_copy: ""
+  - id: crowds
+    objection: "It'll be crowded / not intimate"
+    stage: consideration
+    defuse: "small-group/small-ship framing, guest:guide ratio, exclusive landings"
+    proof: []
+    example_copy: ""
+  - id: solo_penalty
+    objection: "Solo penalty / I'll be alone"
+    stage: consideration
+    defuse: "waived/lower solo supplement if offered, like-minded community, solo-friendly departures"
+    proof: []
+    example_copy: ""
+  - id: accessibility
+    objection: "Too physical / accessibility concerns"
+    stage: consideration
+    defuse: "activity-level labels, suitability notes, 'get in touch to discuss needs'"
+    proof: []
+    example_copy: ""
+  - id: greenwashing
+    objection: "Is it actually sustainable / where does my money go?"
+    stage: any
+    defuse: "evidenced conservation (carbon, foundation, % of fare, citizen science); never vague claims"
+    proof: []
+    example_copy: ""
+  - id: trust
+    objection: "Can I trust this company?"
+    stage: any
+    defuse: "visible rating+review count, awards w/ year, years operating, named experts, secure checkout"
+    proof: []
+    example_copy: ""
+
+# ── 5. TRUST & URGENCY DEVICES (use honestly) ───────────────────────────
+trust_urgency:
+  trust: []                    # rating+count, awards, years, named experts, guarantees
+  urgency: []                  # seasonal booking-window only — NO fake countdown timers
+
+# ── 6. PAGE DIRECTIVE SCHEMA ────────────────────────────────────────────
+# Every page (and overridable section) the writer produces MUST declare this
+# block first. It is the contract that aligns audience + stage + CTA + objections.
+page_directive_schema:
+  fields:
+    - "url_or_working_title"
+    - "stage: awareness | consideration | decision | retention"
+    - "primary_persona: <persona id>"
+    - "secondary_personas: [<persona ids>]"
+    - "primary_cta: <verbatim, from cta_system>"
+    - "secondary_cta: <lead magnet or human fallback>"
+    - "objections_to_preempt: [<objection_library ids>]"
+    - "tone_note: <stage tone, deferring to brand-style-guide voice>"
+  section_override: "A section may override 'stage' + 'primary_cta' (e.g. a decision-stage enquiry band inside an awareness guide). Declare the override on the section."
+  examples: []                 # fill with this site's real pages (see filled example)
+
+# ── 7. GLOBAL THINGS TO AVOID (bounce causers) ──────────────────────────
+global_avoid:
+  - "No clear next action, or CTA overload (competing primary CTAs)"
+  - "Hero-blocking modal on load"
+  - "Burying price ranges (forces the 'how much?' bounce)"
+  - "Ignoring safety/cancellation objections until checkout"
+  - "One-size persona copy that speaks to no one"
+  - "Fake scarcity / countdown timers"
+  - "Walls of text with no scannable answer"
+  - "CTA mismatched to the page's funnel stage"
