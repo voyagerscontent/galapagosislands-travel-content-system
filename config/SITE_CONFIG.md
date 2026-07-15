@@ -35,12 +35,12 @@ CONTRIBUTORS: []            # e.g. ["Jane Doe (Naturalist)"] — default: none
 
 # --- automation (hard-coded for one-trigger redeploy; see engine/DEPLOYMENT.md)
 site_id: galapagosislands-travel-v1
-airtable_base: ""           # appXXXX — fill from your Airtable base
-airtable_table: ""          # tblXXXX — Pages Master
-airtable_pat: ""            # Airtable Personal Access Token (hard-coded per deploy)
-n8n_base_url: ""            # e.g. https://your-n8n.example.com
-n8n_intake_webhook: ""      # full webhook URL that creates a Backlog record
-n8n_api_key: ""             # n8n API key (hard-coded per deploy)
+airtable_base: "appNkUL50eF601ejN"   # Content Production OS — GalapagosIslands.travel
+airtable_table: "tblUgxSGGfeJIL5GD"  # Pages Master
+airtable_pat: ""            # TODO: paste your Airtable PAT (airtable.com/create/tokens → scope: data.records:read + data.records:write + schema.bases:read on this base)
+n8n_base_url: ""            # TODO: e.g. https://your-n8n.example.com
+n8n_intake_webhook: ""      # TODO: full webhook URL that creates a Backlog record
+n8n_api_key: ""             # TODO: n8n API key
 n8n_poll_minutes: 5
 
 # --- pipeline contract (DO NOT CHANGE — shared across all sites) ----------
