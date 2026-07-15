@@ -229,6 +229,35 @@
           "name": "Airtable API - Weboptimizer"
         }
       }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/auditor",
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site_id",
+              "value": "={{ $('Airtable Status Webhook').item.json.body.site_id }}"
+            },
+            {
+              "name": "record_id",
+              "value": "={{ $('Re-check and Claim (guarded)').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Trigger next stage",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1660,
+        220
+      ],
+      "onError": "continueRegularOutput"
     }
   ],
   "connections": {
@@ -299,6 +328,17 @@
         [
           {
             "node": "Route to Needs Attention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advance to Auditor Review": {
+      "main": [
+        [
+          {
+            "node": "Trigger next stage",
             "type": "main",
             "index": 0
           }
