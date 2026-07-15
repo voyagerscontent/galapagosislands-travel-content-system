@@ -1,0 +1,266 @@
+{
+  "name": "WFP0 Production Intake - GalapagosIslands.travel",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "galapagos-production/stage/intake",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Airtable Status Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "gal-prod-intake-ff01"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appPlU9eC5GL6ncjZ"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblOkOXzm2GZUMkYs"
+        },
+        "filterByFormula": "=AND({Site ID} = '{{ $json.body.site_id }}', {Active} = 1)",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "name": "Lookup Site (registry)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json['Table ID'] }}"
+        },
+        "filterByFormula": "=AND({Status} = 'Backlog', RECORD_ID() = '{{ $('Airtable Status Webhook').item.json.body.record_id }}')",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "name": "Re-check and Claim (guarded)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const claim = $items('Re-check and Claim (guarded)');\nconst site = $items('Lookup Site (registry)')[0] ? $items('Lookup Site (registry)')[0].json : {};\nconst rec = claim[0] ? claim[0].json : null;\nconst ok = !!(rec && rec.id);\nreturn [{ json: {\n  recordId: rec && rec.id ? rec.id : '',\n  baseId: site['Base ID'] || '',\n  tableId: site['Table ID'] || '',\n  ok,\n  error: ok ? '' : 'Intake rejected: record not in Backlog, or site_id not found/active in Content Production Sites registry.'\n}}];\n"
+      },
+      "name": "Normalize + guard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.ok }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Claimed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.baseId }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.tableId }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.recordId }}",
+            "Status": "Scoring",
+            "Attempt Count": 0
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Advance to Scoring",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        220
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.baseId }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.tableId }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.recordId }}",
+            "Status": "Needs Attention",
+            "Last Error": "={{ $json.error }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Route to Needs Attention",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        400
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Airtable Status Webhook": {
+      "main": [
+        [
+          {
+            "node": "Lookup Site (registry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Site (registry)": {
+      "main": [
+        [
+          {
+            "node": "Re-check and Claim (guarded)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-check and Claim (guarded)": {
+      "main": [
+        [
+          {
+            "node": "Normalize + guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize + guard": {
+      "main": [
+        [
+          {
+            "node": "Claimed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claimed?": {
+      "main": [
+        [
+          {
+            "node": "Advance to Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route to Needs Attention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
