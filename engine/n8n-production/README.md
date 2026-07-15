@@ -37,16 +37,20 @@ WFP1 fired end-to-end: **Webhook ✓ → Registry lookup ✓ → Claim-guard ✓
 The ONLY failure was `Your credit balance is too low to access the Anthropic API` on the
 `Anthropic - Weboptimizer` credential. Plumbing is correct; **top up Anthropic credits** to run.
 
+## Self-chaining (built) — no Airtable automation needed
+WFP0–WFP6 each end with a **"Trigger next stage"** HTTP node that POSTs
+`{site_id, record_id}` to the next stage's webhook right after the Advance step.
+So one POST to the intake webhook (or setting a record to Backlog + POSTing intake)
+runs the whole chain autonomously to **Editor Review**, where WFP7 stops (human gate).
+Applier: `add_self_chaining.py`. On the `Needs Attention` branch nothing chains (it halts).
+
 ## Remaining to go live
-1. **Top up Anthropic API credits** (account behind the `fQbptY6CtcIWVwYp` credential).
-2. **Activate** WFP0–WFP7 (they're inactive). Activate in order; each registers its webhook.
-3. **Airtable automation** on the Galápagos base (UI, not API): "When record Status changes",
-   route each working status to its stage webhook with `{site_id:'galapagosislands-travel-v1',
-   record_id: RECORD_ID()}`. (One automation with a Status→path switch, or one per status.)
-4. **Google-Doc export (enhancement):** add a Google Drive node writing the artifact to a Doc
-   in folder `1_Tliljbgdl0HBqBcBfrtd6CPHMdOmtaE` and store the real URL alongside the
-   `airtable://` link — needs a Google Drive credential added in n8n.
-5. Run one real record Backlog→Editor Review, review output, then open the queue.
+1. **Top up Anthropic API credits** (account behind the `fQbptY6CtcIWVwYp` credential) — the one true blocker (verified by the controlled test).
+2. **Activate** WFP0–WFP7 (currently inactive). Activate each; activation registers its webhook.
+3. **Kick off** a record: POST `{site_id:'galapagosislands-travel-v1', record_id:'recXXXX'}` to
+   `…/webhook/galapagos-production/stage/intake` (record must be at `Backlog`). It self-chains to Editor Review.
+4. **Google-Doc export (enhancement):** add a Google Drive credential in n8n, then a Drive node on
+   the output stages writes a real Doc into folder `1_Tliljbgdl0HBqBcBfrtd6CPHMdOmtaE` alongside the `airtable://` link.
 
 ## Loop-safety (unchanged contract)
 One `Status` field; each stage has input filter + output guard + error route to
