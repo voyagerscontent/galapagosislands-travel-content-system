@@ -14,25 +14,39 @@ produces NEW pages on the production status model:
 - Row: `galapagosislands-travel-v1` → Base `appNkUL50eF601ejN`, Table `tblUgxSGGfeJIL5GD`,
   Drive folder `1_Tliljbgdl0HBqBcBfrtd6CPHMdOmtaE`, intake path `galapagos-production/stage/intake`.
 
-## Built
-| Workflow | n8n id | Active | Purpose |
+## Built — ALL stages (inactive, for review before activation)
+| Workflow | n8n id | Webhook path | Transition |
 |---|---|---|---|
-| WFP0 Production Intake | `i8xtkx9GBw1aRdkP` | **inactive** | webhook → registry lookup → claim-guard (Status=Backlog + record match) → advance Backlog→Scoring, else Needs Attention |
+| WFP0 Production Intake | `i8xtkx9GBw1aRdkP` | `…/intake` | Backlog → Scoring |
+| WFP1 Scoring | `zJKqFEmA9FYDJYXh` | `…/scoring` | Scoring → Brief Ready |
+| WFP2 Brief Ready | `cFY7Tz5q2ih2UCvt` | `…/brief` | Brief Ready → Drafting |
+| WFP3 Drafting | `eExgOTVFIoCuJb0D` | `…/draft` | Drafting → Truth Check |
+| WFP4 Truth Check | `ZsrCHmeSCy8P4Wb2` | `…/truthcheck` | Truth Check → Humanizing \| Needs Attention |
+| WFP5 Humanizing | `yh9kMFkbPY34vmVJ` | `…/humanize` | Humanizing → Polishing |
+| WFP6 Polishing | `U0MrpTN3hv4RfNMI` | `…/polish` | Polishing → Auditor Review |
+| WFP7 Auditor Review | `na9GWyR851UHSlbP` | `…/auditor` | Auditor Review → Editor Review \| Needs Attention |
 
-WFP0 mirrors the proven WF0 pattern minus the optimization "page must already
-exist" gate. Created **inactive** for review; activate after testing.
-Intake URL (once active): `https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/intake`
-Payload: `{ "site_id": "galapagosislands-travel-v1", "record_id": "recXXneed", ... }`
+Base webhook: `https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/<path>`
+Payload: `{ "site_id": "galapagosislands-travel-v1", "record_id": "recXXXX" }`
+Each stage stores its artifact in an Airtable long-text field (`Brief/Draft/Humanized/Polished Content`)
+with `<X> Link = airtable://<X> Content`, matching the proven Weboptimizer pattern.
+Editor Review → Ready to Publish → Published are human/publish steps (not LLM stages).
 
-## Remaining (each = the WF3 pattern: filter+guard → Anthropic → validate → advance | Needs Attention)
-- WFP1 Scoring, WFP2 Brief Ready, WFP3 Drafting, WFP4 Truth Check, WFP5 Humanizing,
-  WFP6 Polishing, WFP7 Auditor Review → then human Editor Review → Ready to Publish → Published.
-- **Blocker for output stages:** where drafts land. Either (a) add a Google Drive
-  OAuth credential in n8n (write Google Docs), or (b) store drafts in an Airtable
-  long-text field (no Drive dependency). Decide before building WFP3 Drafting.
-- **Trigger:** Airtable automation on the Galápagos base → "When Status is one of
-  [the working stages] → POST to the stage webhook" with `{site_id, record_id}`.
-  (Airtable automations are created in the Airtable UI, not the API.)
+## Verified (2026-07-15 controlled test on a throwaway record)
+WFP1 fired end-to-end: **Webhook ✓ → Registry lookup ✓ → Claim-guard ✓** → Anthropic ✗.
+The ONLY failure was `Your credit balance is too low to access the Anthropic API` on the
+`Anthropic - Weboptimizer` credential. Plumbing is correct; **top up Anthropic credits** to run.
+
+## Remaining to go live
+1. **Top up Anthropic API credits** (account behind the `fQbptY6CtcIWVwYp` credential).
+2. **Activate** WFP0–WFP7 (they're inactive). Activate in order; each registers its webhook.
+3. **Airtable automation** on the Galápagos base (UI, not API): "When record Status changes",
+   route each working status to its stage webhook with `{site_id:'galapagosislands-travel-v1',
+   record_id: RECORD_ID()}`. (One automation with a Status→path switch, or one per status.)
+4. **Google-Doc export (enhancement):** add a Google Drive node writing the artifact to a Doc
+   in folder `1_Tliljbgdl0HBqBcBfrtd6CPHMdOmtaE` and store the real URL alongside the
+   `airtable://` link — needs a Google Drive credential added in n8n.
+5. Run one real record Backlog→Editor Review, review output, then open the queue.
 
 ## Loop-safety (unchanged contract)
 One `Status` field; each stage has input filter + output guard + error route to
