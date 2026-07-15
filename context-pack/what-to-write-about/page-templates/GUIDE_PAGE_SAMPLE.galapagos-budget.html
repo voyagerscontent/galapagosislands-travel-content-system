@@ -41,7 +41,16 @@
     "@type": "Article",
     "headline": "Galápagos Trip Cost: Daily Budget Breakdown",
     "image": "{{HERO_IMAGE_URL}}",
-    "author": { "@type": "Organization", "name": "{{BRAND}}" },
+    "author": {
+      "@type": "Person",
+      "name": "Juan Magallanes",
+      "jobTitle": "Galápagos Travel Advisor",
+      "url": "{{AUTHOR_URL}}"
+    },
+    "contributor": [
+      { "@type": "Person", "name": "Andre Robles", "affiliation": { "@type": "Organization", "name": "Voyagers Travel Company" } },
+      { "@type": "Person", "name": "Luisa Cordova", "affiliation": { "@type": "Organization", "name": "Golden Galapagos" } }
+    ],
     "publisher": {
       "@type": "Organization",
       "name": "{{BRAND}}",
@@ -91,8 +100,9 @@
   <!-- §1 H1 + byline -->
   <header class="guide__head">
     <h1>How Much Does a Galápagos Trip Cost Per Day?</h1>
-    <p class="byline">By <a href="{{AUTHOR_URL}}">{{AUTHOR_NAME}}</a> · {{BRAND_ALT}} editorial ·
-      Updated 15 Jul 2026 · <span class="reading">6-min read</span></p>
+    <p class="byline">By <a href="{{AUTHOR_URL}}">Juan Magallanes</a>, Galápagos Travel Advisor ·
+      With contributions from Andre Robles (Voyagers Travel Company) and Luisa Cordova (Golden Galápagos) ·
+      {{BRAND_ALT}} editorial · Updated 15 Jul 2026 · <span class="reading">6-min read</span></p>
   </header>
 
   <!-- §2 Answer Box / TL;DR  (primary AIO extractable block, speakable) -->

@@ -31,7 +31,7 @@ PRIMARY_CTA: "Talk to a Galápagos Specialist"   # a lead/enquiry, never "Book N
 # --- contributors (optional) ---------------------------------------------
 # Named expert voices to attribute where authorship is shown. Leave empty to
 # run brand-voice only (no named contributors). Reusable: swap per brand.
-CONTRIBUTORS: []            # e.g. ["Jane Doe (Naturalist)"] — default: none
+CONTRIBUTORS: ["Juan Magallanes (Galápagos Travel Advisor)", "Andre Robles (Voyagers Travel Company)", "Luisa Cordova (Golden Galapagos)"]
 
 # --- automation (see engine/DEPLOYMENT.md) --------------------------------
 # SECRETS LIVE IN .env (gitignored), NOT here. Values in .env override these
