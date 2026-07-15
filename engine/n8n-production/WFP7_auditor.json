@@ -1,0 +1,311 @@
+{
+  "name": "WFP7 Auditor Review - GalapagosIslands.travel",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "galapagos-production/stage/auditor",
+        "httpMethod": "POST",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Airtable Status Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        220,
+        300
+      ],
+      "webhookId": "gal-prod-auditor"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appPlU9eC5GL6ncjZ"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblOkOXzm2GZUMkYs"
+        },
+        "filterByFormula": "=AND({Site ID} = '{{ $json.body.site_id }}', {Active} = 1)",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "name": "Lookup Site (registry)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        300
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json['Table ID'] }}"
+        },
+        "filterByFormula": "=AND({Status} = 'Auditor Review', {Audit Notes} = '', RECORD_ID() = '{{ $('Airtable Status Webhook').item.json.body.record_id }}')",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "name": "Re-check and Claim (guarded)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        620,
+        300
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "claude-opus-4-8"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=CONTEXT \u2014 obey verbatim.\nBRAND: Galapagos Islands.Travel (galapagosislands.travel), an INDEPENDENT editorial guide. Never 'Galapagos Travel Center'; domain is never galapagosislands.com. Author: Juan Magallanes; contributors only from the approved pool (e.g. Andre Robles / Voyagers Travel Company, Luisa Cordova / Golden Galapagos).\nHARD TRUTHS (never violate): (HT-1) The Galapagos is great year-round; never call a time 'best/worst' without stating what species/event it is for; one species is not the whole destination. (HT-2) No island is 'better'; luxury = the yacht experience, not which islands a boat visits; every island is reachable on a 5-day-or-longer cruise; only Fernandina and west Isabela need more than 4 days; the shortest cruise is 4 days and can be luxury.\nVOICE: honest, plain-spoken, answer-first, one idea per sentence, no padding. BANNED words: #1, best, world-class, paradise, hidden gem, luxury-as-filler, unforgettable, must-see, dream vacation. No fabricated numbers \u2014 every figure must be sourced or marked [VERIFY]. One primary CTA: 'Talk to a Galapagos Specialist' (a lead, never 'Book Now'). No operator favoritism.\nOUTPUT: return ONLY the STRICT JSON object described \u2014 no prose, no code fences.\n\nTASK \u2014 Run the full auditor checklist: A Truth (sourced), B Entity rules, C Brand voice (no banned words), D Audience+one CTA, E Page-type structure + schema present and mirroring visible content, F Content fidelity (no padding, answer-first, scannable), G Conversion safety. Return STRICT JSON {\"pass\":true|false,\"notes\":\"per-part PASS/FAIL findings\"}.\n\nRECORD: {{ $json['Meta Title'] }} | brief: {{ $json['Topic / Brief'] }} | pillar: {{ $json['Pillar'] }} | page type: {{ $json['Page Type'] }}\n\nPAGE: {{ $json['Polished Content'] }}"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": 16000
+        }
+      },
+      "name": "Run Stage Agent",
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        820,
+        300
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "fQbptY6CtcIWVwYp",
+          "name": "Anthropic - Weboptimizer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $items('Re-check and Claim (guarded)')[0] ? $items('Re-check and Claim (guarded)')[0].json : {};\nconst site = $items('Lookup Site (registry)')[0] ? $items('Lookup Site (registry)')[0].json : {};\nlet raw = Array.isArray($json.content) ? $json.content.filter(b=>b.type==='text').map(b=>b.text).join('') : ($json.message && $json.message.content ? $json.message.content : ($json.text||''));\nraw=(raw||'').trim();\nif(raw.startsWith('```')){const f=raw.match(/^```(?:json)?\\s*([\\s\\S]*?)```\\s*$/);if(f)raw=f[1].trim();}\nconst _s0=raw.indexOf('{'),_e0=raw.lastIndexOf('}'); if(_s0!==-1&&_e0>_s0) raw=raw.slice(_s0,_e0+1);\nlet _o='',_in=false,_esc=false;\nfor(const c of raw){ if(_in){ if(_esc){_o+=c;_esc=false;continue;} if(c==='\\\\'){_o+=c;_esc=true;continue;} if(c==='\"'){_in=false;_o+=c;continue;} if(c==='\\n'){_o+='\\\\n';continue;} if(c==='\\r'){_o+='\\\\r';continue;} if(c==='\\t'){_o+='\\\\t';continue;} _o+=c;continue;} if(c==='\"')_in=true; _o+=c; }\nraw=_o;\nconst rid=rec.id||'', bid=site['Base ID']||'', tid=site['Table ID']||'';\nlet out={recordId:rid,baseId:bid,tableId:tid,ok:false,error:'',notes:''};\ntry{ const p=JSON.parse(raw); out.notes=String(p.notes||''); const pass=(p.pass===true||p.pass==='true'); out.ok=pass; if(!pass)out.error='QA FAIL: '+out.notes;}catch(e){out.error='Unparseable LLM output: '+e.message;}\nreturn [{json:out}];"
+      },
+      "name": "Validate Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.ok }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Output OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.baseId }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.tableId }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.recordId }}",
+            "Status": "Editor Review",
+            "Attempt Count": "={{ 0 }}",
+            "Audit Notes": "={{ $json.notes }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Advance to Editor Review",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        220
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.baseId }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.tableId }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.recordId }}",
+            "Status": "Needs Attention",
+            "Last Error": "={{ $json.error }}",
+            "Return To": "Auditor Review"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "name": "Route to Needs Attention",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        400
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Airtable Status Webhook": {
+      "main": [
+        [
+          {
+            "node": "Lookup Site (registry)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Site (registry)": {
+      "main": [
+        [
+          {
+            "node": "Re-check and Claim (guarded)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-check and Claim (guarded)": {
+      "main": [
+        [
+          {
+            "node": "Run Stage Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Stage Agent": {
+      "main": [
+        [
+          {
+            "node": "Validate Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Output": {
+      "main": [
+        [
+          {
+            "node": "Output OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output OK?": {
+      "main": [
+        [
+          {
+            "node": "Advance to Editor Review",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route to Needs Attention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
