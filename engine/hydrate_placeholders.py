@@ -3,6 +3,10 @@
 BRAND BLOCK, so a redeploy is a single edit. Idempotent and reversible-ish (keeps a
 .rendered copy; never overwrites the tokenized source unless --inplace).
 
+Secrets: automation values (airtable_pat, n8n_api_key, etc.) are read from a
+gitignored `.env` file at the repo root, which OVERRIDES SITE_CONFIG. This keeps
+tokens out of git while SITE_CONFIG stays committable. See `.env.example`.
+
 Usage:
   python engine/hydrate_placeholders.py            # writes *.rendered next to each file
   python engine/hydrate_placeholders.py --inplace  # replace tokens in-place (deploy)
@@ -18,6 +22,34 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CFG = ROOT / "config" / "SITE_CONFIG.md"
+ENV = ROOT / ".env"
+
+# .env KEY -> SITE_CONFIG automation key. Secrets live in .env (gitignored) and
+# OVERRIDE anything in SITE_CONFIG, so no token is ever committed.
+ENV_TO_CFG = {
+    "AIRTABLE_PAT": "airtable_pat",
+    "AIRTABLE_BASE": "airtable_base",
+    "AIRTABLE_TABLE": "airtable_table",
+    "N8N_BASE_URL": "n8n_base_url",
+    "N8N_INTAKE_WEBHOOK": "n8n_intake_webhook",
+    "N8N_API_KEY": "n8n_api_key",
+}
+
+
+def parse_env():
+    """Read .env (if present) into a dict of SITE_CONFIG automation keys."""
+    vals = {}
+    if not ENV.exists():
+        return vals
+    for line in ENV.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, _, v = line.partition("=")
+        k, v = k.strip(), v.strip().strip('"').strip("'")
+        if k in ENV_TO_CFG and v:
+            vals[ENV_TO_CFG[k]] = v
+    return vals
 
 
 def parse_brand_block():
@@ -33,6 +65,8 @@ def parse_brand_block():
     if cm and cm.group(1).strip():
         contribs = ", ".join(s.strip().strip('"') for s in cm.group(1).split(",") if s.strip())
     vals["CONTRIBUTORS"] = contribs or "brand editorial voice (no named contributor)"
+    # .env secrets override SITE_CONFIG (secrets never committed)
+    vals.update(parse_env())
     return vals
 
 

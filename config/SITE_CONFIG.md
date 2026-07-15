@@ -33,14 +33,16 @@ PRIMARY_CTA: "Talk to a Galápagos Specialist"   # a lead/enquiry, never "Book N
 # run brand-voice only (no named contributors). Reusable: swap per brand.
 CONTRIBUTORS: []            # e.g. ["Jane Doe (Naturalist)"] — default: none
 
-# --- automation (hard-coded for one-trigger redeploy; see engine/DEPLOYMENT.md)
+# --- automation (see engine/DEPLOYMENT.md) --------------------------------
+# SECRETS LIVE IN .env (gitignored), NOT here. Values in .env override these
+# and are never committed. Base/table below are non-secret IDs kept as defaults.
 site_id: galapagosislands-travel-v1
 airtable_base: "appNkUL50eF601ejN"   # Content Production OS — GalapagosIslands.travel
 airtable_table: "tblUgxSGGfeJIL5GD"  # Pages Master
-airtable_pat: ""            # TODO: paste your Airtable PAT (airtable.com/create/tokens → scope: data.records:read + data.records:write + schema.bases:read on this base)
-n8n_base_url: ""            # TODO: e.g. https://your-n8n.example.com
-n8n_intake_webhook: ""      # TODO: full webhook URL that creates a Backlog record
-n8n_api_key: ""             # TODO: n8n API key
+airtable_pat: ""            # → set AIRTABLE_PAT in .env (airtable.com/create/tokens: data.records:read+write, schema.bases:read on this base)
+n8n_base_url: ""            # → set N8N_BASE_URL in .env (blank = Claude-Code-only mode, no n8n)
+n8n_intake_webhook: ""      # → set N8N_INTAKE_WEBHOOK in .env
+n8n_api_key: ""             # → set N8N_API_KEY in .env
 n8n_poll_minutes: 5
 
 # --- pipeline contract (DO NOT CHANGE — shared across all sites) ----------

@@ -4,10 +4,11 @@ This is the single file any LLM (Perplexity, Claude Code, etc.) reads to run the
 system. All connections are hard-coded in `config/SITE_CONFIG.md` (BRAND BLOCK →
 `automation:`). To redeploy for another brand, edit that block only.
 
-> **Secrets:** the `airtable_pat`, `n8n_api_key`, `airtable_base`, `airtable_table`,
-> `n8n_base_url`, and `n8n_intake_webhook` values live in the SITE_CONFIG BRAND BLOCK.
-> Fill them once; every consumer below reads them from there. (If this repo is public,
-> use a private repo or repo secrets — baked tokens are visible to anyone with access.)
+> **Secrets:** `airtable_pat`, `n8n_api_key`, `n8n_base_url`, and `n8n_intake_webhook`
+> live in a gitignored **`.env`** at the repo root (copy from `.env.example`). Values in
+> `.env` OVERRIDE SITE_CONFIG, so tokens are never committed. The non-secret
+> `airtable_base`/`airtable_table` IDs stay in SITE_CONFIG as defaults. `hydrate_placeholders.py`
+> merges `.env` over SITE_CONFIG at deploy time; every consumer reads the merged values.
 
 ## Connections (read from SITE_CONFIG → automation)
 | Purpose | SITE_CONFIG key | Used by |
