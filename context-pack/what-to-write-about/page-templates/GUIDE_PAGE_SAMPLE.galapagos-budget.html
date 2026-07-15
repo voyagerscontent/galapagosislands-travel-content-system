@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--
+  GUIDE PAGE — reference build. Page type: informational/planning guide.
+  Topic: "Daily Budget on the Galápagos". Implements GUIDE_PAGE_SPEC.md.
+  Authored layer = hard-coded knowledge; {{TOKENS}} = ACF/brand-global layer
+  (see ACF-FIELD-MAP.md). JSON-LD is generated from the SAME copy shown on-page.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- §Meta (GUIDE_PAGE_SPEC §"Meta & head") -->
+  <title>Galápagos Trip Cost: Daily Budget Breakdown (2026)</title>
+  <meta name="description" content="A Galápagos trip runs about $250–$400/day land-based and $500–$2,500+/day by cruise, plus a $200 park fee. Here's the real per-day budget, line by line." />
+  <link rel="canonical" href="{{CANONICAL_URL}}" />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Galápagos Trip Cost: Daily Budget Breakdown (2026)" />
+  <meta property="og:description" content="The real per-day cost of a Galápagos trip — land-based vs cruise, fixed fees, and honest ways to spend less." />
+  <meta property="og:image" content="{{HERO_IMAGE_URL}}" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Schema 1 · BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{SITE_URL}}" },
+      { "@type": "ListItem", "position": 2, "name": "Planning", "item": "{{SITE_URL}}planning/" },
+      { "@type": "ListItem", "position": 3, "name": "Galápagos Trip Cost", "item": "{{CANONICAL_URL}}" }
+    ]
+  }
+  </script>
+
+  <!-- Schema 2 · Article (+ speakable) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Galápagos Trip Cost: Daily Budget Breakdown",
+    "image": "{{HERO_IMAGE_URL}}",
+    "author": { "@type": "Organization", "name": "{{BRAND}}" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "{{BRAND}}",
+      "logo": { "@type": "ImageObject", "url": "{{LOGO_URL}}" }
+    },
+    "datePublished": "2026-07-15",
+    "dateModified": "2026-07-15",
+    "mainEntityOfPage": "{{CANONICAL_URL}}",
+    "speakable": { "@type": "SpeakableSpecification", "cssSelector": [".answer-box", ".faq"] }
+  }
+  </script>
+
+  <!-- Schema 3 · FAQPage (answers byte-match the visible FAQ below) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "How much does a Galápagos trip cost per day?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Budget on about $250–$400 per person per day land-based, $500–$900 for a mid-range cruise, and $1,000–$2,500+ for a high-end yacht. Fixed fees and the island flight add roughly $90–$100 per day across a week." } },
+      { "@type": "Question", "name": "Is the Galápagos National Park fee really $200?",
+        "acceptedAnswer": { "@type": "Answer", "text": "For most foreign adults, yes — the fee rose to $200 in 2024. It's paid in cash on arrival; children and some nationalities pay less. Confirm the current rate before you travel." } },
+      { "@type": "Question", "name": "Can I do the Galápagos on a budget?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. A land-based trip using town hotels and day tours can run around $250–$300 per person per day, before international flights, if you keep meals simple and book day boats locally." } },
+      { "@type": "Question", "name": "Does a more expensive cruise visit better islands?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Almost all boats visit the same headline islands; only Fernandina and western Isabela require an itinerary of 5 days or more, regardless of price. A higher price buys a better on-board experience, not better islands." } },
+      { "@type": "Question", "name": "What's not included in a Galápagos cruise fare?",
+        "acceptedAnswer": { "@type": "Answer", "text": "International flights to Ecuador, the $200 park fee and ~$20 transit card, travel insurance, tips (often $10–$25/day), some alcohol and wetsuit rental, and a night or two in Quito or Guayaquil around your island flight." } },
+      { "@type": "Question", "name": "What is the cheapest month to visit the Galápagos?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The islands are a year-round destination, so quality doesn't track a single month. Prices firm up over the mid-June–August and mid-December–early-January peaks, so shoulder weeks on either side often book cheaper." } }
+    ]
+  }
+  </script>
+</head>
+
+<body class="is-production guide">
+
+<!-- §0 Breadcrumb -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="{{SITE_URL}}">Home</a> ›
+  <a href="{{SITE_URL}}planning/">Planning</a> ›
+  <span aria-current="page">Galápagos Trip Cost</span>
+</nav>
+
+<main class="guide__wrap">
+
+  <!-- §1 H1 + byline -->
+  <header class="guide__head">
+    <h1>How Much Does a Galápagos Trip Cost Per Day?</h1>
+    <p class="byline">By <a href="{{AUTHOR_URL}}">{{AUTHOR_NAME}}</a> · {{BRAND_ALT}} editorial ·
+      Updated 15 Jul 2026 · <span class="reading">6-min read</span></p>
+  </header>
+
+  <!-- §2 Answer Box / TL;DR  (primary AIO extractable block, speakable) -->
+  <section class="answer-box" aria-label="Quick answer">
+    <h2 class="answer-box__h">The short answer</h2>
+    <p>Plan on roughly <strong>$250–$400 per person per day</strong> for a budget, land-based trip;
+      <strong>$500–$900/day</strong> for a mid-range cruise; and <strong>$1,000–$2,500+/day</strong>
+      for a high-end yacht. On top of that, everyone pays a <strong>$200 park fee</strong>, a
+      <strong>~$20 transit card</strong>, and <strong>~$400–$500</strong> for the mainland flight.</p>
+    <ul class="stat-row">
+      <li><b>$200</b><span>park fee / adult</span></li>
+      <li><b>~$20</b><span>transit card</span></li>
+      <li><b>$400–500</b><span>island flight</span></li>
+      <li><b>4 days</b><span>shortest cruise</span></li>
+      <li><b>Year-round</b><span>great any month</span></li>
+    </ul>
+  </section>
+
+  <!-- §3 Sticky on-page anchor sub-nav -->
+  <nav class="subnav" aria-label="On this page">
+    <a href="#fixed">Fixed costs</a>
+    <a href="#fork">Cruise vs land</a>
+    <a href="#luxury">What luxury costs</a>
+    <a href="#table">Sample week</a>
+    <a href="#save">Spend less</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+
+  <!-- §4 Body sections -->
+  <section id="fixed">
+    <h2>The fixed costs everyone pays</h2>
+    <p>Some line items are the same whether you backpack or book a private yacht:</p>
+    <ul>
+      <li><strong>Galápagos National Park entrance fee — $200</strong> per adult for most foreign
+        visitors, cash on arrival. Children and some nationalities pay less. Set by the Galápagos
+        National Park Directorate (DPNG). <em>[source: DPNG]</em></li>
+      <li><strong>Ingala Transit Control Card — ~$20</strong>, bought at the mainland airport before you fly.</li>
+      <li><strong>Round-trip mainland flight — ~$400–$500</strong> from Quito or Guayaquil; about 3 hours from Quito.</li>
+    </ul>
+    <p>Before your first island night, budget around <strong>$620–$720</strong> per person for fees and
+      the flight. Spread across a week, that's about <strong>$90–$100 per day</strong>. Figures are
+      indicative through early 2026 — <em>[VERIFY current rates]</em>.</p>
+  </section>
+
+  <section id="fork">
+    <h2>Cruise vs. land-based: the big fork</h2>
+    <p>Your biggest budget decision isn't which islands you see — it's how you sleep.</p>
+    <p><strong>Cruise (live-aboard yacht):</strong> you sail overnight and wake at a new site, which is
+      how you reach the most remote landings. Daily rates run about $500–$900 for tourist- and
+      first-class boats and $1,000–$2,500+ for the top yachts.</p>
+    <p><strong>Land-based (hotel + day tours):</strong> you stay in the island towns — Puerto Ayora,
+      Puerto Baquerizo Moreno, or Puerto Villamil — and day-boat to nearby sites. About $250–$450/day
+      all-in for budget to mid-range travelers.</p>
+    <p class="callout">An honest trade-off, not a ranking: land-based is easier on the wallet; a cruise
+      reaches sites day boats can't, especially the western islands. Neither is "better" — they answer
+      different questions.</p>
+  </section>
+
+  <section id="luxury">
+    <h2>What "luxury" actually costs — and what it doesn't</h2>
+    <p>A common myth is that paying more buys you better islands. It doesn't. Nearly every vessel visits
+      the headline islands, and every island is reachable on a cruise of <strong>5 days or longer</strong>.
+      The only sites you'll miss on a 4-day-or-shorter program are <strong>Fernandina and the west coast
+      of Isabela</strong> — a function of itinerary length, not price.</p>
+    <p>What the premium actually buys is the yacht experience: more space per guest, better cabins and
+      food, a higher crew-to-guest ratio, top naturalist guides, and gear like kayaks. A 4-day cruise can
+      be genuinely high-end; a longer cruise can be modest. <strong>Luxury is the boat, not the map.</strong></p>
+  </section>
+
+  <!-- §5 Cost table (AIO / featured-snippet target) -->
+  <section id="table">
+    <h2>A sample week, three ways</h2>
+    <div class="table-scroll">
+      <table>
+        <caption>Estimated cost per person, excluding international flights to Ecuador (indicative, early 2026).</caption>
+        <thead>
+          <tr><th scope="col">Travel style</th><th scope="col">Length</th><th scope="col">Island flight + fees</th><th scope="col">Accommodation / cruise</th><th scope="col">Total</th><th scope="col">Per day</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Budget, land-based</td><td>6 days</td><td>~$700</td><td>~$900 (hotels, tours, food)</td><td><strong>~$1,600</strong></td><td>~$265</td></tr>
+          <tr><td>Mid-range cruise</td><td>5 days</td><td>~$700</td><td>~$2,800 (first-class, 4 nts)</td><td><strong>~$3,500</strong></td><td>~$700</td></tr>
+          <tr><td>High-end yacht</td><td>8 days</td><td>~$700</td><td>~$10,500+ (luxury, 7 nts)</td><td><strong>~$11,200+</strong></td><td>~$1,400</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Timing and your budget</h3>
+    <p>You can travel any month and have a great trip; the wildlife calendar shifts, not the quality.
+      Prices firm up around the mid-June–August and mid-December–early-January holiday peaks, so
+      shoulder weeks on either side often book cheaper. Choose your month for what you want to see —
+      not for a single "best" time.</p>
+  </section>
+
+  <!-- §6 Key takeaways -->
+  <aside id="save" class="takeaways" aria-label="Key takeaways">
+    <h2>Five honest ways to spend less</h2>
+    <ul>
+      <li>Fly from Guayaquil rather than Quito when you can — closer, sometimes cheaper.</li>
+      <li>Pair a shorter cruise with a couple of land-based days instead of one long sail.</li>
+      <li>Travel shoulder weeks; book last-minute cruise space if your dates are flexible.</li>
+      <li>Base on one island and use day boats rather than changing hotels.</li>
+      <li>Bring cash — the park fee is cash-only and island ATMs can run dry.</li>
+    </ul>
+  </aside>
+
+  <!-- §7 FAQ — real accordions; text mirrors FAQPage schema exactly -->
+  <section id="faq" class="faq">
+    <h2>Frequently asked questions</h2>
+    <details><summary><h3>How much does a Galápagos trip cost per day?</h3></summary>
+      <p>Budget on about $250–$400 per person per day land-based, $500–$900 for a mid-range cruise, and
+        $1,000–$2,500+ for a high-end yacht. Fixed fees and the island flight add roughly $90–$100 per
+        day across a week.</p></details>
+    <details><summary><h3>Is the Galápagos National Park fee really $200?</h3></summary>
+      <p>For most foreign adults, yes — the fee rose to $200 in 2024. It's paid in cash on arrival;
+        children and some nationalities pay less. Confirm the current rate before you travel.</p></details>
+    <details><summary><h3>Can I do the Galápagos on a budget?</h3></summary>
+      <p>Yes. A land-based trip using town hotels and day tours can run around $250–$300 per person per
+        day, before international flights, if you keep meals simple and book day boats locally.</p></details>
+    <details><summary><h3>Does a more expensive cruise visit better islands?</h3></summary>
+      <p>No. Almost all boats visit the same headline islands; only Fernandina and western Isabela require
+        an itinerary of 5 days or more, regardless of price. A higher price buys a better on-board
+        experience, not better islands.</p></details>
+    <details><summary><h3>What's not included in a Galápagos cruise fare?</h3></summary>
+      <p>International flights to Ecuador, the $200 park fee and ~$20 transit card, travel insurance, tips
+        (often $10–$25/day), some alcohol and wetsuit rental, and a night or two in Quito or Guayaquil
+        around your island flight.</p></details>
+    <details><summary><h3>What is the cheapest month to visit the Galápagos?</h3></summary>
+      <p>The islands are a year-round destination, so quality doesn't track a single month. Prices firm up
+        over the mid-June–August and mid-December–early-January peaks, so shoulder weeks on either side
+        often book cheaper.</p></details>
+  </section>
+
+  <!-- §8 Related guides (internal links) -->
+  <nav class="related" aria-label="Related guides">
+    <h2>Keep planning</h2>
+    <ul>
+      <li><a href="{{SITE_URL}}planning/best-time-to-visit-galapagos/">Best time to visit the Galápagos</a></li>
+      <li><a href="{{SITE_URL}}planning/galapagos-packing-list/">What to pack</a></li>
+      <li><a href="{{SITE_URL}}planning/cruise-vs-land-based-galapagos/">Cruise vs land-based</a></li>
+      <li><a href="{{SITE_URL}}galapagos-cruises/">Compare Galápagos cruises (hub)</a></li>
+    </ul>
+  </nav>
+
+  <!-- §9 Soft conversion band -->
+  <section class="cta-band">
+    <p>The right budget depends on your dates, the wildlife you most want to see, and whether you sail or
+      stay ashore.</p>
+    <a class="cta cta--primary" href="{{PRIMARY_CTA_URL}}">Talk to a Galápagos Specialist</a>
+    <p class="cta__reassure">Independent, honest advice — whether or not you book with {{BRAND}}.</p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>{{FOOTER_POSITIONING}} · {{BRAND}} — {{DOMAIN}}. Cost figures indicative through early 2026;
+     verify current park fee, transit card, and airfares before travel. Sources: Galápagos National
+     Park Directorate (DPNG); Ingala; published mainland–island airfares.</p>
+</footer>
+
+</body>
+</html>
