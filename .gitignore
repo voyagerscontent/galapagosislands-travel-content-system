@@ -8,3 +8,7 @@
 .DS_Store
 *.pyc
 __pycache__/
+
+# local backups and Windows metadata
+*.xlsx.bak
+*:Zone.Identifier
