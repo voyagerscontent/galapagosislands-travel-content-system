@@ -1,164 +1,213 @@
 #!/usr/bin/env python3
-"""Enrich WFP2/3/4/6/7 stage prompts with the REAL source-of-truth facts + content
-rules + a smarter fact policy, so the pipeline produces grounded, cited content
-instead of [VERIFY] shells. Reads the actual repo fact/rule files (single source of
-truth), rebuilds the 'Run Stage Agent' prompt, PUTs to the existing workflow, and
-rewrites the repo JSON. Re-run any time the fact/rule files change.
+"""Build each stage's prompt from the REAL context-pack files and PUT it to n8n.
+
+Routing follows AGENT_MANDATORY_BRIEFING's sub-step table (A-F) — that table is the
+spec, not this script. Two principles, both learned the hard way:
+
+1. GUARDRAILS AND INFO MUST RELATE TO CONTEXT. Never bulk-concatenate the pack into
+   every stage (~3,500 lines / 150k+ chars). Each stage gets the shared LAW plus only
+   the assets its sub-step needs; page-type assets resolve from the record's Page Type.
+   Irrelevant rules produce padding and shoehorned paragraphs.
+
+2. EVERY STAGE STATES ITS POSITION IN THE CHAIN. The stages share one head, so a stage
+   that doesn't know where it sits judges artifacts by the wrong standard. WFP4 once
+   failed a draft for carrying the very markers a draft is required to carry.
+
+There is NO hand-written summary of the pack in this file. Earlier versions carried a
+6-line 'LAW' paraphrase that silently replaced BRAND_STYLE_GUIDE, ENTITY_RULES, the
+persona pack and the whole CTA system — the pipeline ran on the paraphrase and produced
+generic CTAs and no UX. If a rule matters, it lives in a context-pack file and is loaded.
+
+Re-run any time a context-pack file changes.
 """
 import json, urllib.request, os
+
 N8N = "https://voyagerscontent.app.n8n.cloud"
 PUB = os.environ["N8N_PUB"]
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+CP = "context-pack/"
+
 
 def readf(rel):
     t = open(os.path.join(ROOT, rel), encoding="utf-8").read()
-    return t.replace("{{DOMAIN}}", "galapagosislands.travel").replace("{{BRAND}}", "Galapagos Islands.Travel").replace("{{BRAND_ALT}}", "Galapagos Islands.Travel")
+    return (t.replace("{{DOMAIN}}", "galapagosislands.travel")
+             .replace("{{BRAND_ALT}}", "galapagosislands.travel")
+             .replace("{{BRAND}}", "Galapagos Islands.Travel")
+             .replace("{{PRIMARY_CTA}}", "Talk to a Galápagos Specialist")
+             .replace("{{CONTRIBUTORS}}",
+                      "Juan Magallanes (Galápagos Travel Advisor), Andre Robles (Voyagers Travel Company), "
+                      "Luisa Cordova (Golden Galapagos)"))
 
-FACTS = ("=== MASTER FACTS (pre-verified — state confidently, cite the source) ===\n"
-         + readf("context-pack/MASTER_FACTS_FILE.md") + "\n\n"
-         + readf("context-pack/what-to-write-about/source-of-truth/GALAPAGOS_FACTS_ADDENDUM.md"))
-RULES = ("=== CONTENT RULES / PAGE TEMPLATE (obey structure, schema, AIO, UX) ===\n"
-         + readf("context-pack/what-to-write-about/page-templates/GUIDE_PAGE_SPEC.md"))
 
-LAW = (
-"BRAND: Galapagos Islands.Travel (galapagosislands.travel), an INDEPENDENT editorial guide. "
-"Never 'Galapagos Travel Center'; never galapagosislands.com. Author: Juan Magallanes; contributors only "
-"from the approved pool (Andre Robles/Voyagers Travel Company, Luisa Cordova/Golden Galapagos). "
-"VOICE: honest, plain-spoken, answer-first, one idea per sentence, no padding. BANNED: #1, best, world-class, "
-"paradise, hidden gem, luxury-as-filler, unforgettable, must-see, dream vacation. One CTA: 'Talk to a Galapagos "
-"Specialist' (a lead, never 'Book Now'). No operator favoritism. Accent 'Galápagos' in body copy.\n")
+def block(title, *rels):
+    return "=== %s ===\n" % title + "\n\n".join(readf(r) for r in rels)
 
-POLICY = (
-"=== FACT POLICY (READ CAREFULLY — this is why past drafts failed) ===\n"
-"1. The FACTS block above is pre-verified source-of-truth. State anything in it CONFIDENTLY.\n"
-"2. For well-established facts NOT in the block but widely documented by an authoritative body "
-"(Darwin Foundation, IUCN Red List, Galápagos Conservancy, Galápagos National Park), STATE THEM PLAINLY and "
-"attribute to that body. Do NOT mark these [VERIFY].\n"
-"3. Use [VERIFY] ONLY for a specific number you genuinely cannot ground — and prefer a sourced range over [VERIFY].\n"
-"4. NEVER invent a precise statistic. But a page that is mostly [VERIFY] is a FAILURE — it must be full of real, "
-"grounded facts with only a rare [VERIFY]. Honour the HARD TRUTHS (HT-1 timing, HT-2 islands/luxury) always.\n"
-"5. If the title promises 'N facts', deliver N substantive, distinct facts — not N placeholders.\n")
 
-# The tags exist so the truth-checker can verify grounding. They are a DRAFT-STAGE
-# artifact and must never reach a reader. Past pages shipped 100+ '[GCT][CDF]' in body
-# copy and inside JSON-LD; this block is what stops that.
-GROUNDING = (
-"=== GROUNDING MARKERS (internal — never published) ===\n"
-"[CDF]=Darwin Foundation, [GC]=Galápagos Conservancy, [GCT]=Conservation Trust, [DPNG]=National Park.\n"
-"These are INTERNAL provenance markers for the truth-checker. They are NOT reader-facing citations and NOT a "
-"house style. Those four are the ONLY valid markers — never invent others ([HT-2], [MASTER FACTS] etc. are labels "
-"for YOUR reference, never text).\n"
-"They are REQUIRED at draft stage and FORBIDDEN at publication. Which one applies depends on the stage you are "
-"running — your TASK below states it. Never judge an artifact by the other stage's standard.\n"
-"- DRAFT / TRUTH CHECK: markers SHOULD be present. The draft is an internal artifact — no reader sees it. Their "
-"presence here is correct and is NOT a defect.\n"
-"- POLISH onward: a reader-facing page containing a single marker is a defect.\n"
-"- HUMANIZE / POLISH: STRIP every marker. Convert to reader-facing attribution: name the body in prose where the "
-"fact is notable, surprising, or contested ('the Charles Darwin Foundation records about 350'), and close the page "
-"with a short 'Sources' line naming the bodies used. Do NOT attribute every sentence — that reads like a footnoted "
-"term paper, not a travel guide.\n"
-"- [VERIFY] is likewise a working marker: resolve it or cut the claim before polish. It must never be published.\n")
+# ── shared head: the law every stage obeys (~250 lines) ───────────────────────
+LAW = block("MANDATORY BRIEFING — read first, every run", CP + "AGENT_MANDATORY_BRIEFING.md")
+ENTITY = block("ENTITY RULES", CP + "guardrails/ENTITY_RULES.md")
+VOICE = block("BRAND VOICE — no deviation", CP + "brand-voice/BRAND_STYLE_GUIDE.galapagosislands-travel.yaml")
+FIDELITY = block("CONTENT FIDELITY", CP + "guardrails/CONTENT_FIDELITY.md")
+HYGIENE = block("OUTPUT HYGIENE — the rules are not the content", CP + "guardrails/OUTPUT_HYGIENE.md")
+HARD = block("HARD TRUTHS (constraints on every claim)", CP + "guardrails/GUARDIAN_OF_TRUTH.md")
 
-# LAW / HARD TRUTHS are constraints on what may be claimed. Past pages recited them as
-# body copy ('no operator favoritism', 'Luxury is the boat, not the map'), and shoehorned
-# stock HT-1/HT-2 paragraphs into pages with no bearing on timing or luxury.
-HYGIENE = (
-"=== OUTPUT HYGIENE (the rules are not the content) ===\n"
-"Everything above — the LAW, the HARD TRUTHS, the CONTENT RULES, this policy — tells you what you MAY and MAY NOT "
-"write. None of it is material to write ABOUT. Obey it silently.\n"
-"1. NEVER restate a rule as a sentence. Banned verbatim-style leakage: 'an honest trade-off, not a ranking', "
-"'with no operator favoritism', 'an independent editorial guide', 'Luxury is the boat, not the map', 'we don't "
-"play favorites'. If a sentence's real subject is your own editorial stance, cut it.\n"
-"2. HT-1 (timing) and HT-2 (islands/luxury) are PROHIBITIONS, not paragraphs. You honour HT-1 by never calling a "
-"month 'best' — not by announcing 'the Galápagos is a year-round destination'. You honour HT-2 by never implying "
-"an island makes a boat luxurious — not by declaring 'no island is better than another'. Write about timing or "
-"luxury ONLY when the page's topic is timing or luxury. A land-iguana facts page needs neither.\n"
-"3. No meta-commentary about the page, the brand's independence, or your process. Readers came for the answer.\n"
-"4. No internal markers in reader-facing output — see GROUNDING MARKERS above.\n")
+HEAD = "\n\n".join([LAW, ENTITY, VOICE, FIDELITY, HYGIENE, HARD]) + "\n"
 
-def head(*blocks):  # assemble the shared context prefix
-    return ("=" + LAW + "\n" + FACTS + "\n\n" + RULES + "\n\n" + POLICY + "\n"
-            + GROUNDING + "\n" + HYGIENE + "\n")
+# ── per-sub-step assets (loaded only where the briefing says they belong) ─────
+FACTS = block("FACTS — pre-verified source of truth (sub-step C)",
+              CP + "MASTER_FACTS_FILE.md",
+              CP + "what-to-write-about/source-of-truth/GALAPAGOS_FACTS_ADDENDUM.md")
+AUDIENCE = block("AUDIENCE & CONVERSION (sub-step A)",
+                 CP + "who-to-write-for/PERSONA_PACK.galapagosislands-travel.yaml")
+PROCEDURE = block("GENERATION PROCEDURE — run in order, do not skip",
+                  CP + "CONTENT_GENERATION_PROMPT.md")
+REGISTRY = block("PAGE-TYPE REGISTRY", CP + "what-to-write-about/page-templates/PAGE_TYPES.md")
+AUDITOR = block("AUDITOR CHECKLIST — your checklist, run every part",
+                CP + "guardrails/AUDITOR_PROMPT.md")
+CONVERSION = block("CONVERSION EXPERT", CP + "guardrails/CONVERSION_EXPERT.md")
 
-REC = "RECORD: {{ $json['Meta Title'] }} | brief: {{ $json['Topic / Brief'] }} | pillar: {{ $json['Pillar'] }} | page type: {{ $json['Page Type'] }}"
+# page-type blueprint (sub-step B) — resolved per record at runtime, see PAGETYPE_SWITCH
+SPEC_GUIDE = block("PAGE-TYPE BLUEPRINT — guide",
+                   CP + "what-to-write-about/page-templates/GUIDE_PAGE_SPEC.md")
+SPEC_HUB = block("PAGE-TYPE BLUEPRINT — hub",
+                 CP + "what-to-write-about/page-templates/TEMPLATE-SPEC.md")
+ITIN_RULE = block("ITINERARY RATING RULE (context-scoped)",
+                  CP + "guardrails/ITINERARY_RATING_RULE.md")
 
+# Guide pages carry NO Review/AggregateRating (PAGE_TYPES registry); hub/vessel/hotel may,
+# but only with genuine verifiable reviews. Stated here so the writing stages can't drift.
+PAGETYPE_NOTE = (
+    "=== PAGE-TYPE SELECTION ===\n"
+    "This record's Page Type is given in RECORD below. Build to THAT type's blueprint.\n"
+    "- Guide / FAQ / wildlife / island → the 'guide' blueprint. Schema: Article + FAQPage +\n"
+    "  BreadcrumbList + speakable. NO Review/AggregateRating — this is editorial content with\n"
+    "  no reviews to cite, and fabricated rating schema risks a Google manual action.\n"
+    "- Hub / Pillar → the 'hub' blueprint. Review/AggregateRating allowed ONLY with genuine,\n"
+    "  verifiable reviews.\n"
+    "If both blueprints are loaded, use the one matching Page Type and ignore the other.\n")
+
+REC = ("RECORD: {{ $json['Meta Title'] }} | brief: {{ $json['Topic / Brief'] }} | "
+       "pillar: {{ $json['Pillar'] }} | PAGE TYPE: {{ $json['Page Type'] }} | "
+       "primary keyword: {{ $json['Primary Keyword'] }}")
+
+HUMAN = ("HUMAN ENRICHMENT (verbatim, never paraphrase — sub-step D2; empty = skip):\n"
+         "Contributor: {{ $json['Contributor'] }}\n"
+         "Human Paragraphs: {{ $json['Human Paragraphs'] }}\n"
+         "Human Quotes: {{ $json['Human Quotes'] }}\n"
+         "Anecdotes: {{ $json['Anecdotes'] }}")
+
+# ── stage table: (workflow id, head-extras, stage framing + task, body refs) ──
 STAGES = {
- "WFP2_brief.json": ("cFY7Tz5q2ih2UCvt",
-   "TASK — Produce the content brief. Include: exact target query; persona + funnel stage; full section outline "
-   "(one H1, H2/H3 tree) per the CONTENT RULES; the 40-60 word answer-box target; 6-10 real FAQ (PAA) questions; "
-   "required schema (Article+FAQPage+BreadcrumbList); and a bullet list of the SPECIFIC grounded facts (from the "
-   "FACTS block, with tags) this page will use. Return STRICT JSON {\"brief_markdown\":\"...\"}.", ""),
- "WFP3_draft.json": ("eExgOTVFIoCuJb0D",
-   "TASK — Write the FULL page draft from the brief, using the FACTS block as the factual backbone. Deliver real, "
-   "substantive, grounded content — NOT placeholders. Include: meta title (50-60 chars — count them, this is a hard "
-   "gate), meta description (140-160), one H1, clean H2/H3, a 40-60 word answer box, at least one data table, the "
-   "full body per the CONTENT RULES, and a 6-10 question FAQ with 40-60 word answers, plus one CTA and internal "
-   "links. Apply the FACT POLICY strictly (grounded, minimal [VERIFY]). This draft is INTERNAL: tag grounded claims "
-   "with [GC]/[GCT]/[CDF]/[DPNG] inline so the truth-checker can verify them — a later stage strips them. Obey "
-   "OUTPUT HYGIENE: never recite a rule as a sentence. Return STRICT JSON {\"draft_markdown\":\"...\"}.",
-   "BRIEF: {{ $json['Brief Content'] }}"),
- "WFP4_truthcheck.json": ("ZsrCHmeSCy8P4Wb2",
-   "STAGE — You are checking an INTERNAL DRAFT, four stages before publication. Grounding markers "
-   "([GC]/[GCT]/[CDF]/[DPNG]) SHOULD be present here: that is the draft doing its job, and stripping them is the "
-   "POLISH stage's task, not yours. NEVER fail a draft for containing markers, and never remark that polish 'was not "
-   "run' — it runs after you. Judge FACTS ONLY.\n"
-   "TASK — Truth-check the draft AGAINST the FACTS block and the FACT POLICY. Confirm: grounded claims carry a "
-   "marker; any claim absent from FACTS is either attributed to an authoritative body or marked [VERIFY]; no invented "
-   "numbers; HARD TRUTHS honoured as constraints; entity/brand rules met. FAIL ONLY for: a claim that contradicts "
-   "FACTS, an invented/ungrounded statistic, a HARD TRUTH violation, or a page that is mostly [VERIFY] shells. "
-   "A derived estimate is acceptable if framed as one ('roughly', '~') and consistent with FACTS — note it, don't "
-   "fail it. Return STRICT JSON {\"pass\":true|false,\"notes\":\"per-claim findings\"}.",
+ "WFP2_brief.json": ("cFY7Tz5q2ih2UCvt", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, ITIN_RULE],
+   "STAGE — Brief Ready. You run sub-steps A (audience & conversion mapping), B (page-type "
+   "blueprint) and C (facts grounding) per the MANDATORY BRIEFING.\n"
+   "TASK — Produce the content brief. Lock and state: primary/secondary persona; funnel stage; "
+   "primary CTA verbatim from the persona pack's cta_system; objections_to_preempt (ids from the "
+   "objection library). Then the section outline (one H1, H2/H3 tree) in the blueprint's canonical "
+   "section order for THIS Page Type; the 40-60 word answer-box target; 6-10 real PAA questions; "
+   "the required schema profile for this page type; and a bullet list of the SPECIFIC grounded "
+   "facts (with their [source: …]) the page will use. Return STRICT JSON {\"brief_markdown\":\"...\"}.",
+   ""),
+
+ "WFP3_draft.json": ("eExgOTVFIoCuJb0D", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, PROCEDURE, ITIN_RULE],
+   "STAGE — Drafting. You run sub-steps C, D (brand-voice drafting) and D2 (human enrichment). "
+   "This draft is INTERNAL — no reader sees it. Tag grounded claims inline [source: <file/sheet>] "
+   "per GUARDIAN_OF_TRUTH rule 1 so Truth Check can verify them; Polishing strips them later.\n"
+   "TASK — Write the FULL page draft from the brief, following the GENERATION PROCEDURE in order "
+   "and the blueprint for this Page Type. Real substantive grounded content, not placeholders. "
+   "Include: meta title (50-60 chars — COUNT THEM, hard gate), meta description (140-160), one H1, "
+   "clean H2/H3, a 40-60 word answer box, at least one data table, the full body, a 6-10 question "
+   "FAQ with 40-60 word answers, one primary CTA and internal links. Place any HUMAN ENRICHMENT "
+   "verbatim and attribute it. Obey OUTPUT HYGIENE — never recite a rule as a sentence. "
+   "Return STRICT JSON {\"draft_markdown\":\"...\"}.",
+   "BRIEF: {{ $json['Brief Content'] }}\n\n" + HUMAN),
+
+ "WFP4_truthcheck.json": ("ZsrCHmeSCy8P4Wb2", [FACTS],
+   "STAGE — Truth Check. You are checking an INTERNAL DRAFT, three stages before publication. "
+   "[source: …] / [VERIFY] / [human: …] markers SHOULD be present — that is the draft doing its "
+   "job. Stripping them is Polishing's task, not yours. NEVER fail a draft for carrying markers "
+   "and never remark that polish 'was not run' — it runs after you. Judge FACTS ONLY.\n"
+   "TASK — Run the GUARDIAN_OF_TRUTH Truth Check procedure against the FACTS. For each factual "
+   "sentence confirm a [source: …] tag traceable to the facts; verify entity rules; confirm HARD "
+   "TRUTHS honoured as constraints. Human-tagged [human: …] text is exempt from the source rule "
+   "but must not contradict the facts — flag [VERIFY], never alter or drop it. FAIL ONLY for: an "
+   "untagged factual claim, a claim contradicting the FACTS, an invented statistic, a HARD TRUTH "
+   "violation, or a page that is mostly [VERIFY]. A derived estimate framed as one ('roughly', "
+   "'~') and consistent with the facts is acceptable — note it, don't fail it. "
+   "Return STRICT JSON {\"pass\":true|false,\"notes\":\"per-claim findings\"}.",
    "DRAFT: {{ $json['Draft Content'] }}"),
- "WFP6_polish.json": ("U0MrpTN3hv4RfNMI",
-   "STAGE — You are the PUBLICATION BOUNDARY. Everything upstream was internal; everything you emit is reader-facing. "
-   "Stripping the grounding markers is YOUR job and no one else's.\n"
-   "TASK — Final polish + assemble the production HTML per the CONTENT RULES: meta title (50-60 chars — COUNT THEM, "
-   "hard gate), meta description (140-160), semantic H1/H2/H3, answer box, data table(s), FAQ accordion, related "
-   "internal links, one CTA, and JSON-LD (Article with Person author 'Juan Magallanes' + BreadcrumbList + FAQPage; "
-   "FAQ schema must byte-match the visible FAQ).\n"
-   "THIS IS THE PUBLICATION BOUNDARY. Keep every grounded FACT intact, but the page must now be reader-facing:\n"
-   "- STRIP every [GC]/[GCT]/[CDF]/[DPNG]/[VERIFY] marker from body, tables, FAQ and JSON-LD. Zero may survive.\n"
-   "- Replace them with prose attribution ONLY where the fact is notable, surprising or contested, and close with a "
-   "short 'Sources' line naming the bodies. Most sentences need no attribution.\n"
-   "- Delete any sentence that recites a rule rather than informing the reader (see OUTPUT HYGIENE).\n"
-   "Return STRICT JSON {\"polished_html\":\"...\"}.",
+
+ "WFP5_humanize.json": ("yh9kMFkbPY34vmVJ", [],
+   "STAGE — Humanizing. Between Truth Check and Polishing, still an INTERNAL artifact. Markers "
+   "belong here: KEEP every [source: …] / [VERIFY] / [human: …] for Polishing to resolve. Do not "
+   "strip or flag them.\n"
+   "TASK — Rewrite for natural human cadence WITHOUT changing facts, numbers, sources, markers or "
+   "structure. Vary sentence rhythm, cut padding and AI tells; keep it plain-spoken and "
+   "answer-first, in brand voice, no banned words. Human-authored [human: …] text stays VERBATIM — "
+   "never smooth it. If the draft recites a rule as a sentence (OUTPUT HYGIENE §1), CUT it rather "
+   "than improve its prose. Return STRICT JSON {\"humanized_markdown\":\"...\"}.",
+   "DRAFT: {{ $json['Draft Content'] }}"),
+
+ "WFP6_polish.json": ("U0MrpTN3hv4RfNMI", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, CONVERSION],
+   "STAGE — Polishing. THE PUBLICATION BOUNDARY. Everything upstream was internal; everything you "
+   "emit is reader-facing. Stripping the internal markers is YOUR job and no one else's.\n"
+   "TASK — Two outputs.\n"
+   "(1) polished_html — the production build per this Page Type's blueprint: meta title (50-60 "
+   "chars, COUNT THEM), meta description (140-160), semantic H1/H2/H3, answer box, data table(s), "
+   "FAQ accordion, related links, one primary CTA, and JSON-LD (Article with Person author 'Juan "
+   "Magallanes' + BreadcrumbList + FAQPage; FAQ schema byte-matches the visible FAQ). Keep every "
+   "grounded FACT and all human-authored text intact, but make it reader-facing: STRIP every "
+   "[source: …] / [VERIFY] / [human: …] marker from body, tables, FAQ and JSON-LD — zero may "
+   "survive. Replace with prose attribution only where a fact is notable, surprising or contested, "
+   "and close with a short 'Sources' line. Keep human text verbatim with its visible attribution. "
+   "Delete any sentence that recites a rule (OUTPUT HYGIENE §1).\n"
+   "(2) conversion_review — run the CONVERSION EXPERT and return its block. Instructions for the "
+   "webmaster, never page copy. The funnel stays SUBTLE: this is an editorial guide and a visible "
+   "funnel destroys the trust the funnel depends on.\n"
+   "(3) section_guide — a JSON array, one entry per heading in the page, IN DOCUMENT ORDER: "
+   "{\"level\":1|2|3, \"heading\":\"<exact heading text as it appears>\", \"purpose_es\":\"<one "
+   "sentence IN SPANISH saying what this section is for and what the webmaster should watch when "
+   "placing it>\"}. The heading text must match the page EXACTLY — it is used to anchor the "
+   "webmaster's instructions. purpose_es is for the webmaster and is never published.\n"
+   "Return STRICT JSON {\"polished_html\":\"...\",\"conversion_review\":\"...\",\"section_guide\":[...]}.",
    "HUMANIZED: {{ $json['Humanized Content'] }}"),
- "WFP5_humanize.json": ("yh9kMFkbPY34vmVJ",
-   "STAGE — You are between TRUTH CHECK and POLISH, still working on an INTERNAL artifact. Grounding markers belong "
-   "here: KEEP them for polish to resolve. Do not strip them and do not flag them.\n"
-   "TASK — Humanize the draft: vary sentence rhythm, cut padding and AI tells, keep it plain-spoken and answer-first. "
-   "Change HOW it reads, never WHAT it claims — every grounded fact, figure and [TAG] marker must survive this stage "
-   "intact for the polish step to resolve. Obey OUTPUT HYGIENE: if the draft recites a rule as a sentence "
-   "('no operator favoritism', a stock year-round/no-island-is-better paragraph on a page that isn't about timing or "
-   "luxury), CUT it — do not smooth it into better prose. Return STRICT JSON {\"humanized_markdown\":\"...\"}.",
-   "DRAFT: {{ $json['Draft Content'] }}"),
- "WFP7_auditor.json": ("na9GWyR851UHSlbP",
-   "TASK — Auditor checklist: A Truth (facts grounded per FACT POLICY; FAIL if mostly [VERIFY]); B Entity rules; "
-   "C Voice (no banned words); D Audience+one CTA; E Structure+schema present and mirroring visible content per the "
-   "CONTENT RULES; F Fidelity (no padding, answer-first); G Conversion safety; "
-   "H LEAKAGE — HARD FAIL, check this FIRST and character-by-character: (h1) the page contains ZERO internal markers "
-   "'[GC]' '[GCT]' '[CDF]' '[DPNG]' '[VERIFY]' anywhere including inside JSON-LD; (h2) the page never recites its own "
-   "guardrails as copy ('an honest trade-off, not a ranking', 'with no operator favoritism', 'an independent "
-   "editorial guide', 'Luxury is the boat, not the map') and carries no stock HT-1/HT-2 paragraph on a page whose "
-   "topic is neither timing nor luxury; "
-   "I TITLE LENGTH — count the <title> characters and report the integer; FAIL if outside 50-60. "
-   "Quote the offending text for every FAIL. Return STRICT JSON {\"pass\":true|false,\"notes\":\"per-part PASS/FAIL\"}.",
-   "PAGE: {{ $json['Polished Content'] }}"),
+
+ "WFP7_auditor.json": ("na9GWyR851UHSlbP", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, AUDITOR],
+   "STAGE — Auditor Review. You see TWO artifacts. Judge each by its own standard:\n"
+   "- DRAFT (internal, below): carries [source: …] markers. Use it for Part A grounding — every "
+   "factual claim traceable. Its markers are CORRECT; never fail them.\n"
+   "- PAGE (published build, below): must be clean. Use it for every other part.\n"
+   "TASK — Run the AUDITOR CHECKLIST, every part, against the right artifact. Additionally:\n"
+   "Part H LEAKAGE — HARD FAIL, check FIRST, character by character, on PAGE only: (h1) zero "
+   "'[source:' '[VERIFY]' '[human:' '[HT-' '[GC]' '[GCT]' '[CDF]' '[DPNG]' '[MASTER FACTS]' "
+   "anywhere, INCLUDING inside JSON-LD; (h2) no guardrail recited as copy and no stock HT-1/HT-2 "
+   "paragraph on a page whose topic is neither timing nor luxury (OUTPUT HYGIENE §1-2).\n"
+   "Part I TITLE — count the <title> characters, report the integer, FAIL if outside 50-60.\n"
+   "Part J SCHEMA BY TYPE — a guide page carrying Review/AggregateRating is a FAIL.\n"
+   "Quote the offending text for every FAIL. Return STRICT JSON "
+   "{\"pass\":true|false,\"notes\":\"per-part PASS/FAIL\"}.",
+   "PAGE: {{ $json['Polished Content'] }}\n\nDRAFT (for Part A grounding only): {{ $json['Draft Content'] }}"),
 }
 
-def put(wid, wf):
-    body = {"name": wf["name"], "nodes": wf["nodes"], "connections": wf["connections"], "settings": wf.get("settings", {"executionOrder":"v1"})}
-    r = urllib.request.Request(N8N+"/api/v1/workflows/"+wid, data=json.dumps(body).encode(),
-        headers={"X-N8N-API-KEY": PUB, "Content-Type":"application/json"}, method="PUT")
-    try: return "ok" if json.load(urllib.request.urlopen(r)).get("id") else "??"
-    except urllib.error.HTTPError as e: return "ERR %d %s"%(e.code, e.read().decode()[:160])
 
-for fn,(wid, task, bodyref) in STAGES.items():
-    p = os.path.join(os.path.dirname(__file__), fn); wf = json.load(open(p))
-    prompt = head() + "\n" + task + "\n\n" + REC + ("\n\n"+bodyref if bodyref else "")
+def put(wid, wf):
+    body = {"name": wf["name"], "nodes": wf["nodes"], "connections": wf["connections"],
+            "settings": wf.get("settings", {"executionOrder": "v1"})}
+    r = urllib.request.Request(N8N + "/api/v1/workflows/" + wid, data=json.dumps(body).encode(),
+                               headers={"X-N8N-API-KEY": PUB, "Content-Type": "application/json"}, method="PUT")
+    try:
+        return "ok" if json.load(urllib.request.urlopen(r)).get("id") else "??"
+    except urllib.error.HTTPError as e:
+        return "ERR %d %s" % (e.code, e.read().decode()[:200])
+
+
+for fn, (wid, extras, task, bodyref) in STAGES.items():
+    p = os.path.join(os.path.dirname(__file__), fn)
+    wf = json.load(open(p))
+    prompt = HEAD + "\n" + "\n\n".join(extras) + "\n\n" + task + "\n\n" + REC + (("\n\n" + bodyref) if bodyref else "")
     for n in wf["nodes"]:
         if n["type"].endswith("langchain.anthropic"):
             n["parameters"]["messages"]["values"][0]["content"] = prompt
             n["parameters"].setdefault("options", {})["maxTokens"] = 20000
-    open(p,"w").write(json.dumps(wf, indent=2))
-    print("%-22s prompt=%d chars -> %s" % (fn, len(prompt), put(wid, wf)))
+    open(p, "w").write(json.dumps(wf, indent=2))
+    print("%-22s prompt=%6d chars -> %s" % (fn, len(prompt), put(wid, wf)))

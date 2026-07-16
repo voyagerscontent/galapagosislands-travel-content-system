@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
-"""Add a Google Drive export to each CONTENT stage (WFP2/3/5/6), so every artifact
+"""Add a Google Drive export to the markdown CONTENT stages (WFP2/3/5), so every artifact
 lands as a Google Doc in its ContentEngine stage folder and the record's *Link field
 points at the Doc instead of 'airtable://...'.
 
 Only content stages export. WFP4 (truth check) and WFP7 (auditor) are QA gates whose
 output is a pass/fail + notes, not a document — those stay in Airtable.
+
+WFP6 is NOT here — see add_editor_render.py. Its artifact is production HTML, and
+createFromText uploads as text/plain, which puts raw HTML source in the editor's Doc.
+WFP6 uploads as text/html instead so Drive renders it, which the stock node can't do.
 
 Insertion: Output OK? --true--> [Export to Drive] --> Advance to X --> Trigger next stage
 Because the Drive node replaces $json, 'Advance to X' is rewritten to pull the record
@@ -26,8 +30,6 @@ STAGES = {
                            "1DRmnqM32E40vKB_9JRJNO-yPLD1hl2Nb", "04 First Drafts"),
     "WFP5_humanize.json": ("yh9kMFkbPY34vmVJ", "Advance to Polishing",      "Humanized Content", "Humanized Link",
                            "1IFBQB6v6ht2jS4mNm5RPjMZryf4ro-9Y", "06 Humanized"),
-    "WFP6_polish.json":   ("U0MrpTN3hv4RfNMI", "Advance to Auditor Review", "Polished Content", "Polished Link",
-                           "1jf8kwaFmFHpYTgmLYSVSMU4yq-YBM5bH", "07 Polished for Editor"),
 }
 
 V = "$('Validate Output').item.json"
