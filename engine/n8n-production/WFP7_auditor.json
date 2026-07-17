@@ -1,5 +1,5 @@
 {
-  "name": "WFP7 Auditor Review - GalapagosIslands.travel",
+  "name": "WFP7 Auditor Review (Drive-enabled)",
   "nodes": [
     {
       "parameters": {
@@ -229,6 +229,34 @@
           "name": "Airtable API - Weboptimizer"
         }
       }
+    },
+    {
+      "name": "Write Audit Report to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1660,
+        220
+      ],
+      "parameters": {
+        "operation": "upload",
+        "name": "={{ $('Re-check and Claim (guarded)').item.json['Meta Title'] + ' \u2014 Audit Report.txt' }}",
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1jf8kwaFmFHpYTgmLYSVSMU4yq-YBM5bH"
+        },
+        "binaryData": false,
+        "fileContent": "={{ $json.audit_report }}",
+        "mimeType": "text/plain",
+        "options": {}
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "{{GOOGLE_DRIVE_CREDENTIAL_ID}}",
+          "name": "Google Drive \u2014 Content Engine"
+        }
+      }
     }
   ],
   "connections": {
@@ -299,6 +327,17 @@
         [
           {
             "node": "Route to Needs Attention",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advance to Editor Review": {
+      "main": [
+        [
+          {
+            "node": "Write Audit Report to Drive",
             "type": "main",
             "index": 0
           }
