@@ -54,9 +54,15 @@ HARD = block("HARD TRUTHS (constraints on every claim)", CP + "guardrails/GUARDI
 HEAD = "\n\n".join([LAW, ENTITY, VOICE, FIDELITY, HYGIENE, HARD]) + "\n"
 
 # ── per-sub-step assets (loaded only where the briefing says they belong) ─────
+# The DPNG site list must travel WITH the facts. MASTER_FACTS names galapagos_master.xlsx as a
+# source and tells the writer to cite its sheets — but a workbook cannot enter a prompt, so the
+# model was being told to cite data it could not see. It filled the gap from training and invented
+# a [source:] tag for 'Cerro Dragon' (a real DPNG site, in that very sheet), and Truth Check
+# rightly failed the page. Facts the model cannot read are not facts it can ground.
 FACTS = block("FACTS — pre-verified source of truth (sub-step C)",
               CP + "MASTER_FACTS_FILE.md",
-              CP + "what-to-write-about/source-of-truth/GALAPAGOS_FACTS_ADDENDUM.md")
+              CP + "what-to-write-about/source-of-truth/GALAPAGOS_FACTS_ADDENDUM.md",
+              CP + "what-to-write-about/source-of-truth/DPNG_VISITOR_SITES.md")
 AUDIENCE = block("AUDIENCE & CONVERSION (sub-step A)",
                  CP + "who-to-write-for/PERSONA_PACK.galapagosislands-travel.yaml")
 PROCEDURE = block("GENERATION PROCEDURE — run in order, do not skip",
@@ -152,8 +158,14 @@ STAGES = {
    "STAGE — Polishing. THE PUBLICATION BOUNDARY. Everything upstream was internal; everything you "
    "emit is reader-facing. Stripping the internal markers is YOUR job and no one else's.\n"
    "TASK — Two outputs.\n"
-   "(1) polished_html — the production build per this Page Type's blueprint: meta title (50-60 "
-   "chars, COUNT THEM), meta description (140-160), semantic H1/H2/H3, answer box, data table(s), "
+   "(1) polished_html — a COMPLETE, VALID HTML DOCUMENT the CMS can ingest. It MUST open with "
+   "<!DOCTYPE html><html lang=\"en\"><head> and contain a real <title> element (50-60 chars — COUNT "
+   "THEM), a real <meta name=\"description\"> (140-160), <link rel=\"canonical\">, then <body>. Do NOT "
+   "put the meta title or description in an HTML comment — a comment is not a tag and the CMS "
+   "cannot read it. Emit PURE HTML: no markdown syntax anywhere, ever. Never '**bold**' (use "
+   "<strong>), never '~' for approx (write 'about' or '&approx;'), never markdown pipes for tables "
+   "(use <table>). Markdown inside a table cell ships literal asterisks to the reader.\n"
+   "Build per this Page Type's blueprint: semantic H1/H2/H3, answer box, data table(s), "
    "FAQ accordion, related links, one primary CTA, and JSON-LD (Article with Person author 'Juan "
    "Magallanes' + BreadcrumbList + FAQPage; FAQ schema byte-matches the visible FAQ). Keep every "
    "grounded FACT and all human-authored text intact, but make it reader-facing: STRIP every "
@@ -182,8 +194,14 @@ STAGES = {
    "'[source:' '[VERIFY]' '[human:' '[HT-' '[GC]' '[GCT]' '[CDF]' '[DPNG]' '[MASTER FACTS]' "
    "anywhere, INCLUDING inside JSON-LD; (h2) no guardrail recited as copy and no stock HT-1/HT-2 "
    "paragraph on a page whose topic is neither timing nor luxury (OUTPUT HYGIENE §1-2).\n"
-   "Part I TITLE — count the <title> characters, report the integer, FAIL if outside 50-60.\n"
+   "Part I TITLE — FAIL if the page has no real <title> ELEMENT ('<!-- META TITLE ... -->' is a "
+   "comment, NOT a tag — the CMS cannot read it, so that is a FAIL). Then count its characters, "
+   "report the integer, and FAIL if outside 50-60. Same for a real <meta name=\"description\"> "
+   "(140-160).\n"
    "Part J SCHEMA BY TYPE — a guide page carrying Review/AggregateRating is a FAIL.\n"
+   "Part K VALID HTML — the page must be a complete HTML document (<!DOCTYPE html><html><head>...). "
+   "FAIL on any markdown surviving in it: '**bold**', markdown pipe-tables, or a bare '~' meaning "
+   "'approximately'. Those ship literal asterisks and tildes to the reader. Quote each instance.\n"
    "Quote the offending text for every FAIL. Return STRICT JSON "
    "{\"pass\":true|false,\"notes\":\"per-part PASS/FAIL\"}.",
    "PAGE: {{ $json['Polished Content'] }}\n\nDRAFT (for Part A grounding only): {{ $json['Draft Content'] }}"),

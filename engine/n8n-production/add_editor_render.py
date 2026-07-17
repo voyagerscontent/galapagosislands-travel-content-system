@@ -40,12 +40,35 @@ CC_EMAIL = "webmaster@voyagers.travel,marketing@voyagers.travel"
 
 V = "$('Validate Output').item.json"
 
-# ── Validate Output: carry all three WFP6 keys ───────────────────────────────
+# ── Validate Output: carry all three WFP6 keys + enforce the meta gates in CODE ──
+# An LLM cannot reliably count characters. The auditor passed a 163-char description as
+# "158 chars" against a 140-160 gate. Deterministic gates belong in code, not in a prompt:
+# measure here and fail the stage, so a bad meta can never reach the editor.
 VALIDATE_TAIL = (
     "try{ const p=JSON.parse(raw); const a=p['polished_html'];"
     " if(typeof a==='string'&&a.length>40){out.artifact=a;out.ok=true;} else out.error='Missing/short polished_html';"
     " out.conversion=(typeof p['conversion_review']==='string')?p['conversion_review']:'';"
     " try{ out.sections=JSON.stringify(p['section_guide']||[]); }catch(e){ out.sections='[]'; }"
+    # Deterministic cleanup. The prompt asks for pure HTML and no '~', but a prompt cannot
+    # guarantee it -- same reason the meta gates moved into code. Fix it here, then measure.
+    " if(out.ok){"
+    "   out.artifact = out.artifact"
+    "     .replace(/\\*\\*([^*\\n]+)\\*\\*/g, '<strong>$1</strong>')"
+    "     .replace(/(^|[\\s(>])~(?=\\$|\\d)/g, '$1about ')"
+    "     .replace(/about\\s+about\\s+/g, 'about ');"
+    "   const dec=s=>String(s).replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'\"')"
+    "     .replace(/&#39;/g,\"'\").replace(/&amp;/g,'&');"
+    # measure the SANITIZED artifact -- that is what ships, so that is what the gate must judge
+    "   const tm=out.artifact.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);"
+    "   const dm=out.artifact.match(/<meta\\s+name=[\"']description[\"']\\s+content=[\"']([\\s\\S]*?)[\"']\\s*\\/?>/i);"
+    "   const t=tm?dec(tm[1]).trim():''; const d=dm?dec(dm[1]).trim():'';"
+    "   const bad=[];"
+    "   if(!tm) bad.push('no <title> element (a <!-- META TITLE --> comment is not a tag)');"
+    "   else if(t.length<50||t.length>60) bad.push('<title> is '+t.length+' chars, gate is 50-60: \"'+t+'\"');"
+    "   if(!dm) bad.push('no <meta name=\"description\"> element');"
+    "   else if(d.length<140||d.length>160) bad.push('meta description is '+d.length+' chars, gate is 140-160: \"'+d+'\"');"
+    "   if(bad.length){ out.ok=false; out.error='META GATE FAIL (measured in code, not by the LLM): '+bad.join(' | '); }"
+    " }"
     "}catch(e){out.error='Unparseable LLM output: '+e.message;}\n"
 )
 
@@ -62,9 +85,15 @@ const dec  = (s) => String(s).replace(/&lt;/g,'<').replace(/&gt;/g,'>')
                              .replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&');
 const esc  = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-const title = dec(pick(/<title[^>]*>([\s\S]*?)<\/title>/i));
-const desc  = dec(pick(/<meta\s+name=["']description["']\s+content=["']([\s\S]*?)["']/i));
+// Prefer the real tags. Fall back to the '<!-- META TITLE: ... -->' comment form only so the
+// table degrades readably — the auditor fails a page whose meta lives in a comment (Part I),
+// because a comment is not a tag and the CMS cannot read it.
+const title = dec(pick(/<title[^>]*>([\s\S]*?)<\/title>/i)
+               || pick(/<!--\s*META TITLE[^:]*:\s*([\s\S]*?)-->/i));
+const desc  = dec(pick(/<meta\s+name=["']description["']\s+content=["']([\s\S]*?)["']/i)
+               || pick(/<!--\s*META DESCRIPTION[^:]*:\s*([\s\S]*?)-->/i));
 const canon = dec(pick(/<link\s+rel=["']canonical["']\s+href=["']([\s\S]*?)["']/i));
+const metaInComment = !/<title[^>]*>/i.test(html);
 const name  = rec['Name'] || rec['Meta Title'] || 'Untitled';
 const ptype = rec['Page Type'] || '';
 const brief = rec['Topic / Brief'] || '';
@@ -76,6 +105,12 @@ const Gp = (s) => '<p>' + G(s) + '</p>';
 // body only — the editor reviews prose, not <head>, the JSON-LD blob or CSS
 let body = pick(/<body[^>]*>([\s\S]*?)<\/body>/i) || html;
 body = body.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'');
+
+// Drive renders <strong> as real bold in prose, but inside a <td>/<th> it converts to literal
+// '**' asterisks in the Doc. Strip bold from table cells for the DOC ONLY — the production
+// .html keeps its <strong> markup untouched.
+body = body.replace(/<(t[dh])([^>]*)>([\s\S]*?)<\/\1>/gi,
+  (m, tag, attrs, inner) => '<' + tag + attrs + '>' + inner.replace(/<\/?strong>/gi, '') + '</' + tag + '>');
 
 // Anchor each heading with its [H1]/[H2]/[H3] marker + Spanish purpose, so the webmaster
 // can see exactly where each level goes and what the section is for.
@@ -93,7 +128,8 @@ body = body.replace(/<h([123])([^>]*)>([\s\S]*?)<\/h\1>/gi, (m, lvl, attrs, inne
   return '<p>' + tag + '</p><h' + lvl + attrs + '>' + inner + '</h' + lvl + '>';
 });
 
-const flag = (n, lo, hi) => (n >= lo && n <= hi) ? 'OK' : 'FUERA DE RANGO (' + lo + '-' + hi + ')';
+const flag = (n, lo, hi) => n === 0 ? 'FALTA — no se encontró la etiqueta'
+                          : (n >= lo && n <= hi) ? 'OK' : 'FUERA DE RANGO (' + lo + '-' + hi + ')';
 
 let head = '';
 head += '<h1>' + esc(name) + ' — Copia para el editor</h1>';

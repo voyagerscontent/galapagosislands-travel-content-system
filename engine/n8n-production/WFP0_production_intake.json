@@ -131,7 +131,25 @@
           "value": {
             "id": "={{ $json.recordId }}",
             "Status": "Scoring",
-            "Attempt Count": 0
+            "Attempt Count": 0,
+            "ROI Score": "={{ null }}",
+            "Buyer Intent (1-5)": "={{ null }}",
+            "Search Demand (1-5)": "={{ null }}",
+            "Ranking Chance (1-5)": "={{ null }}",
+            "Conversion Value (1-5)": "={{ null }}",
+            "Brief Content": "",
+            "Draft Content": "",
+            "Humanized Content": "",
+            "Polished Content": "",
+            "Conversion Review": "",
+            "Truth Check Notes": "",
+            "Audit Notes": "",
+            "Brief Link": "",
+            "Draft Link": "",
+            "Humanized Link": "",
+            "Polished Link": "",
+            "Last Error": "",
+            "Return To": ""
           },
           "matchingColumns": [
             "id"
