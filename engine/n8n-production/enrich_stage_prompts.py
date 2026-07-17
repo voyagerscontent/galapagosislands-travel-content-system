@@ -68,6 +68,7 @@ AUDIENCE = block("AUDIENCE & CONVERSION (sub-step A)",
 PROCEDURE = block("GENERATION PROCEDURE — run in order, do not skip",
                   CP + "CONTENT_GENERATION_PROMPT.md")
 REGISTRY = block("PAGE-TYPE REGISTRY", CP + "what-to-write-about/page-templates/PAGE_TYPES.md")
+MMPROC = block("MARKETMUSE GATE (hub/pillar only)", CP + "what-to-write-about/MARKETMUSE_PROCESS.md")
 AUDITOR = block("AUDITOR CHECKLIST — your checklist, run every part",
                 CP + "guardrails/AUDITOR_PROMPT.md")
 CONVERSION = block("CONVERSION EXPERT", CP + "guardrails/CONVERSION_EXPERT.md")
@@ -102,11 +103,27 @@ HUMAN = ("HUMAN ENRICHMENT (verbatim, never paraphrase — sub-step D2; empty = 
          "Human Quotes: {{ $json['Human Quotes'] }}\n"
          "Anecdotes: {{ $json['Anecdotes'] }}")
 
+# Hub/Pillar pages stop at a human MarketMuse gate after the brief; the terms come back on the
+# record. Empty for every other page type — those never stop. See MARKETMUSE_PROCESS.md.
+MM = ("MARKETMUSE TARGET TERMS (hub/pillar only; empty = none, ignore this block):\n"
+      "Score: {{ $json['MarketMuse Score'] }}\n"
+      "Terms: {{ $json['Target Keywords (NW/MM)'] }}\n"
+      "These are a COVERAGE CHECKLIST, not a quota. Work them in only where they genuinely fit the "
+      "brief's outline and read naturally. Never stuff a term, never bend a sentence around one, "
+      "and never let a term override the FACTS, the HARD TRUTHS or the brand voice — a term with no "
+      "honest place on the page is left out. The Score is a gate and a record: never publish it, "
+      "never mention it in copy.")
+
 # ── stage table: (workflow id, head-extras, stage framing + task, body refs) ──
 STAGES = {
- "WFP2_brief.json": ("cFY7Tz5q2ih2UCvt", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, ITIN_RULE],
+ "WFP2_brief.json": ("cFY7Tz5q2ih2UCvt", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, ITIN_RULE, MMPROC],
    "STAGE — Brief Ready. You run sub-steps A (audience & conversion mapping), B (page-type "
    "blueprint) and C (facts grounding) per the MANDATORY BRIEFING.\n"
+   "If this record's Page Type is Hub Page or Pillar Page, the pipeline STOPS after you and waits "
+   "for a human MarketMuse pass. Your brief is what that person reads. End it with a short "
+   "'MarketMuse pass' section naming the exact topic/query to run and what you most want term "
+   "coverage on, so they can act without reverse-engineering the brief. For any other Page Type "
+   "there is no gate — say nothing about MarketMuse.\n"
    "TASK — Produce the content brief. Lock and state: primary/secondary persona; funnel stage; "
    "primary CTA verbatim from the persona pack's cta_system; objections_to_preempt (ids from the "
    "objection library). Then the section outline (one H1, H2/H3 tree) in the blueprint's canonical "
@@ -126,7 +143,7 @@ STAGES = {
    "FAQ with 40-60 word answers, one primary CTA and internal links. Place any HUMAN ENRICHMENT "
    "verbatim and attribute it. Obey OUTPUT HYGIENE — never recite a rule as a sentence. "
    "Return STRICT JSON {\"draft_markdown\":\"...\"}.",
-   "BRIEF: {{ $json['Brief Content'] }}\n\n" + HUMAN),
+   "BRIEF: {{ $json['Brief Content'] }}\n\n" + MM + "\n\n" + HUMAN),
 
  "WFP4_truthcheck.json": ("ZsrCHmeSCy8P4Wb2", [FACTS],
    "STAGE — Truth Check. You are checking an INTERNAL DRAFT, three stages before publication. "

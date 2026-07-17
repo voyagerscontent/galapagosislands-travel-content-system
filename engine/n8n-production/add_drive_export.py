@@ -10,6 +10,11 @@ WFP6 is NOT here — see add_editor_render.py. Its artifact is production HTML, 
 createFromText uploads as text/plain, which puts raw HTML source in the editor's Doc.
 WFP6 uploads as text/html instead so Drive renders it, which the stock node can't do.
 
+ORDER MATTERS: this script rewires 'Export to Drive' -> 'Advance to X'. On WFP2 the
+MarketMuse gate sits between them, so run add_marketmuse_gate.py AFTER this one or the
+gate is silently clobbered and hub/pillar pages stop stopping. Correct order:
+    enrich_stage_prompts.py -> add_drive_export.py -> add_editor_render.py -> add_marketmuse_gate.py
+
 Insertion: Output OK? --true--> [Export to Drive] --> Advance to X --> Trigger next stage
 Because the Drive node replaces $json, 'Advance to X' is rewritten to pull the record
 and artifact from $('Validate Output') explicitly, and its Link field from the Doc id.

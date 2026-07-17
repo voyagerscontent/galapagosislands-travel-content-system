@@ -1,0 +1,281 @@
+{
+  "name": "WFPD Dispatcher - Content Production (polls Airtable)",
+  "nodes": [
+    {
+      "name": "Every 2 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Lookup Active Sites",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        0
+      ],
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appPlU9eC5GL6ncjZ"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblOkOXzm2GZUMkYs"
+        },
+        "filterByFormula": "={Active} = TRUE()",
+        "returnAll": true,
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "name": "Find Backlog",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        -140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+        },
+        "filterByFormula": "={Status} = 'Backlog'",
+        "returnAll": true,
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "name": "Start intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        -140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/intake",
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site_id",
+              "value": "={{ $('Lookup Active Sites').item.json['Site ID'] || $('Lookup Active Sites').item.json['Name'] }}"
+            },
+            {
+              "name": "record_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "name": "Find Gate Released",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+        },
+        "filterByFormula": "=AND({Status} = 'Brief Ready', {MarketMuse Score} != '', {Brief Content} != '')",
+        "returnAll": true,
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "name": "Set Drafting",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [],
+          "value": {
+            "id": "={{ $json.id }}",
+            "Status": "Drafting",
+            "Attempt Count": "={{ 0 }}"
+          }
+        },
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "name": "Start draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/draft",
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site_id",
+              "value": "={{ $('Lookup Active Sites').item.json['Site ID'] || $('Lookup Active Sites').item.json['Name'] }}"
+            },
+            {
+              "name": "record_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Every 2 minutes": {
+      "main": [
+        [
+          {
+            "node": "Lookup Active Sites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Active Sites": {
+      "main": [
+        [
+          {
+            "node": "Find Backlog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Find Gate Released",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Backlog": {
+      "main": [
+        [
+          {
+            "node": "Start intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Gate Released": {
+      "main": [
+        [
+          {
+            "node": "Set Drafting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Drafting": {
+      "main": [
+        [
+          {
+            "node": "Start draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
