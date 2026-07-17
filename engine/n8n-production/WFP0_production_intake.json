@@ -149,7 +149,9 @@
             "Humanized Link": "",
             "Polished Link": "",
             "Last Error": "",
-            "Return To": ""
+            "Return To": "",
+            "MarketMuse Score": "={{ null }}",
+            "Target Keywords (NW/MM)": ""
           },
           "matchingColumns": [
             "id"

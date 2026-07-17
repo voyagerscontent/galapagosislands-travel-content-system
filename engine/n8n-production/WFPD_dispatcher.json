@@ -133,7 +133,7 @@
           "mode": "id",
           "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
         },
-        "filterByFormula": "=AND({Status} = 'Brief Ready', {MarketMuse Score} != '', {Brief Content} != '')",
+        "filterByFormula": "=AND({Status} = 'Brief Ready', NOT({MarketMuse Score} = BLANK()), {Brief Content} != '')",
         "returnAll": true,
         "options": {}
       },

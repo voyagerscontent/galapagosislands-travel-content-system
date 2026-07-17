@@ -88,8 +88,12 @@ nodes = [
     post_webhook("Start intake", "intake", [640, -140]),
 
     # 2 — release hub/pillar pages whose human MarketMuse pass is done
+    # NOT({MarketMuse Score} = BLANK()), never '!= '''. A blank NUMBER field is not equal to the
+    # empty STRING in Airtable, so '!= ''' matched every unscored pillar and released it before any
+    # MarketMuse pass — defeating the gate entirely. BLANK() is the type-correct empty test, and it
+    # still releases a deliberate score of 0 (the documented "skip MarketMuse" value).
     airtable_search("Find Gate Released",
-                    "=AND({Status} = 'Brief Ready', {MarketMuse Score} != '', {Brief Content} != '')",
+                    "=AND({Status} = 'Brief Ready', NOT({MarketMuse Score} = BLANK()), {Brief Content} != '')",
                     [420, 140]),
     {"name": "Set Drafting", "type": "n8n-nodes-base.airtable", "typeVersion": 2.1,
      "position": [640, 140], "onError": "continueRegularOutput",

@@ -20,12 +20,14 @@ WID = "i8xtkx9GBw1aRdkP"
 FN = "WFP0_production_intake.json"
 
 # number fields must be cleared with null, not '' (Airtable 422s on '' for a number)
+# MarketMuse Score is cleared too: a rebuilt brief deserves a fresh MarketMuse pass, and leaving a
+# stale score would let the dispatcher auto-release a Backlog re-run past the gate.
 NUM = ["ROI Score", "Buyer Intent (1-5)", "Search Demand (1-5)", "Ranking Chance (1-5)",
-       "Conversion Value (1-5)"]
+       "Conversion Value (1-5)", "MarketMuse Score"]
 TXT = ["Brief Content", "Draft Content", "Humanized Content", "Polished Content",
        "Conversion Review", "Truth Check Notes", "Audit Notes",
        "Brief Link", "Draft Link", "Humanized Link", "Polished Link",
-       "Last Error", "Return To"]
+       "Target Keywords (NW/MM)", "Last Error", "Return To"]
 
 p = os.path.join(os.path.dirname(__file__), FN)
 wf = json.load(open(p))
