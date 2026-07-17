@@ -182,6 +182,10 @@ STAGES = {
    "placing it>\"}. The heading text must match the page EXACTLY — it is used to anchor the "
    "webmaster's instructions. purpose_es is for the webmaster and is never published.\n"
    "Return STRICT JSON {\"polished_html\":\"...\",\"conversion_review\":\"...\",\"section_guide\":[...]}.",
+   # On a retry the record carries the measured failure. Character counts are measured in code,
+   # not by you — if it says 167, it is 167, however many you counted.
+   "PREVIOUS ATTEMPT (empty on the first run — if present, FIX EXACTLY THIS and change nothing "
+   "else): {{ $json['Last Error'] }}\n\n"
    "HUMANIZED: {{ $json['Humanized Content'] }}"),
 
  "WFP7_auditor.json": ("na9GWyR851UHSlbP", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, AUDITOR],

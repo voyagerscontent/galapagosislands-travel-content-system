@@ -61,12 +61,35 @@ VALIDATE_TAIL = (
     # measure the SANITIZED artifact -- that is what ships, so that is what the gate must judge
     "   const tm=out.artifact.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);"
     "   const dm=out.artifact.match(/<meta\\s+name=[\"']description[\"']\\s+content=[\"']([\\s\\S]*?)[\"']\\s*\\/?>/i);"
-    "   const t=tm?dec(tm[1]).trim():''; const d=dm?dec(dm[1]).trim():'';"
+    "   const t=tm?dec(tm[1]).trim():''; let d=dm?dec(dm[1]).trim():'';"
     "   const bad=[];"
+    # An over-long description is repaired here, not sent back to the model. Asked three times to
+    # fix a 167-char description, it returned the identical 167 chars each time -- it cannot count.
+    # Trimming a summary at a word boundary is safe (Google truncates around 155 regardless). A
+    # title is not trimmed: a mid-phrase cut reads badly, so that stays a hard fail for a human.
+    "   if(dm && d.length>160){"
+    "     const win=d.slice(0,161); let cut='';"
+    # cut at a sentence end if one lands in range, else a clause comma, else a word — so the
+    # trimmed description still reads as a finished thought, not '...and where to'
+    "     const pats=['. ', ', ', ' '];"
+    "     for(const pat of pats){"
+    "       let p=win.lastIndexOf(pat);"
+    "       while(p!==-1 && !cut){"
+    "         const cand=win.slice(0, pat==='. '?p+1:p).replace(/[\\s,;:\\-]+$/,'');"
+    "         if(cand.length>=140 && cand.length<=160) cut=cand;"
+    "         p=win.lastIndexOf(pat,p-1);"
+    "       }"
+    "       if(cut) break;"
+    "     }"
+    "     if(!cut) cut=win.slice(0,160).replace(/[\\s,;:.\\-]+$/,'');"
+    "     out.artifact=out.artifact.replace(dm[0], dm[0].replace(dm[1], cut));"
+    "     out.metaTrimmed='description trimmed in code: '+d.length+' -> '+cut.length+' chars';"
+    "     d=cut;"
+    "   }"
     "   if(!tm) bad.push('no <title> element (a <!-- META TITLE --> comment is not a tag)');"
     "   else if(t.length<50||t.length>60) bad.push('<title> is '+t.length+' chars, gate is 50-60: \"'+t+'\"');"
     "   if(!dm) bad.push('no <meta name=\"description\"> element');"
-    "   else if(d.length<140||d.length>160) bad.push('meta description is '+d.length+' chars, gate is 140-160: \"'+d+'\"');"
+    "   else if(d.length<140) bad.push('meta description is only '+d.length+' chars, gate is 140-160 (too short to pad in code): \"'+d+'\"');"
     "   if(bad.length){ out.ok=false; out.error='META GATE FAIL (measured in code, not by the LLM): '+bad.join(' | '); }"
     " }"
     "}catch(e){out.error='Unparseable LLM output: '+e.message;}\n"
@@ -295,6 +318,53 @@ chain = ["Render editor copy", "Export editor Doc", "Export HTML", "Export JSON-
 wf["connections"]["Output OK?"]["main"][0] = [{"node": chain[0], "type": "main", "index": 0}]
 for src, dst in zip(chain, chain[1:]):
     wf["connections"][src] = {"main": [[{"node": dst, "type": "main", "index": 0}]]}
+
+# ── retry-with-feedback on the FAIL branch ──────────────────────────────────
+# A meta-gate miss is a formatting slip the model can fix if it is simply told the measured
+# number — dead-ending it at Needs Attention would mean a human babysits every run, which
+# defeats "set a cell and walk away". Retry up to the Attempt Count cap, feeding the exact
+# error back into the prompt; only a persistent failure reaches a human.
+RETRY = ["Retry?", "Bump attempt", "Re-trigger polish"]
+for k in RETRY:
+    wf["connections"].pop(k, None)
+wf["nodes"] = [n for n in wf["nodes"] if n["name"] not in RETRY]
+ATT = "$('Re-check and Claim (guarded)').item.json['Attempt Count']"
+
+wf["nodes"] += [
+    {"name": "Retry?", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [x - 400, y + 220],
+     "parameters": {"conditions": {"options": {"caseSensitive": True, "version": 2},
+                                   "combinator": "and",
+                                   "conditions": [{"operator": {"type": "number", "operation": "lt"},
+                                                   "leftValue": "={{ %s || 0 }}" % ATT,
+                                                   "rightValue": 2}]}, "options": {}}},
+    {"name": "Bump attempt", "type": "n8n-nodes-base.airtable", "typeVersion": 2.1,
+     "position": [x - 200, y + 160],
+     "parameters": {"operation": "update",
+                    "base": {"__rl": True, "mode": "id", "value": "={{ %s.baseId }}" % V},
+                    "table": {"__rl": True, "mode": "id", "value": "={{ %s.tableId }}" % V},
+                    "columns": {"mappingMode": "defineBelow", "matchingColumns": ["id"], "schema": [],
+                                "value": {"id": "={{ %s.recordId }}" % V,
+                                          "Status": "Polishing",
+                                          "Attempt Count": "={{ (%s || 0) + 1 }}" % ATT,
+                                          "Last Error": "={{ %s.error }}" % V}},
+                    "options": {}},
+     "credentials": {"airtableTokenApi": {"id": "mITfEGdTPqCCNrsT", "name": "Airtable API - Weboptimizer"}}},
+    {"name": "Re-trigger polish", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2,
+     "position": [x, y + 160], "onError": "continueRegularOutput",
+     "parameters": {"method": "POST",
+                    "url": N8N + "/webhook/galapagos-production/stage/polish",
+                    "sendBody": True, "specifyBody": "keypair",
+                    "bodyParameters": {"parameters": [
+                        {"name": "site_id", "value": "={{ $('Airtable Status Webhook').item.json.body.site_id }}"},
+                        {"name": "record_id", "value": "={{ %s.recordId }}" % V}]},
+                    "options": {}}},
+]
+wf["connections"]["Output OK?"]["main"][1] = [{"node": "Retry?", "type": "main", "index": 0}]
+wf["connections"]["Retry?"] = {"main": [
+    [{"node": "Bump attempt", "type": "main", "index": 0}],
+    [{"node": "Route to Needs Attention", "type": "main", "index": 0}],
+]}
+wf["connections"]["Bump attempt"] = {"main": [[{"node": "Re-trigger polish", "type": "main", "index": 0}]]}
 
 open(p, "w").write(json.dumps(wf, indent=2))
 print("%s -> editor Doc + .html + .schema.json in '07 Polished for Editor' + ES email  %s"
