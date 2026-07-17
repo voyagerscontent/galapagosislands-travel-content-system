@@ -60,9 +60,20 @@ VALIDATE_TAIL = (
     "     .replace(/&#39;/g,\"'\").replace(/&amp;/g,'&');"
     # measure the SANITIZED artifact -- that is what ships, so that is what the gate must judge
     "   const tm=out.artifact.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);"
-    "   const dm=out.artifact.match(/<meta\\s+name=[\"']description[\"']\\s+content=[\"']([\\s\\S]*?)[\"']\\s*\\/?>/i);"
+    "   const dm=out.artifact.match(/<meta\\s+name=[\"']description[\"']\\s+content=\"([\\s\\S]*?)\"\\s*\\/?>/i);"
     "   const t=tm?dec(tm[1]).trim():''; let d=dm?dec(dm[1]).trim():'';"
     "   const bad=[];"
+    # A raw " inside the content attribute terminates it early: content=\"...See what \"budget\" buys\"
+    # is invalid HTML — a browser reads the description as ending at 'See what '. The model wrote
+    # exactly that. Re-escape inner quotes rather than fail: it is unambiguous and safe.
+    "   if(dm && /\"/.test(d)){"
+    "     const fixed=d.replace(/\"/g,'&quot;');"
+    # Function replacement, NOT a string: the description contains '$445', and '$' is a special
+    # replacement pattern in String.replace ($&, $', $1...), which silently mangles the result.
+    "     out.artifact=out.artifact.replace(dm[0], ()=>'<meta name=\"description\" content=\"'+fixed+'\">');"
+    "     out.metaFixed='escaped '+(d.split('\"').length-1)+' raw quote(s) in meta description';"
+    "     d=fixed;"
+    "   }"
     # An over-long description is repaired here, not sent back to the model. Asked three times to
     # fix a 167-char description, it returned the identical 167 chars each time -- it cannot count.
     # Trimming a summary at a word boundary is safe (Google truncates around 155 regardless). A
@@ -82,7 +93,8 @@ VALIDATE_TAIL = (
     "       if(cut) break;"
     "     }"
     "     if(!cut) cut=win.slice(0,160).replace(/[\\s,;:.\\-]+$/,'');"
-    "     out.artifact=out.artifact.replace(dm[0], dm[0].replace(dm[1], cut));"
+    # function replacement here too — a trimmed price range still carries '$'
+    "     out.artifact=out.artifact.replace(dm[0], ()=>'<meta name=\"description\" content=\"'+cut+'\">');"
     "     out.metaTrimmed='description trimmed in code: '+d.length+' -> '+cut.length+' chars';"
     "     d=cut;"
     "   }"
