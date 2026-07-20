@@ -102,6 +102,10 @@ VALIDATE_TAIL = (
     "   else if(t.length<50||t.length>60) bad.push('<title> is '+t.length+' chars, gate is 50-60: \"'+t+'\"');"
     "   if(!dm) bad.push('no <meta name=\"description\"> element');"
     "   else if(d.length<140) bad.push('meta description is only '+d.length+' chars, gate is 140-160 (too short to pad in code): \"'+d+'\"');"
+    # The dual CTA close is hardcoded policy -- both operators must be named or the page ships
+    # without the sanctioned disclosure. Verified in code so it can't slip past, then retried.
+    "   if(!/Voyagers Travel Company/i.test(out.artifact)) bad.push('CTA close missing: Voyagers Travel Company (travelers) must be named at the foot');"
+    "   if(!/Latin Trails/i.test(out.artifact)) bad.push('CTA close missing: Latin Trails (trade/DMC) must be named at the foot');"
     "   if(bad.length){ out.ok=false; out.error='META GATE FAIL (measured in code, not by the LLM): '+bad.join(' | '); }"
     " }"
     "}catch(e){out.error='Unparseable LLM output: '+e.message;}\n"

@@ -19,7 +19,7 @@ it can be reused for any brand by editing SITE_CONFIG only.
 - Attribute expert voices only from `{{CONTRIBUTORS}}` (SITE_CONFIG). If empty, write in brand editorial voice with no named contributor. Never invent a contributor or title.
 
 ## Conversion
-- Primary CTA is always a **lead/enquiry** (`{{PRIMARY_CTA}}`); routes to the brand. Never instant "Book Now".
+- The page closes with the **subtle dual CTA** (see `guardrails/CTA_BLOCK.md`): travelers → **Voyagers Travel Company** (full planning), trade → **Latin Trails** (Galápagos DMC). This footer naming of the two operators behind the guide is the ONE sanctioned exception to no-operator-favoritism. Never instant "Book Now"; elsewhere on the page operators stay factual and comparative.
 
 ## Sources vs. voice (brand-neutral sourcing)
 - External authorities (e.g. Charles Darwin Foundation, Galápagos Conservancy, Galápagos Conservation Trust, DPNG) may be **cited as sources** for facts. **Never** write as if the content is published by them or in their voice; the only publishing brand is `{{BRAND}}`.

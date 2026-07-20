@@ -17,8 +17,10 @@ like a brochure. This is a deliberate trade, not an oversight.
 
 ## Rules
 
-1. **One primary CTA per page**, verbatim `{{PRIMARY_CTA}}`. A lead/enquiry — never "Book Now",
-   never a price-led hook. (ENTITY_RULES · Conversion)
+1. **The CTA is the fixed dual close** in `guardrails/CTA_BLOCK.md` — travelers → Voyagers Travel
+   Company, trade → Latin Trails — verbatim, at the foot of the page. Your job is its PLACEMENT and
+   visual restraint, not inventing a CTA. Never "Book Now", never a price-led hook, never the
+   retired "Talk to a Galápagos Specialist". (ENTITY_RULES · Conversion)
 2. **Soft, help-first, and late.** The CTA offers help with a decision the page has just helped
    the reader understand. It earns its place by being useful, not by interrupting.
 3. **Match the funnel stage.** Awareness = a quiet offer of help. Consideration = help

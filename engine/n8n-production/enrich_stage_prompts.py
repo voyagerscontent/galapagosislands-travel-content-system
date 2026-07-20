@@ -33,7 +33,9 @@ def readf(rel):
     return (t.replace("{{DOMAIN}}", "galapagosislands.travel")
              .replace("{{BRAND_ALT}}", "galapagosislands.travel")
              .replace("{{BRAND}}", "Galapagos Islands.Travel")
-             .replace("{{PRIMARY_CTA}}", "Talk to a Galápagos Specialist")
+             .replace("{{PRIMARY_CTA}}", "the subtle dual footer close — travelers to Voyagers Travel Company, trade to Latin Trails (see CTA_BLOCK)")
+             .replace("{{CTA_TRAVELER_URL}}", "https://www.voyagerstravel.com")
+             .replace("{{CTA_TRADE_URL}}", "https://www.latintrails.com")
              .replace("{{CONTRIBUTORS}}",
                       "Juan Magallanes (Galápagos Travel Advisor), Andre Robles (Voyagers Travel Company), "
                       "Luisa Cordova (Golden Galapagos)"))
@@ -47,11 +49,17 @@ def block(title, *rels):
 LAW = block("MANDATORY BRIEFING — read first, every run", CP + "AGENT_MANDATORY_BRIEFING.md")
 ENTITY = block("ENTITY RULES", CP + "guardrails/ENTITY_RULES.md")
 VOICE = block("BRAND VOICE — no deviation", CP + "brand-voice/BRAND_STYLE_GUIDE.galapagosislands-travel.yaml")
+# The AUTHOR voice governs how bylined content is actually written and takes precedence over the
+# style guide's generic 'we_sound_like'. Hardcoded into every prose stage per the user: content
+# must sound like Juan Magallanes (distilled from 1,422 of his real advisory replies).
+AUTHVOICE = block("AUTHOR VOICE — Juan Magallanes (governs the writing voice)",
+                  CP + "brand-voice/AUTHOR_VOICE.juan-magallanes.md")
+CTA_BLOCK = block("CTA — the subtle dual close (verbatim, every page)", CP + "guardrails/CTA_BLOCK.md")
 FIDELITY = block("CONTENT FIDELITY", CP + "guardrails/CONTENT_FIDELITY.md")
 HYGIENE = block("OUTPUT HYGIENE — the rules are not the content", CP + "guardrails/OUTPUT_HYGIENE.md")
 HARD = block("HARD TRUTHS (constraints on every claim)", CP + "guardrails/GUARDIAN_OF_TRUTH.md")
 
-HEAD = "\n\n".join([LAW, ENTITY, VOICE, FIDELITY, HYGIENE, HARD]) + "\n"
+HEAD = "\n\n".join([LAW, ENTITY, VOICE, AUTHVOICE, FIDELITY, HYGIENE, HARD]) + "\n"
 
 # ── per-sub-step assets (loaded only where the briefing says they belong) ─────
 # The DPNG site list must travel WITH the facts. MASTER_FACTS names galapagos_master.xlsx as a
@@ -171,7 +179,7 @@ STAGES = {
    "than improve its prose. Return STRICT JSON {\"humanized_markdown\":\"...\"}.",
    "DRAFT: {{ $json['Draft Content'] }}"),
 
- "WFP6_polish.json": ("U0MrpTN3hv4RfNMI", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, CONVERSION],
+ "WFP6_polish.json": ("U0MrpTN3hv4RfNMI", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, CONVERSION, CTA_BLOCK],
    "STAGE — Polishing. THE PUBLICATION BOUNDARY. Everything upstream was internal; everything you "
    "emit is reader-facing. Stripping the internal markers is YOUR job and no one else's.\n"
    "TASK — Two outputs.\n"
@@ -183,8 +191,12 @@ STAGES = {
    "<strong>), never '~' for approx (write 'about' or '&approx;'), never markdown pipes for tables "
    "(use <table>). Markdown inside a table cell ships literal asterisks to the reader.\n"
    "Build per this Page Type's blueprint: semantic H1/H2/H3, answer box, data table(s), "
-   "FAQ accordion, related links, one primary CTA, and JSON-LD (Article with Person author 'Juan "
-   "Magallanes' + BreadcrumbList + FAQPage; FAQ schema byte-matches the visible FAQ). Keep every "
+   "FAQ accordion, related links, and JSON-LD (Article with Person author 'Juan "
+   "Magallanes' + BreadcrumbList + FAQPage; FAQ schema byte-matches the visible FAQ). "
+   "END THE PAGE with the subtle dual close from the CTA BLOCK, VERBATIM: travelers → Voyagers "
+   "Travel Company (full planning), trade → Latin Trails (Galápagos DMC). Both company names must "
+   "appear exactly once, at the foot, quietly — no loud CTA band, no 'Talk to a Specialist', no "
+   "'Book Now'. Link them to CTA_TRAVELER_URL and CTA_TRADE_URL. Keep every "
    "grounded FACT and all human-authored text intact, but make it reader-facing: STRIP every "
    "[source: …] / [VERIFY] / [human: …] marker from body, tables, FAQ and JSON-LD — zero may "
    "survive. Replace with prose attribution only where a fact is notable, surprising or contested, "
@@ -205,7 +217,7 @@ STAGES = {
    "else): {{ $json['Last Error'] }}\n\n"
    "HUMANIZED: {{ $json['Humanized Content'] }}"),
 
- "WFP7_auditor.json": ("na9GWyR851UHSlbP", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, AUDITOR],
+ "WFP7_auditor.json": ("na9GWyR851UHSlbP", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, AUDITOR, CTA_BLOCK],
    "STAGE — Auditor Review. You see TWO artifacts. Judge each by its own standard:\n"
    "- DRAFT (internal, below): carries [source: …] markers. Use it for Part A grounding — every "
    "factual claim traceable. Its markers are CORRECT; never fail them.\n"
@@ -226,6 +238,12 @@ STAGES = {
    "Part K VALID HTML — the page must be a complete HTML document (<!DOCTYPE html><html><head>...). "
    "FAIL on any markdown surviving in it: '**bold**', markdown pipe-tables, or a bare '~' meaning "
    "'approximately'. Those ship literal asterisks and tildes to the reader. Quote each instance.\n"
+   "Part L CTA CLOSE — FAIL unless the page ends with the subtle dual close and BOTH 'Voyagers "
+   "Travel Company' and 'Latin Trails' appear (travelers→Voyagers, trade→Latin Trails, per the CTA "
+   "BLOCK). Also FAIL if the retired 'Talk to a Galápagos Specialist' CTA still appears, or if the "
+   "close is a loud sales band rather than a subtle footer.\n"
+   "Part C VOICE also covers AUTHOR VOICE: the prose must read like Juan Magallanes — answer-first, "
+   "candid 'but'-caveats, specifics over adjectives — not generic marketing copy.\n"
    "Quote the offending text for every FAIL. Return STRICT JSON "
    "{\"pass\":true|false,\"notes\":\"per-part PASS/FAIL\"}.",
    "PAGE: {{ $json['Polished Content'] }}\n\nDRAFT (for Part A grounding only): {{ $json['Draft Content'] }}"),
