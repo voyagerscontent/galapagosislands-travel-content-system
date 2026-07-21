@@ -29,7 +29,7 @@ PUBLISHER_NOTE: "This guide is run by Voyagers Travel Company (traveller plannin
 # The CTA is a SUBTLE dual close hardcoded at the foot of every page — see
 # context-pack/guardrails/CTA_BLOCK.md for the verbatim copy and rules.
 PRIMARY_CTA: "Travelers can contact Voyagers Travel Company for a full travel-planning service. Travel agents and tour operators looking for expert DMC services in the Galápagos can reach out to Latin Trails."
-CTA_TRAVELER_URL: "https://www.voyagerstravel.com"   # ⚠ webmaster: confirm the exact Voyagers URL
+CTA_TRAVELER_URL: "https://www.voyagers.travel/galapagos"   # confirmed by webmaster 2026-07-20
 CTA_TRADE_URL: "https://www.latintrails.com"
 
 # --- contributors (optional) ---------------------------------------------

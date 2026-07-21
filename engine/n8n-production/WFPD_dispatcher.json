@@ -2,7 +2,7 @@
   "name": "WFPD Dispatcher - Content Production (polls Airtable)",
   "nodes": [
     {
-      "name": "Every 2 minutes",
+      "name": "Every 2 hours",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
@@ -13,8 +13,8 @@
         "rule": {
           "interval": [
             {
-              "field": "minutes",
-              "minutesInterval": 2
+              "field": "hours",
+              "hoursInterval": 2
             }
           ]
         }
@@ -217,17 +217,6 @@
     }
   ],
   "connections": {
-    "Every 2 minutes": {
-      "main": [
-        [
-          {
-            "node": "Lookup Active Sites",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Lookup Active Sites": {
       "main": [
         [
@@ -271,6 +260,17 @@
         [
           {
             "node": "Start draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 2 hours": {
+      "main": [
+        [
+          {
+            "node": "Lookup Active Sites",
             "type": "main",
             "index": 0
           }

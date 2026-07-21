@@ -34,7 +34,7 @@ def readf(rel):
              .replace("{{BRAND_ALT}}", "galapagosislands.travel")
              .replace("{{BRAND}}", "Galapagos Islands.Travel")
              .replace("{{PRIMARY_CTA}}", "the subtle dual footer close — travelers to Voyagers Travel Company, trade to Latin Trails (see CTA_BLOCK)")
-             .replace("{{CTA_TRAVELER_URL}}", "https://www.voyagerstravel.com")
+             .replace("{{CTA_TRAVELER_URL}}", "https://www.voyagers.travel/galapagos")
              .replace("{{CTA_TRADE_URL}}", "https://www.latintrails.com")
              .replace("{{CONTRIBUTORS}}",
                       "Juan Magallanes (Galápagos Travel Advisor), Andre Robles (Voyagers Travel Company), "
