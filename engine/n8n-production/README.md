@@ -92,6 +92,25 @@ the draft is required to carry. A stage that doesn't know where it sits will jud
 standard. `WFP5` was also running the old 1.6k-char prompt with no context pack — it now shares
 the same head as the rest.
 
+## Deterministic QA gate (WFP7 — code, not LLM judgment)
+Every OBJECTIVE publication check now runs in code **before** the auditor model, so a
+model can neither miscount nor override a hard failure, and a broken page never spends a
+token. Flow: `Re-check and Claim ─► QA Gate (code) ─► Gate OK? ─► {false → Needs Attention |
+true → Run Stage Agent (LLM) → …}`. The gate logic lives in **`qa_gate.js`** (single source
+of truth); **`add_deterministic_auditor_gate.py`** embeds it into the node and pushes — edit
+the `.js`, re-run the applier, commit; never hand-edit the node in n8n.
+
+Hard-fails (all measured on the bytes of the polished page): internal marker leakage (the
+11-token set incl. inside JSON-LD), guardrail recital sentences (OUTPUT_HYGIENE §1), banned
+entity strings (`Galapagos Travel Center`, `galapagosislands.com`), surviving markdown / bare
+`~`, `<title>` 50–60 and meta description 140–160, dual CTA present + retired CTA absent, valid
+& declared JSON-LD (`Schema Markup Type` @types must appear), author entity + named author,
+and prose word count within 0.8–1.6× of `Suggested Word Count` (**tables excluded** so data
+pages aren't punished). Thresholds are tunable constants at the top of `qa_gate.js`. The LLM
+that runs after a PASS judges only the irreducibly semantic calls — truth-grounding, Juan
+voice, fidelity. Unit-tested against all 9 produced pages (`node`-runnable); it correctly
+fails every pre-CTA page and passes a CTA-compliant one.
+
 ## Loop-safety (unchanged contract)
 One `Status` field; each stage has input filter + output guard + error route to
 `Needs Attention` + `Attempt Count` cap. Run `engine/validate_pipeline.py` after
