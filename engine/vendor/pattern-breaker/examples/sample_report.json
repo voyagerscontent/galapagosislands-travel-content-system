@@ -1,0 +1,489 @@
+{
+  "input_word_count": 96,
+  "phase1": {
+    "flagged": true,
+    "word_count": 96,
+    "sentence_count": 12,
+    "paragraph_count": 3,
+    "metrics": {
+      "sentence_length_cv": 0.141,
+      "sentence_length_autocorr_lag1": 0.3571,
+      "sentence_burstiness": 0.1236,
+      "word_burstiness": 0.3406,
+      "mean_sentence_length": 8.0
+    },
+    "flags": [
+      {
+        "factor": "sentence_rhythm",
+        "reason": "Sentence-length coefficient of variation 0.141 is below 0.35 \u2014 sentences are too uniform in length.",
+        "metric": 0.141,
+        "threshold": 0.35,
+        "scope": "document",
+        "span_start": 0,
+        "span_end": 678,
+        "span_text": "[document]"
+      },
+      {
+        "factor": "burstiness",
+        "reason": "Sentence burstiness 0.124 is below 0.45 \u2014 lacks the short/long variation typical of human writing.",
+        "metric": 0.1236,
+        "threshold": 0.45,
+        "scope": "document",
+        "span_start": 0,
+        "span_end": 678,
+        "span_text": "[document]"
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 0,
+        "span_end": 62,
+        "span_text": "The Galapagos Islands offer a unique experience for travelers."
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 63,
+        "span_end": 125,
+        "span_text": "The islands provide stunning wildlife encounters for visitors."
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 126,
+        "span_end": 186,
+        "span_text": "The archipelago delivers unforgettable moments for everyone."
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 187,
+        "span_end": 239,
+        "span_text": "The destination creates lasting memories for guests."
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 492,
+        "span_end": 534,
+        "span_text": "The wildlife is diverse and abundant here."
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 535,
+        "span_end": 582,
+        "span_text": "The scenery is beautiful and breathtaking here."
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 583,
+        "span_end": 630,
+        "span_text": "The activities are exciting and memorable here."
+      },
+      {
+        "factor": "sentence_structure",
+        "reason": "4 consecutive sentences start with 'the'.",
+        "metric": 4.0,
+        "threshold": 3.0,
+        "scope": "sentence",
+        "span_start": 631,
+        "span_end": 678,
+        "span_text": "The service is professional and attentive here."
+      },
+      {
+        "factor": "paragraph_pattern",
+        "reason": "Paragraph lengths are uniform (CV 0.000 < 0.25) \u2014 mechanical paragraphing.",
+        "metric": 0.0,
+        "threshold": 0.25,
+        "scope": "paragraph",
+        "span_start": 0,
+        "span_end": 239,
+        "span_text": "The Galapagos Islands offer a unique experience for travelers. The islands provide stunning wildlife encounters for visitors. The archipelago delivers unforgettable moments for everyone. The destination creates lasting memories for guests."
+      },
+      {
+        "factor": "paragraph_pattern",
+        "reason": "Paragraph lengths are uniform (CV 0.000 < 0.25) \u2014 mechanical paragraphing.",
+        "metric": 0.0,
+        "threshold": 0.25,
+        "scope": "paragraph",
+        "span_start": 241,
+        "span_end": 490,
+        "span_text": "Moreover, the tours are designed to maximize your comfort. Furthermore, the guides are trained to enhance your journey. Additionally, the boats are equipped to ensure your safety. In conclusion, the experience is crafted to exceed your expectations."
+      },
+      {
+        "factor": "paragraph_pattern",
+        "reason": "Paragraph lengths are uniform (CV 0.000 < 0.25) \u2014 mechanical paragraphing.",
+        "metric": 0.0,
+        "threshold": 0.25,
+        "scope": "paragraph",
+        "span_start": 492,
+        "span_end": 678,
+        "span_text": "The wildlife is diverse and abundant here. The scenery is beautiful and breathtaking here. The activities are exciting and memorable here. The service is professional and attentive here."
+      },
+      {
+        "factor": "transition_formula",
+        "reason": "Formulaic connective opener 'moreover' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15).",
+        "metric": 0.3333,
+        "threshold": 0.15,
+        "scope": "sentence",
+        "span_start": 241,
+        "span_end": 299,
+        "span_text": "Moreover, the tours are designed to maximize your comfort."
+      },
+      {
+        "factor": "transition_formula",
+        "reason": "Formulaic connective opener 'furthermore' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15).",
+        "metric": 0.3333,
+        "threshold": 0.15,
+        "scope": "sentence",
+        "span_start": 300,
+        "span_end": 360,
+        "span_text": "Furthermore, the guides are trained to enhance your journey."
+      },
+      {
+        "factor": "transition_formula",
+        "reason": "Formulaic connective opener 'additionally' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15).",
+        "metric": 0.3333,
+        "threshold": 0.15,
+        "scope": "sentence",
+        "span_start": 361,
+        "span_end": 420,
+        "span_text": "Additionally, the boats are equipped to ensure your safety."
+      },
+      {
+        "factor": "transition_formula",
+        "reason": "Formulaic connective opener 'in conclusion' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15).",
+        "metric": 0.3333,
+        "threshold": 0.15,
+        "scope": "sentence",
+        "span_start": 421,
+        "span_end": 490,
+        "span_text": "In conclusion, the experience is crafted to exceed your expectations."
+      }
+    ],
+    "flagged_spans": [
+      {
+        "start": 0,
+        "end": 239,
+        "factors": [
+          "paragraph_pattern",
+          "sentence_structure"
+        ],
+        "reasons": [
+          "4 consecutive sentences start with 'the'.",
+          "4 consecutive sentences start with 'the'.",
+          "4 consecutive sentences start with 'the'.",
+          "4 consecutive sentences start with 'the'.",
+          "Paragraph lengths are uniform (CV 0.000 < 0.25) \u2014 mechanical paragraphing."
+        ]
+      },
+      {
+        "start": 241,
+        "end": 490,
+        "factors": [
+          "paragraph_pattern",
+          "transition_formula"
+        ],
+        "reasons": [
+          "Paragraph lengths are uniform (CV 0.000 < 0.25) \u2014 mechanical paragraphing.",
+          "Formulaic connective opener 'moreover' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15).",
+          "Formulaic connective opener 'furthermore' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15).",
+          "Formulaic connective opener 'additionally' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15).",
+          "Formulaic connective opener 'in conclusion' \u2014 connectives open 4/12 sentences (ratio 0.33 > 0.15)."
+        ]
+      },
+      {
+        "start": 492,
+        "end": 678,
+        "factors": [
+          "paragraph_pattern",
+          "sentence_structure"
+        ],
+        "reasons": [
+          "4 consecutive sentences start with 'the'.",
+          "4 consecutive sentences start with 'the'.",
+          "4 consecutive sentences start with 'the'.",
+          "4 consecutive sentences start with 'the'.",
+          "Paragraph lengths are uniform (CV 0.000 < 0.25) \u2014 mechanical paragraphing."
+        ]
+      }
+    ],
+    "notes": []
+  },
+  "phase2": {
+    "dry_run": false,
+    "span_results": [
+      {
+        "start": 0,
+        "end": 54,
+        "original": "Visiting the Galapagos Islands is a unique experience.",
+        "rewrite": "Visiting the Galapagos Islands? Unique. There is simply no other experience quite like standing among the wildlife and landscapes found there, where the islands offer something that cannot be replicated anywhere else. Nothing compares.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 2
+      },
+      {
+        "start": 55,
+        "end": 195,
+        "original": "Wildlife encounters here are stunning, leaving guests with unforgettable moments that few destinations anywhere else in the world can match.",
+        "rewrite": "Wildlife encounters here are stunning. Few destinations anywhere else in the world can match the unforgettable moments guests take away with them.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 196,
+        "end": 230,
+        "original": "Lasting memories follow naturally.",
+        "rewrite": "Lasting memories follow.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 231,
+        "end": 259,
+        "original": "Travelers come away changed.",
+        "rewrite": "Travelers come away changed. Something shifts. The experience leaves them different from who they were when they first arrived and set out on the journey.\n\nIt stays with them. Long after the trip ends, that change remains.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 261,
+        "end": 309,
+        "original": "The tours are designed to maximize your comfort.",
+        "rewrite": "Comfort is the priority. The tours are designed with your comfort in mind throughout.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 311,
+        "end": 354,
+        "original": "Guides are trained to enhance your journey.",
+        "rewrite": "Guides are trained. Their purpose is to enhance your journey through every stage of the experience, ensuring you get the most from what's on offer.\n\nGood guides matter.\n\nThey're trained for this. Your journey benefits directly. That's the point.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 355,
+        "end": 400,
+        "original": "The boats are equipped to ensure your safety.",
+        "rewrite": "Safe. The boats carry all the equipment needed to keep passengers protected throughout the journey.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 401,
+        "end": 414,
+        "original": "That matters.",
+        "rewrite": "That matters.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 416,
+        "end": 489,
+        "original": "The experience, taken as a whole, is crafted to exceed your expectations.",
+        "rewrite": "The experience, taken as a whole, exceeds expectations. No question. It's designed to go beyond what you'd anticipate, delivering something that consistently surpasses the standard you might reasonably walk in with.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 491,
+        "end": 529,
+        "original": "Wildlife here is diverse and abundant.",
+        "rewrite": "Wildlife here is diverse and abundant \u2014 remarkably so.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 530,
+        "end": 640,
+        "original": "Breathtaking scenery surrounds you at every turn, and the activities on offer are both exciting and memorable.",
+        "rewrite": "The scenery is breathtaking. At every turn, the landscape surrounds you with views that are hard to leave behind, and the activities on offer manage to be both exciting and genuinely memorable.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 641,
+        "end": 649,
+        "original": "Service?",
+        "rewrite": "Service?",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 650,
+        "end": 688,
+        "original": "Professional and attentive throughout.",
+        "rewrite": "Professional. The staff remained attentive from start to finish, never missing a beat throughout the entire experience.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      },
+      {
+        "start": 690,
+        "end": 758,
+        "original": "Staff handle every detail with care, ensuring nothing is overlooked.",
+        "rewrite": "Every detail is handled with care. Nothing is overlooked.",
+        "accepted": true,
+        "needs_human_review": false,
+        "major_change": false,
+        "factors": [
+          "burstiness"
+        ],
+        "guard_reason": "clean",
+        "passes": 1
+      }
+    ],
+    "output_text": "Visiting the Galapagos Islands? Unique. There is simply no other experience quite like standing among the wildlife and landscapes found there, where the islands offer something that cannot be replicated anywhere else. Nothing compares. Wildlife encounters here are stunning. Few destinations anywhere else in the world can match the unforgettable moments guests take away with them. Lasting memories follow. Travelers come away changed. Something shifts. The experience leaves them different from who they were when they first arrived and set out on the journey.\n\nIt stays with them. Long after the trip ends, that change remains.\n\nComfort is the priority. The tours are designed with your comfort in mind throughout.\n\nGuides are trained. Their purpose is to enhance your journey through every stage of the experience, ensuring you get the most from what's on offer.\n\nGood guides matter.\n\nThey're trained for this. Your journey benefits directly. That's the point. Safe. The boats carry all the equipment needed to keep passengers protected throughout the journey. That matters.\n\nThe experience, taken as a whole, exceeds expectations. No question. It's designed to go beyond what you'd anticipate, delivering something that consistently surpasses the standard you might reasonably walk in with.\n\nWildlife here is diverse and abundant \u2014 remarkably so. The scenery is breathtaking. At every turn, the landscape surrounds you with views that are hard to leave behind, and the activities on offer manage to be both exciting and genuinely memorable. Service? Professional. The staff remained attentive from start to finish, never missing a beat throughout the entire experience.\n\nEvery detail is handled with care. Nothing is overlooked.\n",
+    "output_html": "Visiting the Galapagos Islands? Unique. There is simply no other experience quite like standing among the wildlife and landscapes found there, where the islands offer something that cannot be replicated anywhere else. Nothing compares. Wildlife encounters here are stunning. Few destinations anywhere else in the world can match the unforgettable moments guests take away with them. Lasting memories follow. Travelers come away changed. Something shifts. The experience leaves them different from who they were when they first arrived and set out on the journey.\n\nIt stays with them. Long after the trip ends, that change remains.\n\nComfort is the priority. The tours are designed with your comfort in mind throughout.\n\nGuides are trained. Their purpose is to enhance your journey through every stage of the experience, ensuring you get the most from what's on offer.\n\nGood guides matter.\n\nThey're trained for this. Your journey benefits directly. That's the point. Safe. The boats carry all the equipment needed to keep passengers protected throughout the journey. That matters.\n\nThe experience, taken as a whole, exceeds expectations. No question. It's designed to go beyond what you'd anticipate, delivering something that consistently surpasses the standard you might reasonably walk in with.\n\nWildlife here is diverse and abundant \u2014 remarkably so. The scenery is breathtaking. At every turn, the landscape surrounds you with views that are hard to leave behind, and the activities on offer manage to be both exciting and genuinely memorable. Service? Professional. The staff remained attentive from start to finish, never missing a beat throughout the entire experience.\n\nEvery detail is handled with care. Nothing is overlooked.\n",
+    "needs_human_review": false
+  },
+  "phase1_recheck": {
+    "flagged": false,
+    "word_count": 264,
+    "sentence_count": 34,
+    "paragraph_count": 9,
+    "metrics": {
+      "sentence_length_cv": 1.0076,
+      "sentence_length_autocorr_lag1": -0.3935,
+      "sentence_burstiness": 0.5019,
+      "word_burstiness": 0.3267,
+      "mean_sentence_length": 7.76
+    },
+    "flags": [],
+    "flagged_spans": [],
+    "notes": []
+  },
+  "final_text": "Visiting the Galapagos Islands? Unique. There is simply no other experience quite like standing among the wildlife and landscapes found there, where the islands offer something that cannot be replicated anywhere else. Nothing compares. Wildlife encounters here are stunning. Few destinations anywhere else in the world can match the unforgettable moments guests take away with them. Lasting memories follow. Travelers come away changed. Something shifts. The experience leaves them different from who they were when they first arrived and set out on the journey.\n\nIt stays with them. Long after the trip ends, that change remains.\n\nComfort is the priority. The tours are designed with your comfort in mind throughout.\n\nGuides are trained. Their purpose is to enhance your journey through every stage of the experience, ensuring you get the most from what's on offer.\n\nGood guides matter.\n\nThey're trained for this. Your journey benefits directly. That's the point. Safe. The boats carry all the equipment needed to keep passengers protected throughout the journey. That matters.\n\nThe experience, taken as a whole, exceeds expectations. No question. It's designed to go beyond what you'd anticipate, delivering something that consistently surpasses the standard you might reasonably walk in with.\n\nWildlife here is diverse and abundant \u2014 remarkably so. The scenery is breathtaking. At every turn, the landscape surrounds you with views that are hard to leave behind, and the activities on offer manage to be both exciting and genuinely memorable. Service? Professional. The staff remained attentive from start to finish, never missing a beat throughout the entire experience.\n\nEvery detail is handled with care. Nothing is overlooked.\n",
+  "final_html": "Visiting the Galapagos Islands? Unique. There is simply no other experience quite like standing among the wildlife and landscapes found there, where the islands offer something that cannot be replicated anywhere else. Nothing compares. Wildlife encounters here are stunning. Few destinations anywhere else in the world can match the unforgettable moments guests take away with them. Lasting memories follow. Travelers come away changed. Something shifts. The experience leaves them different from who they were when they first arrived and set out on the journey.\n\nIt stays with them. Long after the trip ends, that change remains.\n\nComfort is the priority. The tours are designed with your comfort in mind throughout.\n\nGuides are trained. Their purpose is to enhance your journey through every stage of the experience, ensuring you get the most from what's on offer.\n\nGood guides matter.\n\nThey're trained for this. Your journey benefits directly. That's the point. Safe. The boats carry all the equipment needed to keep passengers protected throughout the journey. That matters.\n\nThe experience, taken as a whole, exceeds expectations. No question. It's designed to go beyond what you'd anticipate, delivering something that consistently surpasses the standard you might reasonably walk in with.\n\nWildlife here is diverse and abundant \u2014 remarkably so. The scenery is breathtaking. At every turn, the landscape surrounds you with views that are hard to leave behind, and the activities on offer manage to be both exciting and genuinely memorable. Service? Professional. The staff remained attentive from start to finish, never missing a beat throughout the entire experience.\n\nEvery detail is handled with care. Nothing is overlooked.\n",
+  "changed": true,
+  "needs_human_review": false,
+  "flags_cleared": true,
+  "rounds": [
+    {
+      "round": 1,
+      "still_flagged": true,
+      "factors": [
+        "burstiness"
+      ],
+      "metrics": {
+        "sentence_length_cv": 0.6845,
+        "sentence_length_autocorr_lag1": -0.327,
+        "sentence_burstiness": 0.4064,
+        "word_burstiness": 0.3332,
+        "mean_sentence_length": 7.93
+      }
+    },
+    {
+      "round": 2,
+      "still_flagged": false,
+      "factors": [],
+      "metrics": {
+        "sentence_length_cv": 1.0076,
+        "sentence_length_autocorr_lag1": -0.3935,
+        "sentence_burstiness": 0.5019,
+        "word_burstiness": 0.3267,
+        "mean_sentence_length": 7.76
+      }
+    }
+  ]
+}
