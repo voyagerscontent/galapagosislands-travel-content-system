@@ -1,37 +1,45 @@
 {
   "_meta": {
     "name": "travel_variants",
-    "description": "AI-quirk travel phrases mapped to arrays of authentic human alternatives. Extracted from ~2.9M chars of real travel-agent forum replies (Galapagos / Ecuador / Amazon / Peru / expedition cruise expertise). When multiple variants exist, the engine picks one per occurrence using a Markov-style state machine seeded from the surrounding text so replacements do not follow a repeating pattern.",
-    "version": "1.0.0",
+    "description": "AI-quirk travel phrases mapped to arrays of authentic human alternatives. Extracted from ~2.9M chars of real travel-agent forum replies (Galapagos / Ecuador / Amazon / Peru / expedition cruise expertise). When multiple variants exist, the engine picks one per occurrence using a Markov-style state machine seeded from the surrounding text so replacements do not follow a repeating pattern. | v1.2.0: reinforced with corpus-attested noun-phrase variants from 2,307 real forum posts (see human_corpus.json). | v1.3.1: added landing-craft vocabulary (panga, dinghy, zodiac) as first-class variants, removed backwards 'panga -> small boat' mapping.",
+    "version": "1.3.1",
     "match_type": "phrase",
     "case_sensitive": false,
     "preserve_case": true,
     "domain": "travel",
     "brand": "Voyagers",
     "value_type": "variants",
-    "source": "Extracted from real forum-reply corpora (First-batch, second-batch ... azbuceadora-batch)."
+    "source": "Extracted from real forum-reply corpora (First-batch, second-batch ... azbuceadora-batch).",
+    "stats": {
+      "total_keys": 407,
+      "total_variants": 852,
+      "multi_variant_keys": 368
+    }
   },
   "replacements": {
-
     "the enchanted islands": [
       "the Galapagos",
       "the Galapagos archipelago",
       "the islands",
-      "the archipelago"
+      "the archipelago",
+      "the Galapagos Islands"
     ],
     "the enchanted isles": [
       "the Galapagos",
       "the Galapagos archipelago",
-      "the archipelago"
+      "the archipelago",
+      "the Galapagos Islands"
     ],
     "darwin's living laboratory": [
       "the Galapagos",
       "the archipelago",
-      "the islands where Darwin worked"
+      "the islands where Darwin worked",
+      "the Galapagos Islands"
     ],
     "darwins living laboratory": [
       "the Galapagos",
-      "the archipelago"
+      "the archipelago",
+      "the Galapagos Islands"
     ],
     "the galapagos archipelago": [
       "the Galapagos",
@@ -42,7 +50,6 @@
       "the Galapagos",
       "the archipelago"
     ],
-
     "the world's largest rainforest": [
       "the Amazon rainforest",
       "the rainforest",
@@ -72,7 +79,6 @@
       "further into the rainforest",
       "further from the river"
     ],
-
     "the roof of the world": [
       "the high Andes",
       "the Andes",
@@ -81,25 +87,32 @@
     "the end of the world": [
       "the far south",
       "Ushuaia",
-      "the southern tip of the continent"
+      "the southern tip of the continent",
+      "the Antarctic"
     ],
     "the end of the earth": [
       "the far south",
-      "the southern tip of the continent"
+      "the southern tip of the continent",
+      "the Antarctic"
     ],
     "the last frontier": [
       "a remote region",
       "one of the last remote regions",
-      "one of the least-visited regions"
+      "one of the least-visited regions",
+      "the Antarctic"
     ],
     "the seventh continent": [
-      "Antarctica"
+      "Antarctica",
+      "the Antarctic",
+      "the continent"
     ],
     "the white continent": [
-      "Antarctica"
+      "Antarctica",
+      "the Antarctic"
     ],
     "the frozen continent": [
-      "Antarctica"
+      "Antarctica",
+      "the Antarctic"
     ],
     "the land of the incas": [
       "Peru",
@@ -150,7 +163,6 @@
       "in the far north",
       "in the Arctic"
     ],
-
     "the crown jewel of south america": [
       "one of the best trips in South America",
       "a top South American destination",
@@ -216,7 +228,6 @@
       "set among",
       "in the middle of"
     ],
-
     "surrounded by breathtaking scenery": [
       "with striking scenery",
       "with big views on every side",
@@ -330,7 +341,6 @@
       "under the trees",
       "below the canopy"
     ],
-
     "step off the beaten path": [
       "leave the tourist route",
       "get off the main route",
@@ -368,7 +378,6 @@
       "skip the tourist traps",
       "skip the usual tourist stops"
     ],
-
     "for the adventurous soul": [
       "for adventurous travelers",
       "for people who like active trips"
@@ -396,7 +405,6 @@
     "for the modern traveler": [
       "for today's travelers"
     ],
-
     "immerse themselves in nature's most": [
       "get right into nature's most",
       "spend real time in nature's most"
@@ -518,7 +526,6 @@
       "with nature",
       "at nature's pace"
     ],
-
     "expert local guides": [
       "local guides",
       "experienced local guides",
@@ -641,7 +648,6 @@
     "put together with you in mind": [
       "built around you"
     ],
-
     "your journey begins": [
       "your trip starts",
       "you set off"
@@ -671,7 +677,6 @@
     "paradise awaits": [
       "a great spot is waiting for you"
     ],
-
     "the wonders of the amazon": [
       "the Amazon",
       "what the Amazon has to offer"
@@ -737,7 +742,6 @@
       "great for hiking",
       "a good pick for hikers"
     ],
-
     "witness the wonders": [
       "see"
     ],
@@ -769,7 +773,6 @@
       "look at",
       "watch"
     ],
-
     "the perfect destination for": [
       "a good destination for",
       "one of the best destinations for",
@@ -795,7 +798,6 @@
       "a top getaway",
       "hard to beat as a getaway"
     ],
-
     "the perfect blend of": [
       "a mix of",
       "a good mix of"
@@ -816,7 +818,6 @@
       "the best of both",
       "two things at once"
     ],
-
     "world-class service": [
       "top service",
       "very good service"
@@ -859,7 +860,6 @@
       "known as welcoming",
       "known for looking after their guests"
     ],
-
     "renowned for its beauty": [
       "known for its scenery",
       "known for how it looks"
@@ -930,7 +930,6 @@
       "wide views of Patagonia",
       "views over Patagonia"
     ],
-
     "under the southern cross": [
       "under southern skies"
     ],
@@ -990,7 +989,6 @@
       "the Andean condor (not always easy to spot)",
       "the rarely-seen Andean condor"
     ],
-
     "penguin colonies": [
       "penguin colonies",
       "penguin rookeries",
@@ -1084,7 +1082,6 @@
       "cross the Drake Passage",
       "sail the Drake Passage"
     ],
-
     "an authentic experience": [
       "a real experience",
       "the real thing"
@@ -1188,15 +1185,35 @@
       "one of the most biodiverse regions on Earth",
       "one of the most species-rich regions on the planet"
     ],
-
-    "sustainable travel": ["sustainable travel", "low-impact travel"],
-    "sustainable tourism": ["sustainable tourism", "low-impact tourism"],
-    "responsible travel": ["responsible travel"],
-    "responsible tourism": ["responsible tourism"],
-    "eco-friendly travel": ["eco-friendly travel", "low-impact travel"],
-    "low-impact travel": ["low-impact travel"],
-    "travel with purpose": ["travel that gives back", "travel with a reason"],
-    "purposeful travel": ["travel that gives back", "travel with a reason"],
+    "sustainable travel": [
+      "sustainable travel",
+      "low-impact travel"
+    ],
+    "sustainable tourism": [
+      "sustainable tourism",
+      "low-impact tourism"
+    ],
+    "responsible travel": [
+      "responsible travel"
+    ],
+    "responsible tourism": [
+      "responsible tourism"
+    ],
+    "eco-friendly travel": [
+      "eco-friendly travel",
+      "low-impact travel"
+    ],
+    "low-impact travel": [
+      "low-impact travel"
+    ],
+    "travel with purpose": [
+      "travel that gives back",
+      "travel with a reason"
+    ],
+    "purposeful travel": [
+      "travel that gives back",
+      "travel with a reason"
+    ],
     "give back to local communities": [
       "help local communities",
       "put money into local communities"
@@ -1228,7 +1245,6 @@
       "travel that matters",
       "travel that stays with you"
     ],
-
     "at voyagers, we believe": [
       "at Voyagers, we think",
       "at Voyagers, we've found",
@@ -1323,7 +1339,6 @@
       "we love adventure",
       "we do this because we love the outdoors"
     ],
-
     "book your dream trip": [
       "book your trip"
     ],
@@ -1416,7 +1431,6 @@
       "come see",
       "come and see"
     ],
-
     "embark on a journey of a lifetime": [
       "start a trip you'll remember",
       "set off on a top trip",
@@ -1566,7 +1580,6 @@
     "sensory overload": [
       "a lot to take in"
     ],
-
     "gateway to the amazon": [
       "starting point for the Amazon",
       "the town most Amazon trips start from"
@@ -1582,6 +1595,93 @@
     "gateway to the galapagos": [
       "starting point for the Galapagos",
       "the town most Galapagos trips start from"
+    ],
+    "inflatable craft": [
+      "panga",
+      "dinghy",
+      "zodiac",
+      "small boat"
+    ],
+    "an inflatable craft": [
+      "a panga",
+      "a dinghy",
+      "a zodiac",
+      "a small boat"
+    ],
+    "inflatable boat": [
+      "panga",
+      "dinghy",
+      "zodiac",
+      "small boat"
+    ],
+    "an inflatable boat": [
+      "a panga",
+      "a dinghy",
+      "a zodiac",
+      "a small boat"
+    ],
+    "landing craft": [
+      "panga",
+      "dinghy",
+      "zodiac",
+      "small boat"
+    ],
+    "the landing craft": [
+      "the panga",
+      "the dinghy",
+      "the zodiac",
+      "the small boat"
+    ],
+    "tender boat": [
+      "panga",
+      "dinghy",
+      "zodiac",
+      "small boat"
+    ],
+    "the tender boat": [
+      "the panga",
+      "the dinghy",
+      "the zodiac",
+      "the small boat"
+    ],
+    "rubber boat": [
+      "panga",
+      "dinghy",
+      "zodiac",
+      "small boat"
+    ],
+    "a rubber boat": [
+      "a panga",
+      "a dinghy",
+      "a zodiac",
+      "a small boat"
+    ],
+    "rubber dinghy": [
+      "panga",
+      "dinghy",
+      "zodiac"
+    ],
+    "motorized dinghy": [
+      "panga",
+      "dinghy",
+      "zodiac"
+    ],
+    "motorised dinghy": [
+      "panga",
+      "dinghy",
+      "zodiac"
+    ],
+    "zodiac trip": [
+      "zodiac ride",
+      "panga ride",
+      "zodiac excursion",
+      "dinghy ride"
+    ],
+    "a zodiac trip": [
+      "a zodiac ride",
+      "a panga ride",
+      "a zodiac excursion",
+      "a dinghy ride"
     ]
   }
 }

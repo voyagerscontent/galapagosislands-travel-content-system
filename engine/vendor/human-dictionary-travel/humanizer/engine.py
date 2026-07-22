@@ -1,5 +1,5 @@
 """
-Hardcoded, deterministic humanizer engine — v1.1 with variant support.
+Hardcoded, deterministic humanizer engine — v1.4 with context-trigger layer.
 
 - No LLM. No network.
 - Pre-compiled regex tables from JSON dictionaries.
@@ -17,6 +17,19 @@ v1.1: variant-aware.
   so the same AI phrase in different contexts yields different variants, and
   the previous pick influences the next one — a first-order Markov walk over
   the variant list.
+
+v1.4: context-trigger layer.
+- travel_context_triggers.json defines AI structural patterns that cannot be
+  cleanly regex-swapped (whole-sentence tropes, phrases needing sentence
+  reshape). The engine FLAGS these matches but does not substitute — a
+  downstream LLM step (n8n OpenAI HTTP node) rewrites the flagged sentence,
+  pasting one of the pre-approved human_variants character-for-character.
+- Engine emits `flagged_spans` in the result with the trigger id, matched
+  text, char range, local context (~40 chars before + after), an ordered
+  candidate list of human variants (Markov-picked so it's deterministic),
+  and the LLM instruction. Downstream consumers see everything they need
+  to call OpenAI with a strict verbatim guardrail.
+- No LLM is called from the Python engine itself — this stays 100% offline.
 """
 
 from __future__ import annotations
@@ -43,6 +56,12 @@ DEFAULT_DICT_FILES = [
     "core_words.json",       # universal words
 ]
 
+# Context-trigger file: flag-only, no substitution here.
+DEFAULT_TRIGGER_FILE = "travel_context_triggers.json"
+# Max human_variants offered to the LLM per flagged span. Kept small so
+# prompts stay short and the LLM's verbatim-copy job is easier.
+MAX_CANDIDATES_PER_FLAG = 6
+
 
 @dataclass
 class Replacement:
@@ -67,12 +86,46 @@ class Replacement:
 
 
 @dataclass
+class FlaggedSpan:
+    """A context-trigger match. The engine does NOT substitute; downstream
+    LLM (n8n OpenAI node) rewrites the sentence pasting one of the
+    candidate_variants verbatim. If the LLM output does not contain a
+    candidate verbatim, the flagged text is left as-is (safe fallback)."""
+    trigger_id: str
+    matched_text: str
+    start: int
+    end: int
+    context_before: str
+    context_after: str
+    candidate_variants: List[str]  # Markov-ordered subset (top N)
+    llm_instruction: str
+    topic_bucket: str
+    reason: str
+
+    def to_dict(self) -> dict:
+        return {
+            "trigger_id": self.trigger_id,
+            "matched_text": self.matched_text,
+            "start": self.start,
+            "end": self.end,
+            "context_before": self.context_before,
+            "context_after": self.context_after,
+            "candidate_variants": self.candidate_variants,
+            "llm_instruction": self.llm_instruction,
+            "topic_bucket": self.topic_bucket,
+            "reason": self.reason,
+        }
+
+
+@dataclass
 class HumanizeResult:
     text: str
     original_text: str
     replacements: List[Replacement] = field(default_factory=list)
+    flagged_spans: List[FlaggedSpan] = field(default_factory=list)
     word_count: int = 0
     replacement_count: int = 0
+    flag_count: int = 0
     truncated: bool = False
 
     def to_dict(self) -> dict:
@@ -81,8 +134,10 @@ class HumanizeResult:
             "original_text": self.original_text,
             "word_count": self.word_count,
             "replacement_count": self.replacement_count,
+            "flag_count": self.flag_count,
             "truncated": self.truncated,
             "replacements": [r.to_dict() for r in self.replacements],
+            "flagged_spans": [f.to_dict() for f in self.flagged_spans],
         }
 
 
@@ -183,6 +238,7 @@ class Humanizer:
         extra_dicts: Optional[Dict[str, Union[str, List[str]]]] = None,
         max_words: int = MAX_WORDS,
         seed: str = "",
+        trigger_file: Optional[str] = DEFAULT_TRIGGER_FILE,
     ) -> None:
         self.dict_dir = Path(dict_dir) if dict_dir else DICT_DIR
         self.max_words = int(max_words)
@@ -190,6 +246,8 @@ class Humanizer:
         # Each source stores: (name, compiled_pattern, {lower_key: [variants]})
         self._sources: List[Tuple[str, re.Pattern, Dict[str, List[str]]]] = []
         self._loaded_names: List[str] = []
+        # Context triggers: list of compiled dicts with regex + metadata
+        self._triggers: List[dict] = []
 
         files = dictionaries if dictionaries is not None else DEFAULT_DICT_FILES
         for filename in files:
@@ -197,6 +255,9 @@ class Humanizer:
 
         if extra_dicts:
             self._add_dict("extra_dicts", extra_dicts)
+
+        if trigger_file:
+            self._load_triggers(trigger_file)
 
     # ----- dictionary loading -----
 
@@ -238,9 +299,43 @@ class Humanizer:
         self._sources.append((name, pattern, normalized))
         self._loaded_names.append(name)
 
+    def _load_triggers(self, filename: str) -> None:
+        """Load context-trigger definitions. Missing file is OK."""
+        path = self.dict_dir / filename
+        if not path.exists():
+            return
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        for t in data.get("triggers", []):
+            try:
+                rx = re.compile(t["trigger_pattern"])
+            except re.error:
+                continue
+            # Normalize variants: accept list[str] or list[{text, source}]
+            variants: List[str] = []
+            for v in t.get("human_variants", []):
+                if isinstance(v, str):
+                    variants.append(v)
+                elif isinstance(v, dict) and "text" in v:
+                    variants.append(v["text"])
+            if not variants:
+                continue
+            self._triggers.append({
+                "id": t["id"],
+                "pattern": rx,
+                "topic_bucket": t.get("topic_bucket", "general"),
+                "reason": t.get("reason", ""),
+                "instruction": t.get("instruction_to_llm", ""),
+                "variants": variants,
+            })
+
     @property
     def loaded_dictionaries(self) -> List[str]:
         return list(self._loaded_names)
+
+    @property
+    def loaded_triggers(self) -> List[str]:
+        return [t["id"] for t in self._triggers]
 
     def total_entries(self) -> int:
         return sum(len(m) for _, _, m in self._sources)
@@ -313,14 +408,81 @@ class Humanizer:
         current = re.sub(r"(^|\n)[ \t]*[,;][ \t]*", r"\1", current)
         current = re.sub(r"\n[ \t]+\n", "\n\n", current)
 
+        # ---- Context-trigger flagging pass (no substitution) ----
+        flagged_spans = self._flag_context_triggers(current, picker)
+
         return HumanizeResult(
             text=current,
             original_text=original,
             replacements=replacements,
+            flagged_spans=flagged_spans,
             word_count=word_count,
             replacement_count=len(replacements),
+            flag_count=len(flagged_spans),
             truncated=truncated,
         )
+
+    def _flag_context_triggers(
+        self,
+        text: str,
+        picker: "MarkovVariantPicker",
+    ) -> List[FlaggedSpan]:
+        """Scan text for context-trigger regex matches. Emit FlaggedSpan for
+        each; do NOT modify text. Overlapping matches are resolved by
+        keeping the first (leftmost) longest match per position.
+        """
+        if not self._triggers:
+            return []
+        # Collect all matches
+        raw: List[Tuple[int, int, dict, str]] = []
+        for trig in self._triggers:
+            for m in trig["pattern"].finditer(text):
+                if m.start() == m.end():
+                    continue
+                raw.append((m.start(), m.end(), trig, m.group(0)))
+        # Sort by (start, -length) so longest wins at same position
+        raw.sort(key=lambda t: (t[0], -(t[1] - t[0])))
+        # De-overlap: skip any match that overlaps a previously-kept one
+        kept: List[Tuple[int, int, dict, str]] = []
+        cursor = 0
+        for start, end, trig, txt in raw:
+            if start < cursor:
+                continue
+            kept.append((start, end, trig, txt))
+            cursor = end
+
+        # Build FlaggedSpan list with Markov-picked candidate ordering.
+        # The picker gives each span a deterministic but non-patterned
+        # first-choice variant; we surface the top MAX_CANDIDATES_PER_FLAG
+        # so the LLM has options if the first doesn't fit grammatically.
+        spans: List[FlaggedSpan] = []
+        for start, end, trig, matched in kept:
+            ctx_before = text[max(0, start - 80):start]
+            ctx_after = text[end:min(len(text), end + 80)]
+            variants = trig["variants"]
+            # Order candidates: first the Markov pick, then the rest
+            # (rotated so consecutive triggers of same id don't repeat).
+            first_idx, _first = picker.pick(
+                f"trigger:{trig['id']}",
+                variants,
+                ctx_before + ctx_after,
+            )
+            ordered = [variants[first_idx]] + [
+                variants[i] for i in range(len(variants)) if i != first_idx
+            ]
+            spans.append(FlaggedSpan(
+                trigger_id=trig["id"],
+                matched_text=matched,
+                start=start,
+                end=end,
+                context_before=ctx_before,
+                context_after=ctx_after,
+                candidate_variants=ordered[:MAX_CANDIDATES_PER_FLAG],
+                llm_instruction=trig["instruction"],
+                topic_bucket=trig["topic_bucket"],
+                reason=trig["reason"],
+            ))
+        return spans
 
     # ----- utilities -----
 
@@ -345,3 +507,20 @@ class Humanizer:
                     "replacement": variants[0],  # fallback for legacy consumers
                 })
         return rules
+
+    def dump_triggers(self) -> List[dict]:
+        """Export context triggers for downstream runtimes (n8n Code node,
+        intake page). Each entry ships its full variant list — the n8n
+        OpenAI node will pick and validate verbatim inclusion.
+        """
+        out: List[dict] = []
+        for t in self._triggers:
+            out.append({
+                "id": t["id"],
+                "pattern": t["pattern"].pattern,
+                "topic_bucket": t["topic_bucket"],
+                "reason": t["reason"],
+                "instruction_to_llm": t["instruction"],
+                "human_variants": t["variants"],
+            })
+        return out
