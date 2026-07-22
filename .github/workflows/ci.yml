@@ -1,0 +1,39 @@
+name: CI
+
+# Runs the deterministic normalizer tests and the JS<->Python sync test on
+# every push and pull request. Green = the normalizer still keeps its
+# guarantees (zero-width/NBSP removal, accent preservation, idempotency,
+# determinism) AND the n8n JavaScript twin is byte-identical to normalize.py.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .claude/skills/text-normalizer/scripts
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Python tests (determinism, idempotency, accents, fixtures)
+        run: python3 test_normalize.py
+
+      - name: JS <-> Python sync test (n8n twin parity)
+        run: node sync_test.js
