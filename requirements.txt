@@ -1,0 +1,14 @@
+# Phase 1 (detector) uses only the Python standard library — no deps required.
+# The following are for Phase 2 (Claude) and the FastAPI service.
+
+fastapi>=0.110
+uvicorn>=0.27
+pydantic>=2.0
+requests>=2.31
+
+# Optional: only needed if you use the official Anthropic SDK instead of the
+# built-in requests/curl transport. The service does NOT require it.
+# anthropic>=0.40
+
+# Testing
+pytest>=7.0

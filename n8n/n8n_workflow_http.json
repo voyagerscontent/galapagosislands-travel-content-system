@@ -1,0 +1,135 @@
+{
+  "name": "Pattern Breaker \u2014 Detect & Restructure",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger (test)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pattern-breaker",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook (POST text)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        360
+      ],
+      "webhookId": "pattern-breaker"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalise input from either trigger into { text }\nconst item = $input.first().json;\nconst text = item.body?.text ?? item.text ?? 'The islands offer a unique experience. The islands provide stunning views. The islands deliver great moments. The islands create memories.';\nreturn [{ json: { text } }];"
+      },
+      "id": "prep",
+      "name": "Prep Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://pattern-breaker:8080/process",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.text }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "process",
+      "name": "POST /process",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        760,
+        260
+      ],
+      "notes": "Full 2-phase run. For detection-only, change URL to /detect."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Shape a tidy result for downstream nodes.\nconst r = $input.first().json;\nreturn [{ json: {\n  changed: r.changed,\n  flags_cleared: r.flags_cleared,\n  needs_human_review: r.needs_human_review,\n  factors_before: [...new Set((r.phase1?.flags||[]).map(f=>f.factor))],\n  final_text: r.final_text,\n  final_html: r.final_html\n} }];"
+      },
+      "id": "shape",
+      "name": "Shape Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        260
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger (test)": {
+      "main": [
+        [
+          {
+            "node": "Prep Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook (POST text)": {
+      "main": [
+        [
+          {
+            "node": "Prep Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prep Input": {
+      "main": [
+        [
+          {
+            "node": "POST /process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /process": {
+      "main": [
+        [
+          {
+            "node": "Shape Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "description": "Calls the Pattern Breaker FastAPI service. Change SERVICE_URL at build time or edit the HTTP node's URL. If PB_API_TOKEN is set on the service, add an 'Authorization: Bearer <token>' header to the HTTP Request node."
+  },
+  "pinData": {}
+}

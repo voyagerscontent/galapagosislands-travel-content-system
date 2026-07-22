@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "name": "pattern_breaker_thresholds",
+    "description": "Hardcoded numeric thresholds for the Phase 1 deterministic detector. Every flag is produced by comparing a computed metric against one of these fixed values. No LLM, no learned weights, no randomness. Editing these values is the ONLY way to change detector sensitivity. Same input + same thresholds => same flags, always.",
+    "version": "1.0.0"
+  },
+
+  "sentence_rhythm": {
+    "_desc": "Detects a repetitive rhythm in sentence lengths (word counts). Low coefficient of variation OR strong lag-1 autocorrelation => mechanical rhythm.",
+    "min_sentences": 4,
+    "cv_flag_below": 0.35,
+    "autocorr_lag1_flag_above": 0.55,
+    "scope": "document"
+  },
+
+  "burstiness": {
+    "_desc": "Human writing is 'bursty' — it mixes very short and very long sentences unpredictably. Low burstiness (variance/mean of sentence lengths) is an AI tell. Also computes word-length burstiness.",
+    "min_sentences": 4,
+    "sentence_burstiness_flag_below": 0.45,
+    "word_burstiness_flag_below": 0.30,
+    "scope": "document"
+  },
+
+  "sentence_structure": {
+    "_desc": "Detects a repeated structural pattern in how sentences OPEN (first 2 tokens, lowercased, function-word aware). If the same opening template recurs too often => flag.",
+    "min_sentences": 4,
+    "opening_bigram_repeat_ratio_flag_above": 0.30,
+    "same_first_token_run_flag_at": 3,
+    "scope": "sentence"
+  },
+
+  "paragraph_pattern": {
+    "_desc": "Detects uniform paragraph construction — near-equal paragraph lengths (sentence counts) and parallel opening structures across paragraphs.",
+    "min_paragraphs": 3,
+    "length_cv_flag_below": 0.25,
+    "parallel_opening_ratio_flag_above": 0.50,
+    "scope": "paragraph"
+  },
+
+  "ngram_formula": {
+    "_desc": "Detects repeated multi-word 'formulas' (n-gram templates) reused across the text. Repeated 3-,4-,5-grams beyond expected frequency => formulaic.",
+    "ngram_sizes": [3, 4, 5],
+    "min_repeats_to_flag": 2,
+    "min_ngram_size_for_single_repeat": 5,
+    "ignore_if_all_stopwords": true,
+    "scope": "span"
+  },
+
+  "transition_formula": {
+    "_desc": "Detects overuse of the same formulaic transition/connective openers (Moreover, Furthermore, In conclusion, Additionally, etc.). Deterministic keyword list; counts occurrences.",
+    "max_total_ratio_flag_above": 0.15,
+    "max_single_connective_count": 2,
+    "connectives": [
+      "moreover", "furthermore", "additionally", "in addition", "in conclusion",
+      "overall", "ultimately", "notably", "importantly", "consequently",
+      "as a result", "in summary", "to summarize", "in essence", "essentially",
+      "it is worth noting", "it's worth noting", "it is important to note",
+      "when it comes to", "in today's world", "in the world of", "nestled",
+      "whether you're", "whether you are", "look no further", "rest assured"
+    ],
+    "scope": "sentence"
+  },
+
+  "engine": {
+    "_desc": "Global engine settings.",
+    "max_words": 5000,
+    "min_words_to_analyze": 40,
+    "verify_max_passes": 3,
+    "flag_document_if_any_span_flagged": true
+  }
+}
