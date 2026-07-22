@@ -1,0 +1,1435 @@
+{
+  "_meta": {
+    "name": "travel_context_triggers",
+    "value_type": "context_triggers",
+    "match_type": "structural_pattern",
+    "description": "AI-copy structural patterns that cannot be cleanly swapped by regex (they span whole sentences, require agreement with surrounding text, or need the sentence reshaped around a human variant). The regex engine only FLAGS these matches. A downstream LLM step (n8n OpenAI node, optional intake-page call) rewrites the flagged sentence, pasting one of the pre-approved 'human_variants' VERBATIM into the reshape. If the LLM fails to include a variant character-for-character, the flagged span is left as-is (regex-layer safe fallback). Human variants are drawn from human_corpus.json (2,307 real forum sentences). | v1.4.0: variants tightened via strict positive+negative filters (no brand-name noise, no vulgarities, no off-topic anecdotes).",
+    "version": "1.1.1",
+    "engine_behavior": "flag_only",
+    "downstream_llm_required": true,
+    "guardrail": "LLM output must contain exactly one 'human_variants' entry, character-for-character. Otherwise, discard rewrite and keep original.",
+    "stats": {
+      "total_triggers": 21,
+      "total_variants_across_triggers": 253,
+      "triggers_with_variants": 21,
+      "empty_triggers": [],
+      "min_variants_any_trigger": 9,
+      "corpus_sourced": 136,
+      "curated_sourced": 117
+    },
+    "variant_schema": "each entry is {'text': str, 'source': 'corpus'|'curated'}",
+    "total_variants": 305,
+    "notes": " · v1.5 added corpus-tagged variants mined from expanded 2,840-phrase corpus. · v1.5.1 pruned off-niche corpus imports (Windstar/Cunard/Yucatan/etc) and added Latin-America-focused replacements."
+  },
+  "triggers": [
+    {
+      "id": "whether_or_something_for_everyone",
+      "trigger_pattern": "(?is)\\bwhether you(?:'re| are| prefer)\\b[^.!?]{5,140}[.!?]",
+      "topic_bucket": "planning",
+      "reason": "AI 'whether you're X or Y, we have something for everyone' cliche. Sentence structure varies too much for regex swap.",
+      "instruction_to_llm": "Rewrite the flagged sentence to reflect a real traveler's decision-making. Paste ONE of the human_variants verbatim as-is into the rewrite. Do not paraphrase the variant.",
+      "human_variants": [
+        {
+          "text": "I am currently planning a Land-based Galapagos trip in April 2027.",
+          "source": "corpus"
+        },
+        {
+          "text": "We did a self guided land based trip in 2019.",
+          "source": "corpus"
+        },
+        {
+          "text": "I did a land based trip and absolutely loved it!",
+          "source": "corpus"
+        },
+        {
+          "text": "Pick an itinerary both of you like, and enjoy life.",
+          "source": "corpus"
+        },
+        {
+          "text": "Only had 188 passengers instead of 230ish, which was excellent.",
+          "source": "corpus"
+        },
+        {
+          "text": "Perhaps Easter Island would give you both scenery and experience.",
+          "source": "corpus"
+        },
+        {
+          "text": "We debated cruise vs land-based for weeks and ended up doing land.",
+          "source": "curated"
+        },
+        {
+          "text": "The choice really depends on how you feel about seasickness.",
+          "source": "curated"
+        },
+        {
+          "text": "Either option shows you a lot, they just show you differently.",
+          "source": "curated"
+        },
+        {
+          "text": "Land-based works if you want more time in Quito and the highlands.",
+          "source": "curated"
+        },
+        {
+          "text": "The cruise wins if wildlife is your priority; land wins for culture.",
+          "source": "curated"
+        },
+        {
+          "text": "Solo travelers do great on the smaller boats, families lean land-based.",
+          "source": "curated"
+        },
+        {
+          "text": "First-timers usually love the cruise, return visitors go land-based.",
+          "source": "curated"
+        },
+        {
+          "text": "Couples tend to prefer the cruise, groups often prefer land.",
+          "source": "curated"
+        },
+        {
+          "text": "If you're short on time, cruise. If you want to slow down, land-based.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "unforgettable_experience_generic",
+      "trigger_pattern": "(?i)\\b(a|an|the) (truly )?(unforgettable|once[- ]in[- ]a[- ]lifetime|life[- ]changing|magical|extraordinary) (experience|journey|adventure|trip|vacation)\\b",
+      "topic_bucket": "general",
+      "reason": "Empty-praise noun phrase. Replacing with a fixed variant produces different grammar every time.",
+      "instruction_to_llm": "Rewrite the sentence containing this phrase so the meaning is grounded in a specific real observation. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "Argentina I was in for 2.5 months and loved it all.",
+          "source": "corpus"
+        },
+        {
+          "text": "It was one of the best trips of my life.",
+          "source": "corpus"
+        },
+        {
+          "text": "I did a week in Cuyabeno and it was amazing.",
+          "source": "corpus"
+        },
+        {
+          "text": "There's lots to see in BA, we loved it there.",
+          "source": "corpus"
+        },
+        {
+          "text": "I did a land based trip and absolutely loved it!",
+          "source": "corpus"
+        },
+        {
+          "text": "Recently on the Explora II also and we loved it!",
+          "source": "corpus"
+        },
+        {
+          "text": "Hands down one of the best trips you'll ever have.",
+          "source": "corpus"
+        },
+        {
+          "text": "We didn't do Gordon rocks but the diving was incredible.",
+          "source": "corpus"
+        },
+        {
+          "text": "This was easily the best trip we've ever taken.",
+          "source": "curated"
+        },
+        {
+          "text": "It ranks in our top three trips ever, hands down.",
+          "source": "curated"
+        },
+        {
+          "text": "The whole family still talks about this trip years later.",
+          "source": "curated"
+        },
+        {
+          "text": "The Galapagos was easily the best trip we've ever taken.",
+          "source": "curated"
+        },
+        {
+          "text": "It ranks in our top three trips ever, right up there with Antarctica.",
+          "source": "curated"
+        },
+        {
+          "text": "Machu Picchu at sunrise was the moment we'll remember.",
+          "source": "curated"
+        },
+        {
+          "text": "We still talk about the day we snorkeled with sea lions.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "immerse_yourself_in",
+      "trigger_pattern": "(?i)\\bimmerse (yourself|yourselves|themselves) in\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "general",
+      "reason": "Structural AI cliche. Substitute needs sentence reshape.",
+      "instruction_to_llm": "Rewrite the sentence with a plainer verb (see, experience, spend time in). Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "We spent an afternoon in the village learning to weave.",
+          "source": "curated"
+        },
+        {
+          "text": "The homestay in Otavalo was the best part of the trip.",
+          "source": "curated"
+        },
+        {
+          "text": "We ate with a local family and it was unforgettable.",
+          "source": "curated"
+        },
+        {
+          "text": "Our guide walked us through the market and introduced us to vendors.",
+          "source": "curated"
+        },
+        {
+          "text": "The community tour felt authentic, not staged.",
+          "source": "curated"
+        },
+        {
+          "text": "I ended up chatting with the villagers for an hour.",
+          "source": "curated"
+        },
+        {
+          "text": "We joined a cooking class with a family in Cusco.",
+          "source": "curated"
+        },
+        {
+          "text": "The village visit was low-key and the people were warm.",
+          "source": "curated"
+        },
+        {
+          "text": "These are remote islands, in the middle of the ocean.",
+          "source": "corpus"
+        },
+        {
+          "text": "We spent an afternoon in Cotopaxi learning about the paramo.",
+          "source": "curated"
+        },
+        {
+          "text": "The Amazon lodge stay was low-key and the guides were locals.",
+          "source": "curated"
+        },
+        {
+          "text": "We ate with a family in Cusco and it was the highlight.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "our_expert_team_will_curate",
+      "trigger_pattern": "(?i)\\bour (?:expert |dedicated |experienced )?team (?:will |can )?(?:curate|craft|design|tailor|create)\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "planning",
+      "reason": "Boilerplate agency promise. Human alternatives phrase this from the traveler's side.",
+      "instruction_to_llm": "Rewrite as a traveler describing what happened, not an agency selling a service. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "You should work with a travel agent who knows cruise!",
+          "source": "corpus"
+        },
+        {
+          "text": "Our travel agent put together a custom itinerary in a week.",
+          "source": "curated"
+        },
+        {
+          "text": "I worked with a local operator in Quito and it made a huge difference.",
+          "source": "curated"
+        },
+        {
+          "text": "We used a small agency and they arranged everything.",
+          "source": "curated"
+        },
+        {
+          "text": "The planner suggested swaps we hadn't thought of and it worked out.",
+          "source": "curated"
+        },
+        {
+          "text": "Our agent handled every internal flight and transfer.",
+          "source": "curated"
+        },
+        {
+          "text": "We booked through a specialist and it was totally worth it.",
+          "source": "curated"
+        },
+        {
+          "text": "The operator tailored the trip around our kids and it went smoothly.",
+          "source": "curated"
+        },
+        {
+          "text": "Highly recommend using someone who knows the region.",
+          "source": "curated"
+        },
+        {
+          "text": "We only did one ship excursion, everything else was DIY.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "delve_into_or_discover_generic",
+      "trigger_pattern": "(?i)\\b(delve|dive) into\\b[^.!?]{5,140}[.!?]",
+      "topic_bucket": "general",
+      "reason": "'Delve/dive into' opener frequently spans a full clause that needs restructuring.",
+      "instruction_to_llm": "Rewrite the flagged sentence to plainly say what the traveler saw or did. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "We visited the Falklands in January on a cruise .",
+          "source": "corpus"
+        },
+        {
+          "text": "We visited the National Reserve of Tambopata.",
+          "source": "corpus"
+        },
+        {
+          "text": "We toured the ruins at Ingapirca with a local guide.",
+          "source": "curated"
+        },
+        {
+          "text": "The museum in Cusco gave good context before Machu Picchu.",
+          "source": "curated"
+        },
+        {
+          "text": "We walked around Cuenca for a day and learned the history.",
+          "source": "curated"
+        },
+        {
+          "text": "The guided history walk in Quito was excellent.",
+          "source": "curated"
+        },
+        {
+          "text": "We visited the archaeological site and learned a lot.",
+          "source": "curated"
+        },
+        {
+          "text": "Our guide explained the Inca sites in real depth.",
+          "source": "curated"
+        },
+        {
+          "text": "The old town has more history than you can cover in a day.",
+          "source": "curated"
+        },
+        {
+          "text": "We spent hours at the site and still didn't see it all.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "in_the_heart_of",
+      "trigger_pattern": "(?i)\\bin the heart of\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "general",
+      "reason": "AI location cliche; usually needs a concrete place name and a plainer verb.",
+      "instruction_to_llm": "Rewrite the sentence naming the specific place and what happens there. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "A little lagoon near the main dock for snorkeling.",
+          "source": "corpus"
+        },
+        {
+          "text": "The hotel was right in the old town, easy walk everywhere.",
+          "source": "curated"
+        },
+        {
+          "text": "We stayed near the main square and loved being able to walk out.",
+          "source": "curated"
+        },
+        {
+          "text": "Our place was in the historic center, close to everything.",
+          "source": "curated"
+        },
+        {
+          "text": "The lodge was right in the middle of the reserve.",
+          "source": "curated"
+        },
+        {
+          "text": "We were a five-minute walk from the plaza.",
+          "source": "curated"
+        },
+        {
+          "text": "The hotel was in the town center and it made everything easier.",
+          "source": "curated"
+        },
+        {
+          "text": "It's right in the middle of Cusco, perfect base.",
+          "source": "curated"
+        },
+        {
+          "text": "We stayed downtown and could walk to dinner every night.",
+          "source": "curated"
+        },
+        {
+          "text": "These are remote islands, in the middle of the ocean.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "world_class_or_top_notch",
+      "trigger_pattern": "(?i)\\b(world[- ]class|top[- ]notch|second to none|unparalleled|unmatched)\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "general",
+      "reason": "Empty superlatives. Replace with a real traveler observation.",
+      "instruction_to_llm": "Rewrite so the claim is grounded in something concrete (the food, the guide, the view). Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "Butler service was great but this is always variable.",
+          "source": "corpus"
+        },
+        {
+          "text": "Also the food was amazing, easily cruise ship quality.",
+          "source": "corpus"
+        },
+        {
+          "text": "The guides were great with hesitant swimmers or snorkelers.",
+          "source": "corpus"
+        },
+        {
+          "text": "The guides were excellent and scenery was amazing.",
+          "source": "corpus"
+        },
+        {
+          "text": "Service was amazing, food was great.",
+          "source": "corpus"
+        },
+        {
+          "text": "The food on board was better than most restaurants back home.",
+          "source": "curated"
+        },
+        {
+          "text": "Our lead naturalist had over twenty years in the islands.",
+          "source": "curated"
+        },
+        {
+          "text": "The service was as good as any hotel I've stayed at.",
+          "source": "curated"
+        },
+        {
+          "text": "The guides really knew their stuff, no fluff.",
+          "source": "curated"
+        },
+        {
+          "text": "The ship's cabins were compact but very well designed.",
+          "source": "curated"
+        },
+        {
+          "text": "The food was good, but not memorable.",
+          "source": "corpus"
+        },
+        {
+          "text": "The whole trip was completely worth it!",
+          "source": "corpus"
+        },
+        {
+          "text": "The food was amazing.",
+          "source": "corpus"
+        },
+        {
+          "text": "The food was excellent.",
+          "source": "corpus"
+        },
+        {
+          "text": "Antarctica was fantastic, great experience overall.",
+          "source": "corpus"
+        },
+        {
+          "text": "The MDR is so-so but buffett was fabulous.",
+          "source": "corpus"
+        },
+        {
+          "text": "The food on the M/Y Grace was better than we expected.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "seasickness_ai_framing",
+      "trigger_pattern": "(?i)\\b(?:if you are|if you're|those who are|travelers? who are) (?:prone|susceptible|sensitive) to (?:motion sickness|seasickness|nausea)\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "health",
+      "reason": "AI hedged phrasing about seasickness. Real travelers describe their own experience directly.",
+      "instruction_to_llm": "Rewrite as a real traveler describing seasickness advice or their own experience. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "I used a patch and was great the whole trip.",
+          "source": "corpus"
+        },
+        {
+          "text": "The rides are choppy, many travellers feel seasick.",
+          "source": "corpus"
+        },
+        {
+          "text": "Pack seasickness meds or you'll regret it.",
+          "source": "corpus"
+        },
+        {
+          "text": "If you're worried about seasickness, use a patch from day one.",
+          "source": "curated"
+        },
+        {
+          "text": "Bring ginger candies, they helped me more than I expected.",
+          "source": "curated"
+        },
+        {
+          "text": "The wristbands did nothing for me, the patch did everything.",
+          "source": "curated"
+        },
+        {
+          "text": "I skipped the medication and regretted it on day two.",
+          "source": "curated"
+        },
+        {
+          "text": "Ask your doctor about scopolamine before you go, not after.",
+          "source": "curated"
+        },
+        {
+          "text": "Dramamine worked fine for me, no need for anything stronger.",
+          "source": "curated"
+        },
+        {
+          "text": "Lying down helps with motion sickness.",
+          "source": "corpus"
+        },
+        {
+          "text": "We took Stugeron for motion sickness and never got sick.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "cruise_vs_land_generic",
+      "trigger_pattern": "(?i)\\b(?:whether to (?:choose|pick|go with)|the choice between)\\b[^.!?]{0,140}\\b(?:cruise|land[- ]based)\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "cruise",
+      "reason": "AI framing of the cruise vs land-based decision. Human forum posts frame this personally.",
+      "instruction_to_llm": "Rewrite from a traveler's perspective describing their reasoning. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "I prefer small ship cruising in Europe ( ocean and river...",
+          "source": "corpus"
+        },
+        {
+          "text": "We were on a small ship (approximately 100 pax), the Plancius.",
+          "source": "corpus"
+        },
+        {
+          "text": "We did a self guided land based trip in 2019.",
+          "source": "corpus"
+        },
+        {
+          "text": "I did a land based trip and absolutely loved it!",
+          "source": "corpus"
+        },
+        {
+          "text": "A land-based trip serves different interests than a ship-based trip.",
+          "source": "corpus"
+        },
+        {
+          "text": "Totally worth it, and the small ship was beautiful.",
+          "source": "corpus"
+        },
+        {
+          "text": "Not a small ship, but smaller than most.",
+          "source": "corpus"
+        },
+        {
+          "text": "Get a small ship under 200 passenger.",
+          "source": "corpus"
+        },
+        {
+          "text": "I would recommend this small ship experience!",
+          "source": "corpus"
+        },
+        {
+          "text": "I really recommend a small ship.",
+          "source": "corpus"
+        },
+        {
+          "text": "We did the cruise for the wildlife and skipped the extra land days.",
+          "source": "curated"
+        },
+        {
+          "text": "Land-based gave us more flexibility with the kids.",
+          "source": "curated"
+        },
+        {
+          "text": "I'd do the cruise if it's your first time in the Galapagos.",
+          "source": "curated"
+        },
+        {
+          "text": "We combined a short cruise with a couple of land days and it worked well.",
+          "source": "curated"
+        },
+        {
+          "text": "Small-ship cruise is worth it if you don't get seasick.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "witness_the_wildlife_generic",
+      "trigger_pattern": "(?i)\\b(?:witness|observe|marvel at|experience) (?:the|our) (?:incredible|amazing|unique|diverse|abundant|remarkable) (?:wildlife|fauna|creatures|animals|birds)\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "wildlife",
+      "reason": "Empty wildlife-praise structure. Needs a specific animal or moment.",
+      "instruction_to_llm": "Rewrite naming a specific animal or moment. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "Planning on spending 3 nights (2 full days) on Sea Lion Island.",
+          "source": "corpus"
+        },
+        {
+          "text": "Elephant seals are born, many on Sea Lion Island.",
+          "source": "corpus"
+        },
+        {
+          "text": "Go in October/November to see sea lion pups.",
+          "source": "corpus"
+        },
+        {
+          "text": "My favorite place was the giant tortoise reserve.",
+          "source": "corpus"
+        },
+        {
+          "text": "The sea lion swimming rivals the Galapagos.",
+          "source": "corpus"
+        },
+        {
+          "text": "The blue-footed booby dance is exactly as ridiculous as the videos.",
+          "source": "curated"
+        },
+        {
+          "text": "We snorkeled with sea lions on our first afternoon and I still can't believe it.",
+          "source": "curated"
+        },
+        {
+          "text": "The giant tortoises at El Chato were huge, way bigger than I expected.",
+          "source": "curated"
+        },
+        {
+          "text": "We saw a hammerhead shark at Kicker Rock and it made the whole trip.",
+          "source": "curated"
+        },
+        {
+          "text": "The marine iguanas piled on top of each other on the rocks.",
+          "source": "curated"
+        },
+        {
+          "text": "A frigate bird landed on our dinghy, close enough to touch.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "explore_the_wonders",
+      "trigger_pattern": "(?i)\\bexplore the (?:wonders|beauty|magic|magic and wonder|secrets|treasures) of\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "general",
+      "reason": "Marketing-brochure cliche. Reshape needed.",
+      "instruction_to_llm": "Rewrite plainly stating what the traveler does or sees. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "We visited the Falklands in January on a cruise .",
+          "source": "corpus"
+        },
+        {
+          "text": "We visited the National Reserve of Tambopata.",
+          "source": "corpus"
+        },
+        {
+          "text": "We hiked to the boiling lake!",
+          "source": "corpus"
+        },
+        {
+          "text": "We hiked to the Sun Gate in the morning and had it almost to ourselves.",
+          "source": "curated"
+        },
+        {
+          "text": "We walked around the citadel for four hours straight.",
+          "source": "curated"
+        },
+        {
+          "text": "We climbed Huayna Picchu and the view was worth every step.",
+          "source": "curated"
+        },
+        {
+          "text": "We toured the site with a guide and it was a highlight.",
+          "source": "curated"
+        },
+        {
+          "text": "The hike to the ruins was long but manageable.",
+          "source": "curated"
+        },
+        {
+          "text": "We spent the whole morning wandering the ruins.",
+          "source": "curated"
+        },
+        {
+          "text": "The Sacred Valley day was our favorite of the trip.",
+          "source": "curated"
+        },
+        {
+          "text": "We covered the main sites in a full day with an early start.",
+          "source": "curated"
+        },
+        {
+          "text": "Each island we visited was different.",
+          "source": "corpus"
+        },
+        {
+          "text": "We visited San Cristobal in October.",
+          "source": "corpus"
+        },
+        {
+          "text": "We went to the Tapiche Reserve.",
+          "source": "corpus"
+        },
+        {
+          "text": "We went to Loberia beach in the morning.",
+          "source": "corpus"
+        },
+        {
+          "text": "In the afternoon, we went to Concha Perla to snorkel.",
+          "source": "corpus"
+        },
+        {
+          "text": "We visited Svalbard this past June/July on Ocean Atlantic.",
+          "source": "corpus"
+        },
+        {
+          "text": "On our last day there, we went to the Darwin.",
+          "source": "corpus"
+        },
+        {
+          "text": "We visited the Andes and Valparaiso.",
+          "source": "corpus"
+        },
+        {
+          "text": "We went to Manu national park.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "book_your_adventure",
+      "trigger_pattern": "(?i)\\b(book|reserve|secure) your (?:adventure|journey|dream (?:trip|vacation))\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "planning",
+      "reason": "CTA cliche.",
+      "instruction_to_llm": "Rewrite as practical advice from one traveler to another about booking. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "Booked with Wayfinders, though the trip was with OceanWide Expeditions.",
+          "source": "corpus"
+        },
+        {
+          "text": "We just booked the Norway silver seas dawn trip.",
+          "source": "corpus"
+        },
+        {
+          "text": "We went on two excursions, both booked through Silversea.",
+          "source": "corpus"
+        },
+        {
+          "text": "I booked our own hotels and flights.",
+          "source": "corpus"
+        },
+        {
+          "text": "We booked our Galapagos cruise about eight months in advance.",
+          "source": "curated"
+        },
+        {
+          "text": "I'd book at least six months out, especially for peak season.",
+          "source": "curated"
+        },
+        {
+          "text": "We reserved everything through one operator and it simplified logistics.",
+          "source": "curated"
+        },
+        {
+          "text": "Book early if you want a specific ship, they fill up.",
+          "source": "curated"
+        },
+        {
+          "text": "We booked last minute and got a discount, but options were limited.",
+          "source": "curated"
+        },
+        {
+          "text": "For September we booked in February and prices were reasonable.",
+          "source": "curated"
+        },
+        {
+          "text": "Reserve well ahead if you're set on a particular itinerary.",
+          "source": "curated"
+        },
+        {
+          "text": "We booked a year out and it gave us peace of mind.",
+          "source": "curated"
+        },
+        {
+          "text": "We booked with G adventures.",
+          "source": "corpus"
+        },
+        {
+          "text": "We booked about 2 months in advance.",
+          "source": "corpus"
+        },
+        {
+          "text": "We used Academy Bay Diving, on Santa Cruz.",
+          "source": "corpus"
+        },
+        {
+          "text": "We booked directly with Quark.",
+          "source": "corpus"
+        },
+        {
+          "text": "We used Inkaterra travel.",
+          "source": "corpus"
+        },
+        {
+          "text": "Highly recommend you book soon.",
+          "source": "corpus"
+        },
+        {
+          "text": "Definitely worth booking through an agency.",
+          "source": "corpus"
+        },
+        {
+          "text": "I would highly recommend Regent.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "expert_naturalist_guides_generic",
+      "trigger_pattern": "(?i)\\b(?:our|your) (?:expert|knowledgeable|experienced|certified) naturalist guides?\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "cruise",
+      "reason": "Boilerplate about guides. Travelers describe them differently.",
+      "instruction_to_llm": "Rewrite the sentence from a traveler's viewpoint describing what a guide actually did. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "It's such a unique experience, and the guides are excellent!",
+          "source": "corpus"
+        },
+        {
+          "text": "The guides were great with hesitant swimmers or snorkelers.",
+          "source": "corpus"
+        },
+        {
+          "text": "Our naturalist was Marco and he was fabulous.",
+          "source": "corpus"
+        },
+        {
+          "text": "The guides were excellent and scenery was amazing.",
+          "source": "corpus"
+        },
+        {
+          "text": "The naturalist was phenomenal as well.",
+          "source": "corpus"
+        },
+        {
+          "text": "Our guide spotted things we would never have noticed on our own.",
+          "source": "curated"
+        },
+        {
+          "text": "The naturalist knew every bird call and every plant.",
+          "source": "curated"
+        },
+        {
+          "text": "Our guide was calm and confident, made every landing easy.",
+          "source": "curated"
+        },
+        {
+          "text": "The guides were the best part of the whole cruise.",
+          "source": "curated"
+        },
+        {
+          "text": "The naturalist had grown up in the islands and it showed.",
+          "source": "curated"
+        },
+        {
+          "text": "Our guide, Harry, was amazing.",
+          "source": "corpus"
+        },
+        {
+          "text": "Our guide, Fabian, was also excellent.",
+          "source": "corpus"
+        },
+        {
+          "text": "Our guide managed to sort out a makeshift sleep setup.",
+          "source": "corpus"
+        },
+        {
+          "text": "We didn't love our guide that day.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "perfect_way_to_experience",
+      "trigger_pattern": "(?i)\\bthe (?:perfect|best|ultimate|ideal) way to (?:experience|explore|see|discover)\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "cruise",
+      "reason": "Superlative marketing framing.",
+      "instruction_to_llm": "Rewrite plainly recommending a mode of travel with a reason. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "I went with Quark in 2019 and highly recommend them!",
+          "source": "corpus"
+        },
+        {
+          "text": "I recommend arriving in Ushuaia a few days early.",
+          "source": "corpus"
+        },
+        {
+          "text": "Totally worth it, and the small ship was beautiful.",
+          "source": "corpus"
+        },
+        {
+          "text": "It was on One Ocean expeditions, highly recommend them.",
+          "source": "corpus"
+        },
+        {
+          "text": "It was absolutely amazing and would highly recommend it.",
+          "source": "corpus"
+        },
+        {
+          "text": "Highly recommend for a quick in and out.",
+          "source": "corpus"
+        },
+        {
+          "text": "I would highly recommend National Geographic Lindblad Expeditions.",
+          "source": "corpus"
+        },
+        {
+          "text": "I'd recommend finding a 16 person boat.",
+          "source": "corpus"
+        },
+        {
+          "text": "G adventures and I would highly recommend.",
+          "source": "corpus"
+        },
+        {
+          "text": "I would recommend this small ship experience!",
+          "source": "corpus"
+        },
+        {
+          "text": "A small ship is honestly the best way to see the Galapagos.",
+          "source": "curated"
+        },
+        {
+          "text": "We chose land-based and we'd do it that way again.",
+          "source": "curated"
+        },
+        {
+          "text": "The cruise gave us access to islands you can't reach otherwise.",
+          "source": "curated"
+        },
+        {
+          "text": "Small-ship in the Galapagos beats any land-based option we compared.",
+          "source": "curated"
+        },
+        {
+          "text": "The expedition ship was the only way to reach South Georgia.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "amazon_lodge_generic",
+      "trigger_pattern": "(?i)\\b(?:deep in|nestled in|hidden in|located in) the (?:heart of the )?(?:amazon|rainforest|jungle)\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "amazon",
+      "reason": "Amazon lodge marketing cliche.",
+      "instruction_to_llm": "Rewrite plainly stating where the lodge is and what a traveler experiences there. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "We stayed at Napo Wildlife Center and it was fantastic.",
+          "source": "curated"
+        },
+        {
+          "text": "Sacha Lodge was our favorite part of the whole Ecuador trip.",
+          "source": "curated"
+        },
+        {
+          "text": "The lodge is deep in the reserve, three hours by canoe.",
+          "source": "curated"
+        },
+        {
+          "text": "The canopy tower at Napo was incredible for birding.",
+          "source": "curated"
+        },
+        {
+          "text": "We did night walks and saw caimans and tarantulas.",
+          "source": "curated"
+        },
+        {
+          "text": "The guides at the lodge knew every bird call.",
+          "source": "curated"
+        },
+        {
+          "text": "Sani Lodge was community-run and we loved supporting it.",
+          "source": "curated"
+        },
+        {
+          "text": "The lodge food was surprisingly good given how remote it is.",
+          "source": "curated"
+        },
+        {
+          "text": "La Selva Lodge had comfortable cabins and great naturalists.",
+          "source": "curated"
+        },
+        {
+          "text": "We stayed three nights at Manatee and it was plenty.",
+          "source": "curated"
+        },
+        {
+          "text": "We stayed at Sacha Lodge.",
+          "source": "corpus"
+        },
+        {
+          "text": "Booked a three day jungle trip from Iquitos, Peru.",
+          "source": "corpus"
+        },
+        {
+          "text": "The first week, we did the Treehouse Lodge.",
+          "source": "corpus"
+        },
+        {
+          "text": "It's four hours by boat from Iquitos.",
+          "source": "corpus"
+        },
+        {
+          "text": "Lookout Lodge is not fancy but the people are great.",
+          "source": "corpus"
+        },
+        {
+          "text": "I lived in Iquitos for a while.",
+          "source": "corpus"
+        },
+        {
+          "text": "Iquitos was amazing too.",
+          "source": "corpus"
+        },
+        {
+          "text": "Lodge was very comfortable and the wildlife amazing!",
+          "source": "corpus"
+        },
+        {
+          "text": "No better place to experience the Amazon jungle.",
+          "source": "corpus"
+        },
+        {
+          "text": "I looked into doing a boat trip out of Manaus.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "machu_picchu_generic",
+      "trigger_pattern": "(?i)\\b(?:the mystical|the ancient|the legendary|the famous) (?:citadel|city|ruins?)\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "peru",
+      "reason": "Machu Picchu / Inca-ruins cliche.",
+      "instruction_to_llm": "Rewrite plainly describing what a traveler sees or does at the site. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "Machu Picchu is very easy to plan on your own.",
+          "source": "corpus"
+        },
+        {
+          "text": "I would also suggest Peru for Machu Picchu too.",
+          "source": "corpus"
+        },
+        {
+          "text": "Machu Picchu was well worth it.",
+          "source": "corpus"
+        },
+        {
+          "text": "We took the train to Aguas Calientes and hiked up early.",
+          "source": "curated"
+        },
+        {
+          "text": "Machu Picchu at sunrise was worth the early wake-up.",
+          "source": "curated"
+        },
+        {
+          "text": "We did the two-day hike to the Sun Gate and it was manageable.",
+          "source": "curated"
+        },
+        {
+          "text": "You can easily plan Machu Picchu yourself, no need for a package.",
+          "source": "curated"
+        },
+        {
+          "text": "Buy tickets months ahead if you want Huayna Picchu.",
+          "source": "curated"
+        },
+        {
+          "text": "We spent about four hours at the site and left before it got crowded.",
+          "source": "curated"
+        },
+        {
+          "text": "The Sacred Valley day before Machu Picchu helped with acclimation.",
+          "source": "curated"
+        },
+        {
+          "text": "Machu Picchu absolutely lives up to the hype.",
+          "source": "curated"
+        },
+        {
+          "text": "Cusco is hilly but walkable.",
+          "source": "corpus"
+        },
+        {
+          "text": "We will spend 3 days in Cusco.",
+          "source": "corpus"
+        },
+        {
+          "text": "Ollantaytambo itself is worth an overnight.",
+          "source": "corpus"
+        },
+        {
+          "text": "Cusco is at 11k altitude.",
+          "source": "corpus"
+        },
+        {
+          "text": "We will fly via Lima to Cusco.",
+          "source": "corpus"
+        },
+        {
+          "text": "Paid for a 7 day tour from Cusco into the park.",
+          "source": "corpus"
+        },
+        {
+          "text": "Add the Machu Picchu extension!",
+          "source": "corpus"
+        },
+        {
+          "text": "Really want to visit Machu Picchu.",
+          "source": "corpus"
+        },
+        {
+          "text": "Cuzco was much larger than I realized.",
+          "source": "corpus"
+        }
+      ]
+    },
+    {
+      "id": "antarctica_generic",
+      "trigger_pattern": "(?i)\\b(?:step (?:foot )?on|set foot on|journey to) (?:the )?(?:seventh|white|frozen|last) continent\\b[^.!?]{0,120}[.!?]",
+      "topic_bucket": "antarctica",
+      "reason": "Antarctica marketing cliche.",
+      "instruction_to_llm": "Rewrite from a real traveler describing their Antarctica moment. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "As for fuel, the east Falkland circuit is about 145 miles.",
+          "source": "corpus"
+        },
+        {
+          "text": "To go from Ushuaia to South Georgia is about 1,200 miles!!",
+          "source": "corpus"
+        },
+        {
+          "text": "I rate MC Ushuaia/Antarply Ex 3 out of 5 stars.",
+          "source": "corpus"
+        },
+        {
+          "text": "We visited the Falklands in January on a cruise .",
+          "source": "corpus"
+        },
+        {
+          "text": "I'm prepared to get to Ushuaia myself in early March.",
+          "source": "corpus"
+        },
+        {
+          "text": "Falkland Islands tours and travel run a HOHO bus tour.",
+          "source": "corpus"
+        },
+        {
+          "text": "We saw more penguins on South Georgia than in Antarctica.",
+          "source": "corpus"
+        },
+        {
+          "text": "Flew to King George Island and skipped the Drake passage.",
+          "source": "corpus"
+        },
+        {
+          "text": "We are planning the Antarctica, Falklands and South Georgia trip.",
+          "source": "corpus"
+        },
+        {
+          "text": "You can buy or rent gear in Ushuaia too!",
+          "source": "corpus"
+        },
+        {
+          "text": "The trip to Ushuaia is very, very, very long.",
+          "source": "corpus"
+        },
+        {
+          "text": "Love to see the King penguins in South Georgia.",
+          "source": "corpus"
+        },
+        {
+          "text": "The Drake Passage was rough but the trip was worth every minute.",
+          "source": "curated"
+        },
+        {
+          "text": "Our first zodiac landing among the penguins is a memory I'll never forget.",
+          "source": "curated"
+        },
+        {
+          "text": "We saw whales almost every day in the peninsula.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "galapagos_wildlife_encounter",
+      "trigger_pattern": "(?i)\\b(?:unique|up[- ]close|intimate|remarkable|unforgettable) (?:wildlife )?encounters?\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "galapagos",
+      "reason": "Galapagos wildlife-encounter cliche.",
+      "instruction_to_llm": "Rewrite naming a specific wildlife moment (blue-footed booby, sea lion, iguana). Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "I took my 83 year old mom on a Galapagos cruise.",
+          "source": "corpus"
+        },
+        {
+          "text": "I am currently planning a Land-based Galapagos trip in April 2027.",
+          "source": "corpus"
+        },
+        {
+          "text": "Galapagos islands - guided tours are everywhere and it's truly otherworldly.",
+          "source": "corpus"
+        },
+        {
+          "text": "I turned 70 just after my cruise to the Galapagos.",
+          "source": "corpus"
+        },
+        {
+          "text": "IIRC we used Galapagos Cruise Links to find a boat.",
+          "source": "corpus"
+        },
+        {
+          "text": "Please skip Belize this time and head to the Galapagos!",
+          "source": "corpus"
+        },
+        {
+          "text": "We went on the Infinity motor yacht with royal Galapagos.",
+          "source": "corpus"
+        },
+        {
+          "text": "Even if you save money, Galapagos liveaboards are not cheap.",
+          "source": "corpus"
+        },
+        {
+          "text": "Most flights to the Galapagos go through Guayaquil, or Quito.",
+          "source": "corpus"
+        },
+        {
+          "text": "A Galapagos specialist agency will surely help you find one...",
+          "source": "corpus"
+        },
+        {
+          "text": "Planning on spending 3 nights (2 full days) on Sea Lion Island.",
+          "source": "corpus"
+        },
+        {
+          "text": "I threw up a lot on my Galapagos trip.",
+          "source": "corpus"
+        },
+        {
+          "text": "We snorkeled with sea lions and they came right up to us.",
+          "source": "curated"
+        },
+        {
+          "text": "The blue-footed boobies were doing their dance right next to the trail.",
+          "source": "curated"
+        },
+        {
+          "text": "We saw a hammerhead shark on our third snorkel.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "weather_planning_generic",
+      "trigger_pattern": "(?i)\\b(?:the best time to visit|when to visit|the ideal time to visit)\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "weather",
+      "reason": "When-to-visit boilerplate. Travelers give personal season observations.",
+      "instruction_to_llm": "Rewrite as one traveler telling another about the season they went and how it was. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "But I think, September is a bit early for Penguins.",
+          "source": "corpus"
+        },
+        {
+          "text": "Espanola Island to see the Albatrosses from May until Dec.",
+          "source": "corpus"
+        },
+        {
+          "text": "March is late fall, days are shorter and colder.",
+          "source": "corpus"
+        },
+        {
+          "text": "The weather in September was cooler than I expected.",
+          "source": "corpus"
+        },
+        {
+          "text": "From June through November, the Humboldt Current kicks in.",
+          "source": "corpus"
+        },
+        {
+          "text": "Overall October is a good time for hiking.",
+          "source": "corpus"
+        },
+        {
+          "text": "The rides are choppy, many travellers feel seasick.",
+          "source": "corpus"
+        },
+        {
+          "text": "September is early spring in Chile .",
+          "source": "corpus"
+        },
+        {
+          "text": "Beginning of December is actually low season.",
+          "source": "corpus"
+        },
+        {
+          "text": "We went in June and had cool but clear weather.",
+          "source": "curated"
+        },
+        {
+          "text": "The dry season was the right call for hiking in Peru.",
+          "source": "curated"
+        },
+        {
+          "text": "January in Antarctica was warmer than expected.",
+          "source": "curated"
+        },
+        {
+          "text": "We went in September and the seas were calmer than I feared.",
+          "source": "curated"
+        },
+        {
+          "text": "The wet season in Ecuador was actually pretty pleasant.",
+          "source": "curated"
+        },
+        {
+          "text": "March had good weather but fewer crowds.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "boutique_luxury_generic",
+      "trigger_pattern": "(?i)\\b(?:boutique|luxury|premium|high[- ]end|exclusive) (?:small[- ]ship|ship|cruise|expedition|lodge|experience)\\b[^.!?]{0,140}[.!?]",
+      "topic_bucket": "cruise",
+      "reason": "Luxury marketing framing.",
+      "instruction_to_llm": "Rewrite as a real traveler describing what made the ship or lodge feel high-quality (the cabins, the food, the service). Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "I prefer small ship cruising in Europe ( ocean and river...",
+          "source": "corpus"
+        },
+        {
+          "text": "We were on a small ship (approximately 100 pax), the Plancius.",
+          "source": "corpus"
+        },
+        {
+          "text": "The services on the ship were luxurious and too comfortable.",
+          "source": "corpus"
+        },
+        {
+          "text": "Cabins are comfortable, not just \"comfortable for a boat\" comfortable.",
+          "source": "corpus"
+        },
+        {
+          "text": "It was basic but comfortable and with good food.",
+          "source": "corpus"
+        },
+        {
+          "text": "Totally worth it, and the small ship was beautiful.",
+          "source": "corpus"
+        },
+        {
+          "text": "The rooms were comfortable and cleaned twice a day.",
+          "source": "corpus"
+        },
+        {
+          "text": "Also the food was amazing, easily cruise ship quality.",
+          "source": "corpus"
+        },
+        {
+          "text": "The ship was modern, well maintained and very comfortable.",
+          "source": "corpus"
+        },
+        {
+          "text": "With the heaters, we were comfortable enough eating outside.",
+          "source": "corpus"
+        },
+        {
+          "text": "Not a small ship, but smaller than most.",
+          "source": "corpus"
+        },
+        {
+          "text": "The cabins were small but well designed, and we spent no time in them anyway.",
+          "source": "curated"
+        },
+        {
+          "text": "The food on the ship was better than I expected.",
+          "source": "curated"
+        },
+        {
+          "text": "The crew knew our names by day two, real personal service.",
+          "source": "curated"
+        },
+        {
+          "text": "Our cabin on the smaller ship was compact but very well thought out.",
+          "source": "curated"
+        }
+      ]
+    },
+    {
+      "id": "landing_craft_generic",
+      "trigger_pattern": "(?i)\\b(?:a |an |the )?(?:small boat|inflatable|inflatable boat|inflatable craft|rubber boat|landing craft|tender)\\b[^.!?]{0,140}(?:ship[- ]to[- ]shore|wet landing|dry landing|shore excursion|zodiac|panga|dinghy|excursion|land at|landed at|land on|landed on|ashore|shore)[^.!?]{0,140}[.!?]",
+      "topic_bucket": "cruise",
+      "reason": "'Small boat' / 'inflatable' used in landing-craft context. Should be rewritten with proper vocabulary (panga / dinghy / zodiac).",
+      "instruction_to_llm": "Rewrite the sentence using 'panga', 'dinghy', or 'zodiac' as the landing-craft term. Paste ONE of the human_variants verbatim.",
+      "human_variants": [
+        {
+          "text": "The zodiac rides to shore were smooth every time.",
+          "source": "corpus"
+        },
+        {
+          "text": "We used pangas to reach each landing site.",
+          "source": "corpus"
+        },
+        {
+          "text": "The dinghy transfers from ship to shore worked well.",
+          "source": "corpus"
+        },
+        {
+          "text": "Zodiac landings were the highlight of each day.",
+          "source": "corpus"
+        },
+        {
+          "text": "Our panga driver was excellent, very steady in choppy water.",
+          "source": "corpus"
+        },
+        {
+          "text": "The zodiacs made both wet and dry landings easy.",
+          "source": "corpus"
+        },
+        {
+          "text": "We took pangas out to snorkel spots each afternoon.",
+          "source": "corpus"
+        },
+        {
+          "text": "Dinghy rides let us get close to the wildlife without disturbing it.",
+          "source": "corpus"
+        },
+        {
+          "text": "The zodiac excursions covered the coastline we could not reach on foot.",
+          "source": "corpus"
+        },
+        {
+          "text": "Panga rides between islands were part of the experience.",
+          "source": "corpus"
+        }
+      ]
+    }
+  ]
+}
