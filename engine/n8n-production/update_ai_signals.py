@@ -91,16 +91,16 @@ def main():
 
     per1k, wc = corpus_per1k()
     new = sorted(c for c in cands if c not in known)
-    add_a, add_b = [], []
-    for c in new:
-        # multi-word => phrase; else word. Corpus-gated tiering.
-        (add_a if per1k(c) <= HARD_MAX else add_b).append((c, round(per1k(c), 3)))
+    # Candidates come from the AI-writing catalog, so they ARE AI traces → all
+    # propose as HARD (TIER-A) regardless of whether Juan uses them (user's rule).
+    # Corpus density is shown only to flag which bans would touch his voice.
+    add_a = [(c, round(per1k(c), 3)) for c in new]
+    add_b = []
+    overlap = [(c, round(per1k(c), 3)) for c in new if per1k(c) > HARD_MAX]
 
     proposed = json.loads(json.dumps(bl))
     for c, _ in add_a:
         (proposed["tier_a_phrases"] if " " in c else proposed["tier_a_words"]).append(c)
-    for c, _ in add_b:
-        (proposed["tier_b_phrases"] if " " in c else proposed["tier_b_words"]).append(c)
     for k in ("tier_a_words", "tier_a_phrases", "tier_b_words", "tier_b_phrases"):
         proposed[k] = sorted(set(proposed[k]))
     proposed["_proposed_on"] = datetime.date.today().isoformat()
@@ -111,11 +111,11 @@ def main():
     rep = [f"# AI-signal blocklist — proposed update ({datetime.date.today().isoformat()})", ""]
     rep += ["## Sources", *[f"- {n}" for n in notes], ""]
     rep.append(f"Human corpus: {wc} words. New candidates: {len(new)} "
-               f"(→ {len(add_a)} hard TIER-A, {len(add_b)} advisory TIER-B).\n")
-    rep.append("## Proposed TIER-A additions (hard-fail — near-zero human use)")
+               f"— all proposed as hard TIER-A (they are AI traces; banned even if Juan uses them).\n")
+    rep.append("## Proposed TIER-A additions (hard-fail)")
     rep += [f"- `{c}`  ({d}/1k in corpus)" for c, d in add_a] or ["- (none)"]
-    rep.append("\n## Proposed TIER-B additions (advisory — Juan uses them, ≥ threshold)")
-    rep += [f"- `{c}`  ({d}/1k)" for c, d in add_b] or ["- (none)"]
+    rep.append("\n## Of those, terms Juan actually uses (banned anyway, per rule — expect reconstruction work)")
+    rep += [f"- `{c}`  ({d}/1k)" for c, d in overlap] or ["- (none)"]
     rep += ["", "## To apply", "Review the list above. If good, replace ai_signal_blocklist.json with",
             "ai_signal_blocklist.proposed.json (or cherry-pick terms) and commit. Nothing was",
             "changed automatically."]
