@@ -173,10 +173,23 @@ STAGES = {
    "belong here: KEEP every [source: …] / [VERIFY] / [human: …] for Polishing to resolve. Do not "
    "strip or flag them.\n"
    "TASK — Rewrite for natural human cadence WITHOUT changing facts, numbers, sources, markers or "
-   "structure. Vary sentence rhythm, cut padding and AI tells; keep it plain-spoken and "
-   "answer-first, in brand voice, no banned words. Human-authored [human: …] text stays VERBATIM — "
-   "never smooth it. If the draft recites a rule as a sentence (OUTPUT HYGIENE §1), CUT it rather "
-   "than improve its prose. Return STRICT JSON {\"humanized_markdown\":\"...\"}.",
+   "structure. Human-authored [human: …] text stays VERBATIM — never smooth it. If the draft "
+   "recites a rule as a sentence (OUTPUT HYGIENE §1), CUT it rather than improve its prose.\n"
+   "DE-AI RULES (a deterministic detector checks these AFTER you — anything that survives is sent "
+   "back for reconstruction, so do it now):\n"
+   "1. NO EM-DASHES (—). Juan never uses them. Use a comma, a period, a colon, or parentheses.\n"
+   "2. BURSTINESS. Human writing mixes long, complex sentences with short, punchy ones and the odd "
+   "fragment. Do NOT keep a uniform sentence length. Aim for a sentence-length coefficient of "
+   "variation ≥ 0.5 — vary deliberately.\n"
+   "3. BANNED AI VOCABULARY. Never use: delve, tapestry, cornerstone, pivotal, multifaceted, "
+   "paradigm, robust, holistic, seamless, vibrant, bustling, myriad, plethora, underscore, "
+   "showcase, foster, garner, leverage, elevate, unleash, moreover, furthermore, 'it is worth "
+   "noting', 'plays a crucial role', 'a testament to', 'in conclusion', 'to summarize', and the "
+   "like. Say the plain thing instead (the full list is enforced in code).\n"
+   "4. No empty transitions, no both-sides hedging, no moralizing conclusion. Answer-first, "
+   "specifics over adjectives, in Juan's voice.\n"
+   "5. No invisible characters, no smart-quote clutter, no model artifacts.\n"
+   "Return STRICT JSON {\"humanized_markdown\":\"...\"}.",
    "DRAFT: {{ $json['Draft Content'] }}"),
 
  "WFP6_polish.json": ("U0MrpTN3hv4RfNMI", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, CONVERSION, CTA_BLOCK],
@@ -266,7 +279,9 @@ for fn, (wid, extras, task, bodyref) in STAGES.items():
     wf = json.load(open(p))
     prompt = HEAD + "\n" + "\n\n".join(extras) + "\n\n" + task + "\n\n" + REC + (("\n\n" + bodyref) if bodyref else "")
     for n in wf["nodes"]:
-        if n["type"].endswith("langchain.anthropic"):
+        # Only the primary stage agent — never secondary anthropic nodes like
+        # WFP5's "Reconstruct (Andre-Juan)", which owns its own prompt.
+        if n["type"].endswith("langchain.anthropic") and n["name"] == "Run Stage Agent":
             n["parameters"]["messages"]["values"][0]["content"] = prompt
             n["parameters"].setdefault("options", {})["maxTokens"] = 20000
     open(p, "w").write(json.dumps(wf, indent=2))
