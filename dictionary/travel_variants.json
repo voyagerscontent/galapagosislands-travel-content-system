@@ -1,0 +1,1587 @@
+{
+  "_meta": {
+    "name": "travel_variants",
+    "description": "AI-quirk travel phrases mapped to arrays of authentic human alternatives. Extracted from ~2.9M chars of real travel-agent forum replies (Galapagos / Ecuador / Amazon / Peru / expedition cruise expertise). When multiple variants exist, the engine picks one per occurrence using a Markov-style state machine seeded from the surrounding text so replacements do not follow a repeating pattern.",
+    "version": "1.0.0",
+    "match_type": "phrase",
+    "case_sensitive": false,
+    "preserve_case": true,
+    "domain": "travel",
+    "brand": "Voyagers",
+    "value_type": "variants",
+    "source": "Extracted from real forum-reply corpora (First-batch, second-batch ... azbuceadora-batch)."
+  },
+  "replacements": {
+
+    "the enchanted islands": [
+      "the Galapagos",
+      "the Galapagos archipelago",
+      "the islands",
+      "the archipelago"
+    ],
+    "the enchanted isles": [
+      "the Galapagos",
+      "the Galapagos archipelago",
+      "the archipelago"
+    ],
+    "darwin's living laboratory": [
+      "the Galapagos",
+      "the archipelago",
+      "the islands where Darwin worked"
+    ],
+    "darwins living laboratory": [
+      "the Galapagos",
+      "the archipelago"
+    ],
+    "the galapagos archipelago": [
+      "the Galapagos",
+      "the archipelago",
+      "the islands"
+    ],
+    "the galapagos islands of ecuador": [
+      "the Galapagos",
+      "the archipelago"
+    ],
+
+    "the world's largest rainforest": [
+      "the Amazon rainforest",
+      "the rainforest",
+      "the Amazon basin"
+    ],
+    "the lungs of the planet": [
+      "the Amazon",
+      "the Amazon rainforest",
+      "the rainforest"
+    ],
+    "the lungs of the earth": [
+      "the Amazon",
+      "the Amazon rainforest"
+    ],
+    "the mighty amazon": [
+      "the Amazon",
+      "the Amazon River",
+      "the Amazon basin"
+    ],
+    "the mighty amazon river": [
+      "the Amazon River",
+      "the river",
+      "the Amazon"
+    ],
+    "deeper in the rainforest": [
+      "deeper in the rainforest",
+      "further into the rainforest",
+      "further from the river"
+    ],
+
+    "the roof of the world": [
+      "the high Andes",
+      "the Andes",
+      "the highlands"
+    ],
+    "the end of the world": [
+      "the far south",
+      "Ushuaia",
+      "the southern tip of the continent"
+    ],
+    "the end of the earth": [
+      "the far south",
+      "the southern tip of the continent"
+    ],
+    "the last frontier": [
+      "a remote region",
+      "one of the last remote regions",
+      "one of the least-visited regions"
+    ],
+    "the seventh continent": [
+      "Antarctica"
+    ],
+    "the white continent": [
+      "Antarctica"
+    ],
+    "the frozen continent": [
+      "Antarctica"
+    ],
+    "the land of the incas": [
+      "Peru",
+      "the central Andes of Peru",
+      "the old Inca heartland"
+    ],
+    "in the land of the incas": [
+      "in Peru",
+      "in the old Inca heartland",
+      "in the Peruvian Andes"
+    ],
+    "the lost city of the incas": [
+      "Machu Picchu"
+    ],
+    "the sacred valley of the incas": [
+      "the Sacred Valley"
+    ],
+    "the salt flats of bolivia": [
+      "the Uyuni Salt Flat",
+      "Salar de Uyuni"
+    ],
+    "the world's largest salt flat": [
+      "the Uyuni Salt Flat",
+      "Salar de Uyuni"
+    ],
+    "the driest desert in the world": [
+      "the Atacama Desert",
+      "the Atacama"
+    ],
+    "the driest desert on earth": [
+      "the Atacama Desert",
+      "the Atacama"
+    ],
+    "the southernmost city in the world": [
+      "Ushuaia",
+      "Ushuaia, at the southern tip of Argentina"
+    ],
+    "at the edge of the world": [
+      "in the far south",
+      "at the southern tip of the continent"
+    ],
+    "at the ends of the earth": [
+      "in remote places",
+      "far from anywhere",
+      "in the far corners of the map"
+    ],
+    "at the top of the world": [
+      "in the far north",
+      "in the Arctic"
+    ],
+
+    "the crown jewel of south america": [
+      "one of the best trips in South America",
+      "a top South American destination",
+      "one of the highlights of South America"
+    ],
+    "the pearl of the pacific": [
+      "a top Pacific destination",
+      "one of the best spots on the Pacific coast"
+    ],
+    "the jewel of the andes": [
+      "one of the top spots in the Andes",
+      "a top Andean destination"
+    ],
+    "the jewel of the amazon": [
+      "one of the top spots in the Amazon",
+      "a top Amazon destination"
+    ],
+    "the heart of south america": [
+      "central South America",
+      "the middle of the continent"
+    ],
+    "the heart of the andes": [
+      "the central Andes",
+      "the high Andes"
+    ],
+    "the heart of the amazon": [
+      "the central Amazon",
+      "deep in the Amazon basin"
+    ],
+    "the heart of patagonia": [
+      "central Patagonia",
+      "the middle of Patagonia"
+    ],
+    "in the heart of the amazon rainforest": [
+      "deep in the Amazon rainforest",
+      "well inside the rainforest",
+      "far from the river, in the rainforest"
+    ],
+    "in the heart of the andes": [
+      "deep in the Andes",
+      "high in the Andes"
+    ],
+    "in the heart of patagonia": [
+      "deep in Patagonia",
+      "well inside Patagonia"
+    ],
+    "nestled in the andes": [
+      "in the Andes",
+      "up in the Andes",
+      "high in the Andes"
+    ],
+    "nestled in the mountains": [
+      "in the mountains",
+      "up in the mountains"
+    ],
+    "nestled between": [
+      "between",
+      "sitting between",
+      "set between"
+    ],
+    "nestled amidst": [
+      "surrounded by",
+      "set among",
+      "in the middle of"
+    ],
+
+    "surrounded by breathtaking scenery": [
+      "with striking scenery",
+      "with big views on every side",
+      "with scenery in every direction"
+    ],
+    "surrounded by breathtaking landscapes": [
+      "with striking landscapes",
+      "with big views on every side"
+    ],
+    "surrounded by towering peaks": [
+      "with tall peaks on every side",
+      "with peaks all around"
+    ],
+    "surrounded by snow-capped peaks": [
+      "with snowy peaks all around",
+      "with snowy peaks on every side"
+    ],
+    "snow-capped peaks": [
+      "snowy peaks",
+      "snow-covered peaks",
+      "high snowy peaks"
+    ],
+    "snow-capped andes": [
+      "the snowy Andes",
+      "the snow-covered Andes"
+    ],
+    "snow-covered peaks": [
+      "snowy peaks",
+      "peaks under snow"
+    ],
+    "glacier-carved landscapes": [
+      "glacier-shaped land",
+      "land shaped by glaciers"
+    ],
+    "glacier-fed lakes": [
+      "glacier lakes",
+      "lakes fed by glaciers"
+    ],
+    "crystal-clear waters": [
+      "clear water",
+      "very clear water",
+      "water you can see through"
+    ],
+    "crystal clear waters": [
+      "clear water",
+      "very clear water"
+    ],
+    "turquoise waters": [
+      "blue-green water",
+      "turquoise water",
+      "bright blue water"
+    ],
+    "azure waters": [
+      "blue water",
+      "deep-blue water"
+    ],
+    "emerald waters": [
+      "green water",
+      "deep-green water"
+    ],
+    "pristine waters": [
+      "clean water",
+      "clean, clear water"
+    ],
+    "pristine beaches": [
+      "clean beaches",
+      "quiet beaches"
+    ],
+    "pristine coastline": [
+      "clean coast",
+      "quiet coast"
+    ],
+    "pristine wilderness": [
+      "untouched wilderness",
+      "quiet, undeveloped land"
+    ],
+    "unspoiled wilderness": [
+      "untouched land",
+      "quiet, undeveloped land"
+    ],
+    "untouched paradise": [
+      "a quiet spot",
+      "an undeveloped spot"
+    ],
+    "verdant jungle": [
+      "green jungle",
+      "thick jungle"
+    ],
+    "lush jungle": [
+      "green jungle",
+      "thick jungle"
+    ],
+    "lush rainforest": [
+      "green rainforest",
+      "thick rainforest"
+    ],
+    "dense rainforest": [
+      "thick rainforest",
+      "dense rainforest",
+      "close-canopy rainforest"
+    ],
+    "canopy of the rainforest": [
+      "rainforest canopy",
+      "top of the rainforest"
+    ],
+    "under the canopy": [
+      "under the trees",
+      "below the canopy"
+    ],
+    "beneath the canopy": [
+      "under the trees",
+      "below the canopy"
+    ],
+
+    "step off the beaten path": [
+      "leave the tourist route",
+      "get off the main route",
+      "skip the usual stops"
+    ],
+    "step off the beaten track": [
+      "leave the tourist route",
+      "get off the main route"
+    ],
+    "off-the-beaten-path adventure": [
+      "quiet adventure",
+      "off-the-usual-route trip"
+    ],
+    "off-the-beaten-track adventure": [
+      "quiet adventure",
+      "off-the-usual-route trip"
+    ],
+    "away from the tourist crowds": [
+      "away from crowds",
+      "well away from the crowds"
+    ],
+    "away from the crowds": [
+      "away from crowds",
+      "away from the main tourist areas"
+    ],
+    "escape the crowds": [
+      "avoid crowds",
+      "get away from the crowds"
+    ],
+    "beat the crowds": [
+      "avoid crowds",
+      "get ahead of the crowds"
+    ],
+    "avoid the tourist traps": [
+      "skip the tourist traps",
+      "skip the usual tourist stops"
+    ],
+
+    "for the adventurous soul": [
+      "for adventurous travelers",
+      "for people who like active trips"
+    ],
+    "for the adventurous traveler": [
+      "for adventurous travelers",
+      "for people who like active trips"
+    ],
+    "for the discerning traveler": [
+      "for careful travelers",
+      "for travelers who care about the details"
+    ],
+    "for the seasoned traveler": [
+      "for experienced travelers",
+      "for travelers who've been around"
+    ],
+    "for the intrepid traveler": [
+      "for bold travelers",
+      "for travelers who don't mind roughing it"
+    ],
+    "for the curious traveler": [
+      "for curious travelers",
+      "for travelers who like to learn"
+    ],
+    "for the modern traveler": [
+      "for today's travelers"
+    ],
+
+    "immerse themselves in nature's most": [
+      "get right into nature's most",
+      "spend real time in nature's most"
+    ],
+    "immerse themselves in the culture": [
+      "get into the culture",
+      "spend time with the local culture"
+    ],
+    "immerse themselves in local culture": [
+      "spend time with the local culture",
+      "get into local life"
+    ],
+    "immerse themselves in nature": [
+      "spend time in nature",
+      "get out into nature"
+    ],
+    "immerse themselves in the wilderness": [
+      "spend time in wild places",
+      "get out into wild country"
+    ],
+    "immerse themselves in": [
+      "get into",
+      "spend real time in",
+      "experience"
+    ],
+    "immerse yourself in the culture": [
+      "get into the culture",
+      "spend time with the local culture"
+    ],
+    "immerse yourself in local culture": [
+      "spend time with the local culture",
+      "get into local life"
+    ],
+    "immerse yourself in the local culture": [
+      "spend time with the local culture",
+      "get into local life"
+    ],
+    "immerse yourself in nature": [
+      "spend time in nature",
+      "get out into nature"
+    ],
+    "immerse yourself in the wilderness": [
+      "get out into wild country",
+      "spend time in wild places"
+    ],
+    "immerse yourself in history": [
+      "learn the history first-hand",
+      "walk through the history"
+    ],
+    "immerse yourself in": [
+      "get into",
+      "spend real time in",
+      "experience"
+    ],
+    "get up close and personal with": [
+      "see up close",
+      "get close to",
+      "watch at close range"
+    ],
+    "come face to face with": [
+      "meet",
+      "come face-to-face with",
+      "run into"
+    ],
+    "encounter face to face": [
+      "meet",
+      "come face-to-face with"
+    ],
+    "walk in the footsteps of": [
+      "follow the path of",
+      "retrace the route of"
+    ],
+    "in the footsteps of": [
+      "on the path of",
+      "following"
+    ],
+    "follow in the footsteps of": [
+      "follow the path of",
+      "retrace the route of"
+    ],
+    "follow in the footsteps of the incas": [
+      "follow the Inca path",
+      "walk the old Inca route"
+    ],
+    "walk in the footsteps of darwin": [
+      "follow Darwin's route",
+      "retrace Darwin's route",
+      "see what Darwin saw"
+    ],
+    "walk in the footsteps of the incas": [
+      "walk the old Inca route",
+      "follow the Inca path"
+    ],
+    "connect with nature": [
+      "spend time in nature",
+      "get out into nature"
+    ],
+    "reconnect with nature": [
+      "spend time in nature again",
+      "get back out into nature"
+    ],
+    "get back to nature": [
+      "spend time in nature",
+      "get out into nature"
+    ],
+    "commune with nature": [
+      "spend time in nature",
+      "get out into nature"
+    ],
+    "in harmony with nature": [
+      "with nature",
+      "at nature's pace"
+    ],
+    "in tune with nature": [
+      "with nature",
+      "at nature's pace"
+    ],
+    "at one with nature": [
+      "with nature",
+      "at nature's pace"
+    ],
+
+    "expert local guides": [
+      "local guides",
+      "experienced local guides",
+      "certified naturalist guides"
+    ],
+    "our expert guides": [
+      "our guides",
+      "our experienced guides"
+    ],
+    "our expert local guides": [
+      "our local guides",
+      "our experienced local guides"
+    ],
+    "our knowledgeable guides": [
+      "our guides",
+      "our experienced guides"
+    ],
+    "our seasoned guides": [
+      "our experienced guides",
+      "our long-time guides"
+    ],
+    "certified naturalist guides": [
+      "certified naturalist guides",
+      "licensed naturalist guides"
+    ],
+    "certified naturalist guide": [
+      "certified naturalist guide",
+      "licensed naturalist guide"
+    ],
+    "expedition team": [
+      "expedition team",
+      "onboard team",
+      "guide team"
+    ],
+    "dedicated team": [
+      "team"
+    ],
+    "dedicated staff": [
+      "staff",
+      "onboard staff"
+    ],
+    "handpicked accommodations": [
+      "chosen hotels",
+      "hotels we've vetted",
+      "hotels we know and use"
+    ],
+    "hand-picked accommodations": [
+      "chosen hotels",
+      "hotels we've vetted"
+    ],
+    "carefully curated accommodations": [
+      "chosen hotels",
+      "hotels we've vetted"
+    ],
+    "carefully curated itinerary": [
+      "planned itinerary",
+      "itinerary we've put together",
+      "itinerary we've worked out with you"
+    ],
+    "carefully curated itineraries": [
+      "planned itineraries",
+      "itineraries we've put together"
+    ],
+    "thoughtfully curated": [
+      "planned",
+      "put together with care"
+    ],
+    "meticulously planned": [
+      "carefully planned",
+      "planned in detail"
+    ],
+    "meticulously crafted": [
+      "carefully made",
+      "put together with care"
+    ],
+    "meticulously designed": [
+      "carefully made",
+      "carefully planned"
+    ],
+    "expertly crafted itinerary": [
+      "planned itinerary",
+      "itinerary we've worked out with you"
+    ],
+    "expertly designed itinerary": [
+      "planned itinerary",
+      "itinerary we've worked out with you"
+    ],
+    "custom-designed itinerary": [
+      "custom itinerary",
+      "itinerary built around you"
+    ],
+    "tailor-made itinerary": [
+      "custom itinerary",
+      "itinerary built around you"
+    ],
+    "tailor-made journey": [
+      "custom trip",
+      "trip built around you"
+    ],
+    "tailored to your interests": [
+      "matched to what you want to see",
+      "built around what you want to do"
+    ],
+    "tailored to your preferences": [
+      "matched to what you want",
+      "built around what you want"
+    ],
+    "designed with you in mind": [
+      "built around you",
+      "put together with you in mind"
+    ],
+    "made with you in mind": [
+      "built around you",
+      "put together with you in mind"
+    ],
+    "crafted with you in mind": [
+      "built around you",
+      "put together with you in mind"
+    ],
+    "put together with you in mind": [
+      "built around you"
+    ],
+
+    "your journey begins": [
+      "your trip starts",
+      "you set off"
+    ],
+    "your adventure begins": [
+      "your trip starts",
+      "you set off"
+    ],
+    "your voyage begins": [
+      "your trip starts",
+      "the trip gets going"
+    ],
+    "the journey begins": [
+      "the trip starts",
+      "we get going"
+    ],
+    "the adventure awaits": [
+      "the trip is ready when you are"
+    ],
+    "adventure awaits": [
+      "the trip is ready when you are"
+    ],
+    "your adventure awaits": [
+      "your trip is ready when you are",
+      "your trip is set"
+    ],
+    "paradise awaits": [
+      "a great spot is waiting for you"
+    ],
+
+    "the wonders of the amazon": [
+      "the Amazon",
+      "what the Amazon has to offer"
+    ],
+    "the wonders of the galapagos": [
+      "the Galapagos",
+      "what the Galapagos has to offer"
+    ],
+    "the wonders of patagonia": [
+      "Patagonia",
+      "what Patagonia has to offer"
+    ],
+    "the wonders of antarctica": [
+      "Antarctica",
+      "what Antarctica has to offer"
+    ],
+    "the wonders of nature": [
+      "nature",
+      "the natural world"
+    ],
+    "the wonders of the natural world": [
+      "the natural world",
+      "what nature has to offer"
+    ],
+    "natural wonders": [
+      "natural sights",
+      "the sights",
+      "the natural landmarks"
+    ],
+    "natural wonderland": [
+      "wild area",
+      "a wild stretch"
+    ],
+    "wildlife wonderland": [
+      "wildlife area",
+      "a place packed with wildlife"
+    ],
+    "a wildlife lover's dream": [
+      "great for wildlife watching",
+      "a good pick for wildlife lovers"
+    ],
+    "a birder's dream": [
+      "great for birding",
+      "a good pick for birders"
+    ],
+    "a photographer's dream": [
+      "great for photography",
+      "a good pick for photographers"
+    ],
+    "a nature lover's dream": [
+      "great for nature lovers",
+      "a good pick for nature travelers"
+    ],
+    "a foodie's dream": [
+      "great for food",
+      "a good pick for food travelers"
+    ],
+    "a diver's dream": [
+      "great for diving",
+      "a good pick for divers"
+    ],
+    "a hiker's dream": [
+      "great for hiking",
+      "a good pick for hikers"
+    ],
+
+    "witness the wonders": [
+      "see"
+    ],
+    "witness the beauty of": [
+      "see"
+    ],
+    "witness the majesty of": [
+      "see"
+    ],
+    "witness the magic of": [
+      "see"
+    ],
+    "behold the beauty of": [
+      "see"
+    ],
+    "gaze in wonder at": [
+      "look at",
+      "watch"
+    ],
+    "marvel at": [
+      "look at",
+      "watch"
+    ],
+    "marvel at the beauty of": [
+      "look at",
+      "watch"
+    ],
+    "stand in awe of": [
+      "look at",
+      "watch"
+    ],
+
+    "the perfect destination for": [
+      "a good destination for",
+      "one of the best destinations for",
+      "hard to beat for"
+    ],
+    "the ultimate destination for": [
+      "a top destination for",
+      "one of the best destinations for"
+    ],
+    "the ideal destination for": [
+      "a good destination for",
+      "a solid destination for"
+    ],
+    "the perfect getaway for": [
+      "a good getaway for",
+      "a solid pick for"
+    ],
+    "the perfect escape for": [
+      "a good getaway for",
+      "a solid pick for"
+    ],
+    "the ultimate escape": [
+      "a top getaway",
+      "hard to beat as a getaway"
+    ],
+
+    "the perfect blend of": [
+      "a mix of",
+      "a good mix of"
+    ],
+    "the perfect combination of": [
+      "a mix of",
+      "a good mix of"
+    ],
+    "a perfect blend of": [
+      "a mix of",
+      "a good mix of"
+    ],
+    "an ideal blend of": [
+      "a mix of",
+      "a good mix of"
+    ],
+    "the best of both worlds": [
+      "the best of both",
+      "two things at once"
+    ],
+
+    "world-class service": [
+      "top service",
+      "very good service"
+    ],
+    "world-class amenities": [
+      "top amenities",
+      "the amenities you'd expect at the high end"
+    ],
+    "world-class hospitality": [
+      "top hospitality",
+      "a warm welcome"
+    ],
+    "warm hospitality": [
+      "a warm welcome",
+      "friendly service"
+    ],
+    "warm and welcoming": [
+      "welcoming",
+      "friendly"
+    ],
+    "warm welcome": [
+      "welcome"
+    ],
+    "warm smiles": [
+      "friendly smiles"
+    ],
+    "friendly locals": [
+      "locals",
+      "the people you'll meet"
+    ],
+    "welcoming locals": [
+      "welcoming locals",
+      "friendly locals"
+    ],
+    "the friendliest people you'll ever meet": [
+      "friendly people",
+      "some of the friendliest people around"
+    ],
+    "known for their hospitality": [
+      "known as welcoming",
+      "known for looking after their guests"
+    ],
+
+    "renowned for its beauty": [
+      "known for its scenery",
+      "known for how it looks"
+    ],
+    "renowned for its wildlife": [
+      "known for its wildlife",
+      "known for what you can see there"
+    ],
+    "renowned for its cuisine": [
+      "known for its food",
+      "known for what people eat there"
+    ],
+    "renowned for its culture": [
+      "known for its culture"
+    ],
+    "renowned for its history": [
+      "known for its history"
+    ],
+    "known for its stunning beauty": [
+      "known for its scenery",
+      "known for how it looks"
+    ],
+    "boasts stunning views": [
+      "has striking views",
+      "opens onto big views"
+    ],
+    "boasts breathtaking views": [
+      "has striking views",
+      "opens onto big views"
+    ],
+    "boasts panoramic views": [
+      "has wide views",
+      "opens onto wide views"
+    ],
+    "offering panoramic views": [
+      "with wide views",
+      "opening onto wide views"
+    ],
+    "offering stunning views": [
+      "with striking views",
+      "opening onto big views"
+    ],
+    "with panoramic views of": [
+      "with wide views of",
+      "looking out over"
+    ],
+    "with breathtaking views of": [
+      "with striking views of",
+      "looking out over"
+    ],
+    "with sweeping views of": [
+      "with wide views of",
+      "looking out over"
+    ],
+    "sweeping views of the andes": [
+      "wide views of the Andes",
+      "views over the Andes"
+    ],
+    "sweeping views of patagonia": [
+      "wide views of Patagonia",
+      "views over Patagonia"
+    ],
+    "panoramic views of the andes": [
+      "wide views of the Andes",
+      "views over the Andes"
+    ],
+    "panoramic views of patagonia": [
+      "wide views of Patagonia",
+      "views over Patagonia"
+    ],
+
+    "under the southern cross": [
+      "under southern skies"
+    ],
+    "under the midnight sun": [
+      "under the midnight sun",
+      "in the round-the-clock daylight"
+    ],
+    "under the northern lights": [
+      "under the northern lights",
+      "with the aurora overhead"
+    ],
+    "chasing the northern lights": [
+      "watching the northern lights",
+      "on the lookout for the aurora"
+    ],
+    "chasing the aurora": [
+      "watching the aurora",
+      "on the lookout for the aurora"
+    ],
+    "in search of the northern lights": [
+      "to see the northern lights",
+      "on the lookout for the aurora"
+    ],
+    "in search of the aurora": [
+      "to see the aurora",
+      "on the lookout for the aurora"
+    ],
+    "in search of wildlife": [
+      "to see wildlife",
+      "on the lookout for wildlife"
+    ],
+    "in search of penguins": [
+      "to see penguins",
+      "on the lookout for penguins"
+    ],
+    "in search of whales": [
+      "to see whales",
+      "on the lookout for whales"
+    ],
+    "in search of jaguars": [
+      "to see jaguars",
+      "on the lookout for jaguars"
+    ],
+    "in search of the elusive": [
+      "to see the rarely-seen",
+      "on the lookout for the rarely-seen"
+    ],
+    "the elusive jaguar": [
+      "the rarely-seen jaguar",
+      "the jaguar (a rare sighting)"
+    ],
+    "the elusive puma": [
+      "the rarely-seen puma",
+      "the puma (a rare sighting)"
+    ],
+    "the elusive andean condor": [
+      "the Andean condor (not always easy to spot)",
+      "the rarely-seen Andean condor"
+    ],
+
+    "penguin colonies": [
+      "penguin colonies",
+      "penguin rookeries",
+      "large groups of penguins"
+    ],
+    "colonies of penguins": [
+      "penguin colonies",
+      "penguin rookeries"
+    ],
+    "penguin rookeries": [
+      "penguin rookeries",
+      "penguin nesting sites"
+    ],
+    "seal colonies": [
+      "seal colonies",
+      "groups of seals hauled out"
+    ],
+    "seabird colonies": [
+      "seabird colonies",
+      "seabird nesting sites"
+    ],
+    "wildlife encounters": [
+      "wildlife sightings",
+      "wildlife you'll see"
+    ],
+    "close wildlife encounters": [
+      "close wildlife sightings",
+      "wildlife you can see up close"
+    ],
+    "up-close wildlife encounters": [
+      "close wildlife sightings",
+      "wildlife you can see up close"
+    ],
+    "close encounters with wildlife": [
+      "close wildlife sightings",
+      "wildlife you can see up close"
+    ],
+    "iconic wildlife of the galapagos": [
+      "the Galapagos wildlife",
+      "the species Galapagos is known for"
+    ],
+    "iconic wildlife of the amazon": [
+      "the Amazon wildlife",
+      "the species the Amazon is known for"
+    ],
+    "iconic wildlife of patagonia": [
+      "Patagonia's wildlife",
+      "the species Patagonia is known for"
+    ],
+    "iconic wildlife of antarctica": [
+      "Antarctica's wildlife",
+      "the species Antarctica is known for"
+    ],
+    "the giant tortoises of the galapagos": [
+      "the Galapagos giant tortoises",
+      "the giant tortoises"
+    ],
+    "swim with sea lions": [
+      "swim with sea lions",
+      "snorkel alongside sea lions"
+    ],
+    "snorkel with sea lions": [
+      "snorkel with sea lions",
+      "snorkel alongside sea lions"
+    ],
+    "snorkel with marine iguanas": [
+      "snorkel with marine iguanas",
+      "snorkel near feeding marine iguanas"
+    ],
+    "swim alongside": [
+      "swim with",
+      "snorkel alongside"
+    ],
+    "cruise the amazon river": [
+      "cruise the Amazon River",
+      "travel by boat down the Amazon"
+    ],
+    "cruise the galapagos islands": [
+      "cruise the Galapagos",
+      "sail between the Galapagos islands"
+    ],
+    "cruise the antarctic peninsula": [
+      "cruise the Antarctic Peninsula",
+      "sail along the Antarctic Peninsula"
+    ],
+    "sail the drake passage": [
+      "sail the Drake Passage",
+      "cross the Drake Passage"
+    ],
+    "cross the drake passage": [
+      "cross the Drake Passage",
+      "sail the Drake Passage"
+    ],
+
+    "an authentic experience": [
+      "a real experience",
+      "the real thing"
+    ],
+    "an authentic travel experience": [
+      "a real trip",
+      "a trip without the polish"
+    ],
+    "authentic local experiences": [
+      "real local experiences",
+      "the real local thing"
+    ],
+    "authentic cultural experiences": [
+      "real cultural experiences",
+      "real time with the local culture"
+    ],
+    "authentic cuisine": [
+      "local food",
+      "the food people actually eat"
+    ],
+    "authentic local cuisine": [
+      "local food",
+      "the food people actually eat"
+    ],
+    "authentic flavors": [
+      "local flavors",
+      "the flavors of the place"
+    ],
+    "true local flavor": [
+      "local flavor",
+      "the feel of the place"
+    ],
+    "true local experience": [
+      "real local experience",
+      "the real local thing"
+    ],
+    "the true essence of": [
+      "what makes ",
+      "the real feel of "
+    ],
+    "the essence of": [
+      "the feel of",
+      "what makes"
+    ],
+    "capture the essence of": [
+      "show the feel of",
+      "show what makes"
+    ],
+    "the spirit of": [
+      "the feel of"
+    ],
+    "the soul of": [
+      "the heart of",
+      "the feel of"
+    ],
+    "the vibrant culture of": [
+      "the culture of",
+      "the day-to-day culture of"
+    ],
+    "the rich culture of": [
+      "the culture of",
+      "the day-to-day culture of"
+    ],
+    "the rich heritage of": [
+      "the heritage of",
+      "the history of"
+    ],
+    "rich cultural heritage": [
+      "cultural heritage",
+      "long cultural history"
+    ],
+    "vibrant local culture": [
+      "local culture",
+      "day-to-day local culture"
+    ],
+    "rich biodiversity": [
+      "many species",
+      "a lot of different species"
+    ],
+    "incredible biodiversity": [
+      "many species",
+      "an unusual number of species"
+    ],
+    "unrivaled biodiversity": [
+      "top biodiversity",
+      "one of the highest species counts anywhere"
+    ],
+    "unparalleled biodiversity": [
+      "top biodiversity",
+      "one of the highest species counts anywhere"
+    ],
+    "unmatched biodiversity": [
+      "top biodiversity",
+      "one of the highest species counts anywhere"
+    ],
+    "one of the most biodiverse places on earth": [
+      "one of the most biodiverse places on Earth",
+      "one of the most species-rich places on the planet"
+    ],
+    "one of the most biodiverse regions on earth": [
+      "one of the most biodiverse regions on Earth",
+      "one of the most species-rich regions on the planet"
+    ],
+
+    "sustainable travel": ["sustainable travel", "low-impact travel"],
+    "sustainable tourism": ["sustainable tourism", "low-impact tourism"],
+    "responsible travel": ["responsible travel"],
+    "responsible tourism": ["responsible tourism"],
+    "eco-friendly travel": ["eco-friendly travel", "low-impact travel"],
+    "low-impact travel": ["low-impact travel"],
+    "travel with purpose": ["travel that gives back", "travel with a reason"],
+    "purposeful travel": ["travel that gives back", "travel with a reason"],
+    "give back to local communities": [
+      "help local communities",
+      "put money into local communities"
+    ],
+    "supporting local communities": [
+      "helping local communities",
+      "putting money into local communities"
+    ],
+    "empowering local communities": [
+      "helping local communities",
+      "backing local communities"
+    ],
+    "benefit local communities": [
+      "help local communities"
+    ],
+    "connect with local communities": [
+      "meet local communities",
+      "spend time with local people"
+    ],
+    "authentic connections with locals": [
+      "real connections with locals",
+      "real time with local people"
+    ],
+    "meaningful connections": [
+      "real connections",
+      "connections that stick"
+    ],
+    "meaningful travel": [
+      "travel that matters",
+      "travel that stays with you"
+    ],
+
+    "at voyagers, we believe": [
+      "at Voyagers, we think",
+      "at Voyagers, we've found",
+      "in our experience at Voyagers"
+    ],
+    "at voyagers we believe": [
+      "at Voyagers, we think",
+      "at Voyagers, we've found"
+    ],
+    "at voyagers": [
+      "at Voyagers"
+    ],
+    "as a boutique operator": [
+      "as a small operator",
+      "as a small-group operator"
+    ],
+    "as a small-group operator": [
+      "as a small-group operator"
+    ],
+    "as an expedition operator": [
+      "as an expedition operator"
+    ],
+    "as your travel partner": [
+      "as your travel partner",
+      "as the people planning your trip"
+    ],
+    "we are more than just": [
+      "we do more than",
+      "we're not only"
+    ],
+    "more than just a tour": [
+      "more than a tour",
+      "not only a tour"
+    ],
+    "more than just a trip": [
+      "more than a trip",
+      "not only a trip"
+    ],
+    "more than just a vacation": [
+      "more than a vacation",
+      "not only a vacation"
+    ],
+    "not just a trip": [
+      "more than a trip",
+      "not only a trip"
+    ],
+    "not just a vacation": [
+      "more than a vacation",
+      "not only a vacation"
+    ],
+    "not your typical tour": [
+      "not the usual tour",
+      "different from the usual tour"
+    ],
+    "not your average tour": [
+      "not the usual tour",
+      "different from the usual tour"
+    ],
+    "we take pride in": [
+      "we work hard on",
+      "we focus on"
+    ],
+    "we pride ourselves on": [
+      "we focus on",
+      "we work hard on"
+    ],
+    "our commitment to": [
+      "we focus on",
+      "we stay with"
+    ],
+    "committed to providing": [
+      "we provide"
+    ],
+    "committed to delivering": [
+      "we deliver"
+    ],
+    "dedicated to providing": [
+      "we provide"
+    ],
+    "we are dedicated to": [
+      "we work to",
+      "we focus on"
+    ],
+    "our passion for travel": [
+      "we love travel",
+      "we do this because we love travel"
+    ],
+    "our love for travel": [
+      "we love travel"
+    ],
+    "our passion for adventure": [
+      "we love adventure",
+      "we do this because we love the outdoors"
+    ],
+
+    "book your dream trip": [
+      "book your trip"
+    ],
+    "book your dream vacation": [
+      "book your vacation",
+      "book your trip"
+    ],
+    "book your adventure today": [
+      "book today",
+      "get in touch to book"
+    ],
+    "book your journey today": [
+      "book today",
+      "get in touch to book"
+    ],
+    "contact us today": [
+      "contact us",
+      "get in touch"
+    ],
+    "get in touch today": [
+      "get in touch",
+      "contact us"
+    ],
+    "reach out today": [
+      "get in touch",
+      "contact us"
+    ],
+    "start planning today": [
+      "start planning",
+      "let's start planning"
+    ],
+    "let us help you plan": [
+      "we can help you plan",
+      "we'll help you work out"
+    ],
+    "let us help you create": [
+      "we can help you put together",
+      "we'll help you plan"
+    ],
+    "let us plan your": [
+      "we can plan your",
+      "we'll put together your"
+    ],
+    "we'll help you plan": [
+      "we can help you plan"
+    ],
+    "we can help you plan": [
+      "we can help you plan"
+    ],
+    "we'll take care of": [
+      "we handle",
+      "we'll take care of"
+    ],
+    "leave the details to us": [
+      "we handle the details",
+      "we'll sort the details"
+    ],
+    "we handle the details": [
+      "we handle the details"
+    ],
+    "sit back and relax": [
+      "relax",
+      "let us take it from here"
+    ],
+    "sit back, relax, and": [
+      "relax and",
+      "with everything taken care of, you can"
+    ],
+    "come join us": [
+      "join us",
+      "come with us"
+    ],
+    "join us on": [
+      "join us on",
+      "come with us on"
+    ],
+    "join us for": [
+      "join us for",
+      "come with us for"
+    ],
+    "come experience": [
+      "come see",
+      "come and see"
+    ],
+    "come and experience": [
+      "come see",
+      "come and see"
+    ],
+    "come and discover": [
+      "come see",
+      "come and see"
+    ],
+
+    "embark on a journey of a lifetime": [
+      "start a trip you'll remember",
+      "set off on a top trip",
+      "start the kind of trip people talk about for years"
+    ],
+    "embark on the journey of a lifetime": [
+      "start a trip you'll remember",
+      "set off on a top trip"
+    ],
+    "embark on an unforgettable journey": [
+      "start a trip you'll remember",
+      "set off on a trip that sticks with you"
+    ],
+    "embark on an unforgettable adventure": [
+      "start an adventure you'll remember",
+      "set off on a trip that sticks with you"
+    ],
+    "embark on your journey": [
+      "start your trip",
+      "set off"
+    ],
+    "embark on a voyage": [
+      "start a trip",
+      "set off"
+    ],
+    "embark on a magical journey": [
+      "start a special trip",
+      "set off on a memorable trip"
+    ],
+    "embark on a once-in-a-lifetime adventure": [
+      "start a rare trip",
+      "set off on the kind of trip most people only read about"
+    ],
+    "set sail on a journey": [
+      "set sail",
+      "get underway"
+    ],
+    "set sail on an adventure": [
+      "set sail",
+      "get underway"
+    ],
+    "journey of a lifetime": [
+      "a trip you'll remember",
+      "a top trip",
+      "the kind of trip people talk about for years"
+    ],
+    "trip of a lifetime": [
+      "a top trip",
+      "a trip you'll remember"
+    ],
+    "adventure of a lifetime": [
+      "a top adventure",
+      "an adventure you'll remember"
+    ],
+    "experience of a lifetime": [
+      "a top experience",
+      "an experience you'll remember"
+    ],
+    "vacation of a lifetime": [
+      "a top vacation",
+      "a vacation you'll remember"
+    ],
+    "cruise of a lifetime": [
+      "a top cruise",
+      "a cruise you'll remember"
+    ],
+    "once-in-a-lifetime opportunity": [
+      "a rare chance",
+      "a chance that doesn't come around often"
+    ],
+    "once-in-a-lifetime experience": [
+      "a rare experience",
+      "the kind of experience that doesn't come around often"
+    ],
+    "unforgettable adventure": [
+      "an adventure you'll remember",
+      "a trip that sticks with you"
+    ],
+    "unforgettable experience": [
+      "a trip you'll remember",
+      "an experience that sticks with you"
+    ],
+    "unforgettable memories": [
+      "lasting memories",
+      "memories that stick with you"
+    ],
+    "unforgettable journey": [
+      "a trip you'll remember",
+      "a trip that sticks with you"
+    ],
+    "memories to last a lifetime": [
+      "lasting memories",
+      "memories that stick with you"
+    ],
+    "memories that will last a lifetime": [
+      "lasting memories",
+      "memories that stick with you"
+    ],
+    "memories you will cherish forever": [
+      "lasting memories",
+      "memories that stay with you"
+    ],
+    "make memories that last a lifetime": [
+      "make lasting memories",
+      "make memories that stick with you"
+    ],
+    "create memories that will last a lifetime": [
+      "make lasting memories",
+      "make memories that stick with you"
+    ],
+    "leave you spellbound": [
+      "stay with you",
+      "stick with you"
+    ],
+    "leave you awestruck": [
+      "stay with you",
+      "stick with you"
+    ],
+    "leave you speechless": [
+      "stay with you",
+      "stick with you"
+    ],
+    "leave you breathless": [
+      "stay with you",
+      "stick with you"
+    ],
+    "will leave you in awe": [
+      "will stay with you",
+      "will stick with you"
+    ],
+    "take your breath away": [
+      "stay with you",
+      "stick with you"
+    ],
+    "captivate your senses": [
+      "hold your attention"
+    ],
+    "delight your senses": [
+      "please you"
+    ],
+    "awaken your senses": [
+      "wake you up"
+    ],
+    "feast for the senses": [
+      "a lot to take in"
+    ],
+    "sensory overload": [
+      "a lot to take in"
+    ],
+
+    "gateway to the amazon": [
+      "starting point for the Amazon",
+      "the town most Amazon trips start from"
+    ],
+    "gateway to the andes": [
+      "starting point for the Andes",
+      "the town most Andean trips start from"
+    ],
+    "gateway to patagonia": [
+      "starting point for Patagonia",
+      "the town most Patagonia trips start from"
+    ],
+    "gateway to the galapagos": [
+      "starting point for the Galapagos",
+      "the town most Galapagos trips start from"
+    ]
+  }
+}

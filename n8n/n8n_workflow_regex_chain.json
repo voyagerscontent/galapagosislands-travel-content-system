@@ -1,0 +1,1388 @@
+{
+  "name": "Voyagers · Human Dictionary (Regex-Chain top-40, illustrative)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "00837649-4ade-48f1-97fe-3b428f323434",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a0db095-e9b5-4809-b161-6a4b77a4db73",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)one\\\\ of\\\\ the\\\\ most\\\\ biodiverse\\\\ regions\\\\ on\\\\ earth(?!\\\\w)\", \"gi\"), \"one of the most biodiverse regions on Earth\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3de70146-498f-4ca3-9cd9-e2bf8768345a",
+      "name": "Replace 01: (?<!\\w)one\\ of\\ the\\ most\\ biodi",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "09b2d2f7-143f-4bfa-ad28-aba92fe434d2",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)one\\\\ of\\\\ the\\\\ most\\\\ biodiverse\\\\ places\\\\ on\\\\ earth(?!\\\\w)\", \"gi\"), \"one of the most biodiverse places on Earth\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "16ddbc53-6875-40fc-b2c3-8b51612fde80",
+      "name": "Replace 02: (?<!\\w)one\\ of\\ the\\ most\\ biodi",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df7d9bda-a2cf-4261-bd0c-45f66bb76782",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)create\\\\ memories\\\\ that\\\\ will\\\\ last\\\\ a\\\\ lifetime(?!\\\\w)\", \"gi\"), \"make lasting memories\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "64a43138-ea5f-42b6-b0ac-b9ee936bd07a",
+      "name": "Replace 03: (?<!\\w)create\\ memories\\ that\\ w",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        860,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10b344bc-6e36-4a24-8f31-a194daedf5e6",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)embark\\\\ on\\\\ a\\\\ once\\\\-in\\\\-a\\\\-lifetime\\\\ adventure(?!\\\\w)\", \"gi\"), \"start a rare trip\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "43675d51-52bc-4946-9a05-51cad220a282",
+      "name": "Replace 04: (?<!\\w)embark\\ on\\ a\\ once\\-in\\-",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1080,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "905c0dd6-9812-422f-935b-3ec623fb03de",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)the\\\\ friendliest\\\\ people\\\\ you'll\\\\ ever\\\\ meet(?!\\\\w)\", \"gi\"), \"friendly people\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c79cbaac-35ad-4c82-ba3a-8d83c4606102",
+      "name": "Replace 05: (?<!\\w)the\\ friendliest\\ people\\",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bf03f5d0-64c6-4053-b91e-e8016fff5097",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ yourself\\\\ in\\\\ the\\\\ local\\\\ culture(?!\\\\w)\", \"gi\"), \"spend time with the local culture\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "07ac8757-52ff-492f-bb96-97bd48c66524",
+      "name": "Replace 06: (?<!\\w)immerse\\ yourself\\ in\\ th",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8602fd24-233a-4c7d-a9e7-18391bc35144",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)in\\\\ the\\\\ heart\\\\ of\\\\ the\\\\ amazon\\\\ rainforest(?!\\\\w)\", \"gi\"), \"deep in the Amazon rainforest\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1be000e4-9e96-4907-8a70-8e7977683fe5",
+      "name": "Replace 07: (?<!\\w)in\\ the\\ heart\\ of\\ the\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6bd3e19c-42d2-4074-bae5-fe82111718c4",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)surrounded\\\\ by\\\\ breathtaking\\\\ landscapes(?!\\\\w)\", \"gi\"), \"with striking landscapes\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4fca7d95-b00b-4699-803a-273ceba6af58",
+      "name": "Replace 08: (?<!\\w)surrounded\\ by\\ breathtak",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "054605ed-906a-45e6-9d24-3b3d151773c0",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)embark\\\\ on\\\\ an\\\\ unforgettable\\\\ adventure(?!\\\\w)\", \"gi\"), \"start an adventure you'll remember\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5e1b75dc-0c08-4820-82e9-198ba3c10d62",
+      "name": "Replace 09: (?<!\\w)embark\\ on\\ an\\ unforgett",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2180,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "013c9e83-1dcf-4554-90a8-74dadbc0cf96",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)follow\\\\ in\\\\ the\\\\ footsteps\\\\ of\\\\ the\\\\ incas(?!\\\\w)\", \"gi\"), \"follow the Inca path\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "41f307da-1d48-4dff-92ee-890c5acc552c",
+      "name": "Replace 10: (?<!\\w)follow\\ in\\ the\\ footstep",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "91be1231-5024-4888-bd78-0160c9d18d47",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ themselves\\\\ in\\\\ the\\\\ wilderness(?!\\\\w)\", \"gi\"), \"spend time in wild places\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b146d764-e6c8-453c-ba8c-dbd6047de38d",
+      "name": "Replace 11: (?<!\\w)immerse\\ themselves\\ in\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2620,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78cd5a05-8003-4d53-8bc0-1fd7084fd48c",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)the\\\\ giant\\\\ tortoises\\\\ of\\\\ the\\\\ galapagos(?!\\\\w)\", \"gi\"), \"the Galapagos giant tortoises\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2c0d06c3-aca2-4645-9844-199e797bad00",
+      "name": "Replace 12: (?<!\\w)the\\ giant\\ tortoises\\ of",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2840,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bc41e0d7-499f-4b41-83b0-e1b6988204b7",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)embark\\\\ on\\\\ the\\\\ journey\\\\ of\\\\ a\\\\ lifetime(?!\\\\w)\", \"gi\"), \"start a trip you'll remember\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9aeed805-7782-4cc3-ae23-90114b8b95f9",
+      "name": "Replace 13: (?<!\\w)embark\\ on\\ the\\ journey\\",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3060,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "84f88df7-3cdc-453c-9ada-5d8e89dc092b",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ themselves\\\\ in\\\\ local\\\\ culture(?!\\\\w)\", \"gi\"), \"spend time with the local culture\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cf0627ab-81da-4184-a443-32d69707332a",
+      "name": "Replace 14: (?<!\\w)immerse\\ themselves\\ in\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3280,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "029b8b68-e07a-4fa6-b005-f1315d2cb3d8",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ themselves\\\\ in\\\\ nature's\\\\ most(?!\\\\w)\", \"gi\"), \"get right into nature's most\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5d83d5da-0c37-499b-9dc9-88e0adf2e937",
+      "name": "Replace 15: (?<!\\w)immerse\\ themselves\\ in\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "59c69617-678f-4866-8a25-8b39a79712ee",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)embark\\\\ on\\\\ an\\\\ unforgettable\\\\ journey(?!\\\\w)\", \"gi\"), \"start a trip you'll remember\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c8a6a788-7ced-4bb3-8373-47b92985a6ab",
+      "name": "Replace 16: (?<!\\w)embark\\ on\\ an\\ unforgett",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f53d7d45-3783-49fb-aaa2-abf249739097",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ yourself\\\\ in\\\\ the\\\\ wilderness(?!\\\\w)\", \"gi\"), \"get out into wild country\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "153472be-d490-47ef-8991-8eec82a45b9d",
+      "name": "Replace 17: (?<!\\w)immerse\\ yourself\\ in\\ th",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3940,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c053c488-41f1-4fe2-9fd6-7a84f24476a4",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)make\\\\ memories\\\\ that\\\\ last\\\\ a\\\\ lifetime(?!\\\\w)\", \"gi\"), \"make lasting memories\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "98145cb3-fcc6-4ed0-8969-b75576c00acf",
+      "name": "Replace 18: (?<!\\w)make\\ memories\\ that\\ las",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4160,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "03ed92bf-5970-4d07-b203-30a0994d9833",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)memories\\\\ that\\\\ will\\\\ last\\\\ a\\\\ lifetime(?!\\\\w)\", \"gi\"), \"lasting memories\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f545a80b-b798-478a-9b6d-410180a240c1",
+      "name": "Replace 19: (?<!\\w)memories\\ that\\ will\\ las",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4380,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d50b0f3-2c23-41f2-a122-395bd35e609a",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)surrounded\\\\ by\\\\ breathtaking\\\\ scenery(?!\\\\w)\", \"gi\"), \"with striking scenery\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "02a21bab-74b1-497e-8800-0b3d5c59596d",
+      "name": "Replace 20: (?<!\\w)surrounded\\ by\\ breathtak",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b37b5aa8-3600-4a30-ab64-dfa711e10341",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)the\\\\ southernmost\\\\ city\\\\ in\\\\ the\\\\ world(?!\\\\w)\", \"gi\"), \"Ushuaia\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "76ba1efa-cd19-4f06-b838-80571f7971fc",
+      "name": "Replace 21: (?<!\\w)the\\ southernmost\\ city\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4820,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c13e8d45-5e74-447b-9534-b447a842ec11",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)walk\\\\ in\\\\ the\\\\ footsteps\\\\ of\\\\ the\\\\ incas(?!\\\\w)\", \"gi\"), \"walk the old Inca route\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0857a658-2cb9-4d94-b6eb-21621be2ca51",
+      "name": "Replace 22: (?<!\\w)walk\\ in\\ the\\ footsteps\\",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5040,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "514f8ba4-cfe4-4a29-944b-f50b812bf734",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)authentic\\\\ connections\\\\ with\\\\ locals(?!\\\\w)\", \"gi\"), \"real connections with locals\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4595c205-57cc-45ab-afe2-2dfdee84fc30",
+      "name": "Replace 23: (?<!\\w)authentic\\ connections\\ w",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3dbf148a-1e6d-4fe1-bc00-2d0e247da95a",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)embark\\\\ on\\\\ a\\\\ journey\\\\ of\\\\ a\\\\ lifetime(?!\\\\w)\", \"gi\"), \"start a trip you'll remember\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "de42b99b-120b-47e6-b67e-689e9b48ab19",
+      "name": "Replace 24: (?<!\\w)embark\\ on\\ a\\ journey\\ o",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef67e639-4670-4905-bba2-0d839a2534e3",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ themselves\\\\ in\\\\ the\\\\ culture(?!\\\\w)\", \"gi\"), \"get into the culture\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2a0aea2a-4119-447e-a902-3587afbd1572",
+      "name": "Replace 25: (?<!\\w)immerse\\ themselves\\ in\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aa7f78fb-cc57-44a5-959c-bb0e2cc3db4c",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ yourself\\\\ in\\\\ local\\\\ culture(?!\\\\w)\", \"gi\"), \"spend time with the local culture\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0f645b65-cb08-41ba-9247-e5f29e4958ce",
+      "name": "Replace 26: (?<!\\w)immerse\\ yourself\\ in\\ lo",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c94220ac-d7f9-45f7-980c-dc4e4a477864",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)memories\\\\ you\\\\ will\\\\ cherish\\\\ forever(?!\\\\w)\", \"gi\"), \"lasting memories\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6923d587-51ec-4818-aeba-d06425cf2577",
+      "name": "Replace 27: (?<!\\w)memories\\ you\\ will\\ cher",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6140,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "21e8b74f-5166-4cf6-aac6-73484b4e0e90",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)carefully\\\\ curated\\\\ accommodations(?!\\\\w)\", \"gi\"), \"chosen hotels\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c482017a-c01b-4264-b6b7-652622a9d7e9",
+      "name": "Replace 28: (?<!\\w)carefully\\ curated\\ accom",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f7b6bd43-c409-40de-b056-4dbb313488b3",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)iconic\\\\ wildlife\\\\ of\\\\ the\\\\ galapagos(?!\\\\w)\", \"gi\"), \"the Galapagos wildlife\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0e157b42-11bb-4a1c-9d6d-dcfa15c34505",
+      "name": "Replace 29: (?<!\\w)iconic\\ wildlife\\ of\\ the",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6580,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f8070a44-ea7e-4201-a731-52c7e82a1d65",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)in\\\\ search\\\\ of\\\\ the\\\\ northern\\\\ lights(?!\\\\w)\", \"gi\"), \"to see the northern lights\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1cce4f08-2261-469b-8229-ffbd026aa7e1",
+      "name": "Replace 30: (?<!\\w)in\\ search\\ of\\ the\\ nort",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e194106-2014-4fe6-a6ff-60da9cdeeac3",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)the\\\\ crown\\\\ jewel\\\\ of\\\\ south\\\\ america(?!\\\\w)\", \"gi\"), \"one of the best trips in South America\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4ca68afc-ce42-4e61-a879-40f2b52056da",
+      "name": "Replace 31: (?<!\\w)the\\ crown\\ jewel\\ of\\ so",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7020,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "016368f7-7b80-45ff-b8eb-85d1c50106c0",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)the\\\\ galapagos\\\\ islands\\\\ of\\\\ ecuador(?!\\\\w)\", \"gi\"), \"the Galapagos\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "718df822-c575-48b9-943a-45e8faeb6244",
+      "name": "Replace 32: (?<!\\w)the\\ galapagos\\ islands\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2102009d-a3e1-4866-a6b4-d03394b0e5b9",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)the\\\\ wonders\\\\ of\\\\ the\\\\ natural\\\\ world(?!\\\\w)\", \"gi\"), \"the natural world\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4a2fe60a-efa7-4242-a129-897dbd4c0585",
+      "name": "Replace 33: (?<!\\w)the\\ wonders\\ of\\ the\\ na",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce17ed18-a739-4eaf-ae8d-b9b05c1587bf",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)immerse\\\\ yourself\\\\ in\\\\ the\\\\ culture(?!\\\\w)\", \"gi\"), \"get into the culture\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e8739e0a-2e73-4766-9f21-b012120e28be",
+      "name": "Replace 34: (?<!\\w)immerse\\ yourself\\ in\\ th",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "42bb3b77-30c6-4dc0-be21-9ab8245947cb",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)surrounded\\\\ by\\\\ snow\\\\-capped\\\\ peaks(?!\\\\w)\", \"gi\"), \"with snowy peaks all around\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c5d1f14a-acc0-4cb4-8f51-ccf808696013",
+      "name": "Replace 35: (?<!\\w)surrounded\\ by\\ snow\\-cap",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        7900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d0d822d9-a420-4261-bed7-e827557b4801",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)walk\\\\ in\\\\ the\\\\ footsteps\\\\ of\\\\ darwin(?!\\\\w)\", \"gi\"), \"follow Darwin's route\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "94e09500-7066-48bf-9aa7-8d299c77c383",
+      "name": "Replace 36: (?<!\\w)walk\\ in\\ the\\ footsteps\\",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae01779a-be88-4f10-ab19-5545d049a57b",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)an\\\\ authentic\\\\ travel\\\\ experience(?!\\\\w)\", \"gi\"), \"a real trip\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0c102e15-63fd-4db3-9e29-abee4af68c33",
+      "name": "Replace 37: (?<!\\w)an\\ authentic\\ travel\\ ex",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7a599fef-afe8-4859-9b81-a5019c34cfb5",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)authentic\\\\ cultural\\\\ experiences(?!\\\\w)\", \"gi\"), \"real cultural experiences\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6da2a755-7b7d-4b1c-8330-e002c3816660",
+      "name": "Replace 38: (?<!\\w)authentic\\ cultural\\ expe",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd56f501-28d3-4668-aa11-3e60c4619bec",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)close\\\\ encounters\\\\ with\\\\ wildlife(?!\\\\w)\", \"gi\"), \"close wildlife sightings\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d020e861-c1ba-431c-9167-1e03bb6ec21c",
+      "name": "Replace 39: (?<!\\w)close\\ encounters\\ with\\ ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c98cc80d-712e-42c7-adca-fc164d528d4d",
+              "name": "text",
+              "value": "={{ ($json.text || '').replace(new RegExp(\"(?<!\\\\w)connect\\\\ with\\\\ local\\\\ communities(?!\\\\w)\", \"gi\"), \"meet local communities\") }",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f77fc325-e0ab-40b2-8187-f18f24506293",
+      "name": "Replace 40: (?<!\\w)connect\\ with\\ local\\ com",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        9000,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Replace 01: (?<!\\w)one\\ of\\ the\\ most\\ biodi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 01: (?<!\\w)one\\ of\\ the\\ most\\ biodi": {
+      "main": [
+        [
+          {
+            "node": "Replace 02: (?<!\\w)one\\ of\\ the\\ most\\ biodi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 02: (?<!\\w)one\\ of\\ the\\ most\\ biodi": {
+      "main": [
+        [
+          {
+            "node": "Replace 03: (?<!\\w)create\\ memories\\ that\\ w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 03: (?<!\\w)create\\ memories\\ that\\ w": {
+      "main": [
+        [
+          {
+            "node": "Replace 04: (?<!\\w)embark\\ on\\ a\\ once\\-in\\-",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 04: (?<!\\w)embark\\ on\\ a\\ once\\-in\\-": {
+      "main": [
+        [
+          {
+            "node": "Replace 05: (?<!\\w)the\\ friendliest\\ people\\",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 05: (?<!\\w)the\\ friendliest\\ people\\": {
+      "main": [
+        [
+          {
+            "node": "Replace 06: (?<!\\w)immerse\\ yourself\\ in\\ th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 06: (?<!\\w)immerse\\ yourself\\ in\\ th": {
+      "main": [
+        [
+          {
+            "node": "Replace 07: (?<!\\w)in\\ the\\ heart\\ of\\ the\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 07: (?<!\\w)in\\ the\\ heart\\ of\\ the\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 08: (?<!\\w)surrounded\\ by\\ breathtak",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 08: (?<!\\w)surrounded\\ by\\ breathtak": {
+      "main": [
+        [
+          {
+            "node": "Replace 09: (?<!\\w)embark\\ on\\ an\\ unforgett",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 09: (?<!\\w)embark\\ on\\ an\\ unforgett": {
+      "main": [
+        [
+          {
+            "node": "Replace 10: (?<!\\w)follow\\ in\\ the\\ footstep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 10: (?<!\\w)follow\\ in\\ the\\ footstep": {
+      "main": [
+        [
+          {
+            "node": "Replace 11: (?<!\\w)immerse\\ themselves\\ in\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 11: (?<!\\w)immerse\\ themselves\\ in\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 12: (?<!\\w)the\\ giant\\ tortoises\\ of",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 12: (?<!\\w)the\\ giant\\ tortoises\\ of": {
+      "main": [
+        [
+          {
+            "node": "Replace 13: (?<!\\w)embark\\ on\\ the\\ journey\\",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 13: (?<!\\w)embark\\ on\\ the\\ journey\\": {
+      "main": [
+        [
+          {
+            "node": "Replace 14: (?<!\\w)immerse\\ themselves\\ in\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 14: (?<!\\w)immerse\\ themselves\\ in\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 15: (?<!\\w)immerse\\ themselves\\ in\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 15: (?<!\\w)immerse\\ themselves\\ in\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 16: (?<!\\w)embark\\ on\\ an\\ unforgett",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 16: (?<!\\w)embark\\ on\\ an\\ unforgett": {
+      "main": [
+        [
+          {
+            "node": "Replace 17: (?<!\\w)immerse\\ yourself\\ in\\ th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 17: (?<!\\w)immerse\\ yourself\\ in\\ th": {
+      "main": [
+        [
+          {
+            "node": "Replace 18: (?<!\\w)make\\ memories\\ that\\ las",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 18: (?<!\\w)make\\ memories\\ that\\ las": {
+      "main": [
+        [
+          {
+            "node": "Replace 19: (?<!\\w)memories\\ that\\ will\\ las",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 19: (?<!\\w)memories\\ that\\ will\\ las": {
+      "main": [
+        [
+          {
+            "node": "Replace 20: (?<!\\w)surrounded\\ by\\ breathtak",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 20: (?<!\\w)surrounded\\ by\\ breathtak": {
+      "main": [
+        [
+          {
+            "node": "Replace 21: (?<!\\w)the\\ southernmost\\ city\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 21: (?<!\\w)the\\ southernmost\\ city\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 22: (?<!\\w)walk\\ in\\ the\\ footsteps\\",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 22: (?<!\\w)walk\\ in\\ the\\ footsteps\\": {
+      "main": [
+        [
+          {
+            "node": "Replace 23: (?<!\\w)authentic\\ connections\\ w",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 23: (?<!\\w)authentic\\ connections\\ w": {
+      "main": [
+        [
+          {
+            "node": "Replace 24: (?<!\\w)embark\\ on\\ a\\ journey\\ o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 24: (?<!\\w)embark\\ on\\ a\\ journey\\ o": {
+      "main": [
+        [
+          {
+            "node": "Replace 25: (?<!\\w)immerse\\ themselves\\ in\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 25: (?<!\\w)immerse\\ themselves\\ in\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 26: (?<!\\w)immerse\\ yourself\\ in\\ lo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 26: (?<!\\w)immerse\\ yourself\\ in\\ lo": {
+      "main": [
+        [
+          {
+            "node": "Replace 27: (?<!\\w)memories\\ you\\ will\\ cher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 27: (?<!\\w)memories\\ you\\ will\\ cher": {
+      "main": [
+        [
+          {
+            "node": "Replace 28: (?<!\\w)carefully\\ curated\\ accom",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 28: (?<!\\w)carefully\\ curated\\ accom": {
+      "main": [
+        [
+          {
+            "node": "Replace 29: (?<!\\w)iconic\\ wildlife\\ of\\ the",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 29: (?<!\\w)iconic\\ wildlife\\ of\\ the": {
+      "main": [
+        [
+          {
+            "node": "Replace 30: (?<!\\w)in\\ search\\ of\\ the\\ nort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 30: (?<!\\w)in\\ search\\ of\\ the\\ nort": {
+      "main": [
+        [
+          {
+            "node": "Replace 31: (?<!\\w)the\\ crown\\ jewel\\ of\\ so",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 31: (?<!\\w)the\\ crown\\ jewel\\ of\\ so": {
+      "main": [
+        [
+          {
+            "node": "Replace 32: (?<!\\w)the\\ galapagos\\ islands\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 32: (?<!\\w)the\\ galapagos\\ islands\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 33: (?<!\\w)the\\ wonders\\ of\\ the\\ na",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 33: (?<!\\w)the\\ wonders\\ of\\ the\\ na": {
+      "main": [
+        [
+          {
+            "node": "Replace 34: (?<!\\w)immerse\\ yourself\\ in\\ th",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 34: (?<!\\w)immerse\\ yourself\\ in\\ th": {
+      "main": [
+        [
+          {
+            "node": "Replace 35: (?<!\\w)surrounded\\ by\\ snow\\-cap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 35: (?<!\\w)surrounded\\ by\\ snow\\-cap": {
+      "main": [
+        [
+          {
+            "node": "Replace 36: (?<!\\w)walk\\ in\\ the\\ footsteps\\",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 36: (?<!\\w)walk\\ in\\ the\\ footsteps\\": {
+      "main": [
+        [
+          {
+            "node": "Replace 37: (?<!\\w)an\\ authentic\\ travel\\ ex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 37: (?<!\\w)an\\ authentic\\ travel\\ ex": {
+      "main": [
+        [
+          {
+            "node": "Replace 38: (?<!\\w)authentic\\ cultural\\ expe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 38: (?<!\\w)authentic\\ cultural\\ expe": {
+      "main": [
+        [
+          {
+            "node": "Replace 39: (?<!\\w)close\\ encounters\\ with\\ ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace 39: (?<!\\w)close\\ encounters\\ with\\ ": {
+      "main": [
+        [
+          {
+            "node": "Replace 40: (?<!\\w)connect\\ with\\ local\\ com",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "254ff4dd-e95f-4834-8978-2ce15465f345",
+  "meta": {
+    "description": "Illustrative Set-node chain (top 40 rules). Use the Code-node workflow for the full ruleset."
+  },
+  "id": "7634ed84-cfbd-4d1e-8670-536fee608d5e",
+  "tags": []
+}
