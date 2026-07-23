@@ -92,6 +92,28 @@ the draft is required to carry. A stage that doesn't know where it sits will jud
 standard. `WFP5` was also running the old 1.6k-char prompt with no context pack — it now shares
 the same head as the rest.
 
+## Deployed snapshots (the entire live workflow, committed)
+The `WFP*.json` files here plus `PB_pattern_breaker.deployed.json` and
+`WFPD_dispatcher.json` are exported verbatim from the live n8n instance (runtime-only
+fields stripped). They are the source of truth for what actually runs. Re-export after
+any live change with the export step so the repo never drifts from production.
+
+## Humanizer post-processing chain (WFP5)
+After the LLM humanize + Andre↔Juan reconstruction, WFP5 runs, in order:
+`Normalize (no LLM)` → `Pattern-Breaker (call)` → `PB Merge` → `De-AI Dictionary (no LLM)`.
+- **Normalize** and **De-AI Dictionary** are pure code (vendored `engine/vendor/text-normalizer`
+  and `engine/vendor/human-dictionary-travel`). Dictionary swaps AI vocabulary → plain human/
+  travel wording and writes the swaps to the **De-AI Log** field.
+- **Pattern-Breaker** (`engine/vendor/pattern-breaker`, deployed as its own workflow, called over
+  `/webhook/pattern-breaker`) is Phase-1 deterministic detection + Phase-2 *leashed, fact-guarded*
+  Sonnet on flagged spans only — so this step is **not** fully LLM-free. `PB Merge` strips
+  `[[PB-REVIEW]]` wrappers and falls back to the normalized text if the call fails.
+- Appliers: `add_humanizer_deai.py` (de-AI gate + reconstruction), `add_post_humanizer.py`
+  (this chain). Re-run after a `git subtree pull` of a vendored skill.
+- **Known tuning issue:** pattern-breaker over-fires on markdown with tables/lists (183 spans on a
+  1.6k-word page = ~183 Sonnet calls). Tune `engine/vendor/pattern-breaker/config/thresholds.json`
+  or scope it to prose before relying on it at volume.
+
 ## Deterministic QA gate (WFP7 — code, not LLM judgment)
 Every OBJECTIVE publication check now runs in code **before** the auditor model, so a
 model can neither miscount nor override a hard failure, and a broken page never spends a

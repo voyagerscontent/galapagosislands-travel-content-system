@@ -1,5 +1,7 @@
 {
   "name": "WFP0 Production Intake - GalapagosIslands.travel",
+  "description": null,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -15,7 +17,7 @@
         240,
         300
       ],
-      "webhookId": "gal-prod-intake-ff01"
+      "id": "d0564aae-668d-4e08-a43b-7414e7af4aba"
     },
     {
       "parameters": {
@@ -47,7 +49,8 @@
           "id": "mITfEGdTPqCCNrsT",
           "name": "Airtable API - Weboptimizer"
         }
-      }
+      },
+      "id": "35d6d2b9-59c1-47a7-a2ee-ee2f88b4c5d8"
     },
     {
       "parameters": {
@@ -80,7 +83,8 @@
           "name": "Airtable API - Weboptimizer"
         }
       },
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "id": "3aa53da8-687f-4e6d-81b2-1056ebbf3d07"
     },
     {
       "parameters": {
@@ -92,7 +96,8 @@
       "position": [
         900,
         300
-      ]
+      ],
+      "id": "b726019b-8e73-44c2-8273-b2706ed2fa34"
     },
     {
       "parameters": {
@@ -111,7 +116,8 @@
       "position": [
         1120,
         300
-      ]
+      ],
+      "id": "ec26f488-68cd-4835-9a3b-7dedacd66be5"
     },
     {
       "parameters": {
@@ -172,7 +178,8 @@
           "id": "mITfEGdTPqCCNrsT",
           "name": "Airtable API - Weboptimizer"
         }
-      }
+      },
+      "id": "00958791-b783-4153-8006-9736ae2024a8"
     },
     {
       "parameters": {
@@ -213,7 +220,8 @@
           "id": "mITfEGdTPqCCNrsT",
           "name": "Airtable API - Weboptimizer"
         }
-      }
+      },
+      "id": "89bac3ee-3f09-43e1-b2b9-ec280a725dd8"
     },
     {
       "parameters": {
@@ -242,7 +250,8 @@
         1560,
         220
       ],
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "id": "bb7b0968-f0dc-4152-9319-bba6122221be"
     }
   ],
   "connections": {
@@ -322,5 +331,366 @@
   },
   "settings": {
     "executionOrder": "v1"
+  },
+  "nodeGroups": [],
+  "activeVersionId": "ec944ade-1f94-4a80-b741-e02dd0dfd165",
+  "versionCounter": 4,
+  "sourceWorkflowId": null,
+  "activeVersion": {
+    "updatedAt": "2026-07-17T21:00:21.656Z",
+    "createdAt": "2026-07-17T21:00:21.656Z",
+    "versionId": "ec944ade-1f94-4a80-b741-e02dd0dfd165",
+    "workflowId": "i8xtkx9GBw1aRdkP",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "galapagos-production/stage/intake",
+          "httpMethod": "POST",
+          "responseMode": "onReceived",
+          "options": {}
+        },
+        "name": "Airtable Status Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          240,
+          300
+        ],
+        "webhookId": "gal-prod-intake-ff01",
+        "id": "d0564aae-668d-4e08-a43b-7414e7af4aba"
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "appPlU9eC5GL6ncjZ"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "tblOkOXzm2GZUMkYs"
+          },
+          "filterByFormula": "=AND({Site ID} = '{{ $json.body.site_id }}', {Active} = 1)",
+          "returnAll": false,
+          "limit": 1,
+          "options": {}
+        },
+        "name": "Lookup Site (registry)",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          460,
+          300
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "35d6d2b9-59c1-47a7-a2ee-ee2f88b4c5d8"
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json['Base ID'] }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json['Table ID'] }}"
+          },
+          "filterByFormula": "=AND({Status} = 'Backlog', RECORD_ID() = '{{ $('Airtable Status Webhook').item.json.body.record_id }}')",
+          "returnAll": false,
+          "limit": 1,
+          "options": {}
+        },
+        "name": "Re-check and Claim (guarded)",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          680,
+          300
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "alwaysOutputData": true,
+        "id": "3aa53da8-687f-4e6d-81b2-1056ebbf3d07"
+      },
+      {
+        "parameters": {
+          "jsCode": "const claim = $items('Re-check and Claim (guarded)');\nconst site = $items('Lookup Site (registry)')[0] ? $items('Lookup Site (registry)')[0].json : {};\nconst rec = claim[0] ? claim[0].json : null;\nconst ok = !!(rec && rec.id);\nreturn [{ json: {\n  recordId: rec && rec.id ? rec.id : '',\n  baseId: site['Base ID'] || '',\n  tableId: site['Table ID'] || '',\n  ok,\n  error: ok ? '' : 'Intake rejected: record not in Backlog, or site_id not found/active in Content Production Sites registry.'\n}}];\n"
+        },
+        "name": "Normalize + guard",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          900,
+          300
+        ],
+        "id": "b726019b-8e73-44c2-8273-b2706ed2fa34"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.ok }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "name": "Claimed?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          300
+        ],
+        "id": "ec26f488-68cd-4835-9a3b-7dedacd66be5"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.baseId }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.tableId }}"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id": "={{ $json.recordId }}",
+              "Status": "Scoring",
+              "Attempt Count": 0,
+              "ROI Score": "={{ null }}",
+              "Buyer Intent (1-5)": "={{ null }}",
+              "Search Demand (1-5)": "={{ null }}",
+              "Ranking Chance (1-5)": "={{ null }}",
+              "Conversion Value (1-5)": "={{ null }}",
+              "Brief Content": "",
+              "Draft Content": "",
+              "Humanized Content": "",
+              "Polished Content": "",
+              "Conversion Review": "",
+              "Truth Check Notes": "",
+              "Audit Notes": "",
+              "Brief Link": "",
+              "Draft Link": "",
+              "Humanized Link": "",
+              "Polished Link": "",
+              "Last Error": "",
+              "Return To": "",
+              "MarketMuse Score": "={{ null }}",
+              "Target Keywords (NW/MM)": ""
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": []
+          },
+          "options": {}
+        },
+        "name": "Advance to Scoring",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1340,
+          220
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "00958791-b783-4153-8006-9736ae2024a8"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.baseId }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.tableId }}"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id": "={{ $json.recordId }}",
+              "Status": "Needs Attention",
+              "Last Error": "={{ $json.error }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": []
+          },
+          "options": {}
+        },
+        "name": "Route to Needs Attention",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1340,
+          400
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "89bac3ee-3f09-43e1-b2b9-ec280a725dd8"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/scoring",
+          "sendBody": true,
+          "specifyBody": "keypair",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "site_id",
+                "value": "={{ $('Airtable Status Webhook').item.json.body.site_id }}"
+              },
+              {
+                "name": "record_id",
+                "value": "={{ $('Re-check and Claim (guarded)').item.json.id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Trigger next stage",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          1560,
+          220
+        ],
+        "onError": "continueRegularOutput",
+        "id": "bb7b0968-f0dc-4152-9319-bba6122221be"
+      }
+    ],
+    "connections": {
+      "Airtable Status Webhook": {
+        "main": [
+          [
+            {
+              "node": "Lookup Site (registry)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lookup Site (registry)": {
+        "main": [
+          [
+            {
+              "node": "Re-check and Claim (guarded)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Re-check and Claim (guarded)": {
+        "main": [
+          [
+            {
+              "node": "Normalize + guard",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize + guard": {
+        "main": [
+          [
+            {
+              "node": "Claimed?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Claimed?": {
+        "main": [
+          [
+            {
+              "node": "Advance to Scoring",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Route to Needs Attention",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Advance to Scoring": {
+        "main": [
+          [
+            {
+              "node": "Trigger next stage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Marcel Perkins",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-07-17T21:00:21.894Z",
+        "id": 382,
+        "workflowId": "i8xtkx9GBw1aRdkP",
+        "versionId": "ec944ade-1f94-4a80-b741-e02dd0dfd165",
+        "event": "activated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-17T21:00:21.822Z",
+        "id": 381,
+        "workflowId": "i8xtkx9GBw1aRdkP",
+        "versionId": "ec944ade-1f94-4a80-b741-e02dd0dfd165",
+        "event": "deactivated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      }
+    ]
   }
 }
