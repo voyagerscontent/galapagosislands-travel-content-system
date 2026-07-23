@@ -99,8 +99,13 @@ fields stripped). They are the source of truth for what actually runs. Re-export
 any live change with the export step so the repo never drifts from production.
 
 ## Humanizer post-processing chain (WFP5)
-After the LLM humanize + Andre↔Juan reconstruction, WFP5 runs, in order:
-`Normalize (no LLM)` → `Pattern-Breaker (call)` → `PB Merge` → `De-AI Dictionary (no LLM)`.
+**Current live chain:** `Normalize (no LLM)` → `De-AI Dictionary (no LLM)`.
+**Pattern-Breaker is SUSPENDED** (2026-07-23) pending fine-tuning — it over-fired
+(~183 spans / ~183 Sonnet calls on a 1.6k-word page). It is bypassed in WFP5 and its
+standalone workflow is deactivated in n8n (not deleted). To restore: set
+`PB_ENABLED = True` in `add_post_humanizer.py`, re-run it, and re-activate the
+`Pattern Breaker (native, 2-phase)` workflow. Full intended order once back:
+`Normalize` → `Pattern-Breaker (call)` → `PB Merge` → `De-AI Dictionary`.
 - **Normalize** and **De-AI Dictionary** are pure code (vendored `engine/vendor/text-normalizer`
   and `engine/vendor/human-dictionary-travel`). Dictionary swaps AI vocabulary → plain human/
   travel wording and writes the swaps to the **De-AI Log** field.
