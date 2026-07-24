@@ -1,4 +1,4 @@
-# oceanalbatros.com — Corrected Pipeline (drop-in)
+# {{DOMAIN}} — Corrected Pipeline (drop-in)
 
 This folder fixes the pipeline that made Perplexity run in circles. It changes **only the state machine and wiring** — the rule/guardrail documents in `00 Master Rules` are untouched and are referenced as-is.
 
@@ -9,7 +9,7 @@ Read `00_WHY_IT_LOOPED_AND_FIXES.md` first.
 00_WHY_IT_LOOPED_AND_FIXES.md   diagnosis + every fix
 01_PIPELINE_STATUS_MODEL.md     the single 12-state machine (the contract)
 02_ORCHESTRATOR_PERPLEXITY.md   deterministic Space prompt (loop-safe)
-config/SITE_CONFIG.md           oceanalbatros values + fork template
+config/SITE_CONFIG.md           per-site values + fork template
 automation/airtable_schema.json clean Status single-select + guard fields
 automation/build_airtable_base.py
 automation/n8n_pipeline_corrected.json  corrected stage template (guard + error route)

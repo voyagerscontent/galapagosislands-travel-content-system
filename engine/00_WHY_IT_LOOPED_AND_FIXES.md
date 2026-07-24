@@ -1,6 +1,6 @@
 # Why the pipeline ran in circles — diagnosis and fixes
 
-**Site:** oceanalbatros.com · **Scope:** pipeline mechanics only. The guardrail/rule documents (Guardian of Truth, Content Fidelity, Agent Mandatory Briefing, Master Facts, humanization prompts, personas, auditor checklist) are **not modified**. Only the *state machine, orchestration, Airtable schema, and n8n wiring* are corrected.
+**Site:** {{DOMAIN}} · **Scope:** pipeline mechanics only. The guardrail/rule documents (Guardian of Truth, Content Fidelity, Agent Mandatory Briefing, Master Facts, humanization prompts, personas, auditor checklist) are **not modified**. Only the *state machine, orchestration, Airtable schema, and n8n wiring* are corrected.
 
 I reviewed the System Replication Manual, the Pipeline Replication Starter, the Auditor Agent prompt, and the actual deployed n8n workflows (`content_factory_n8n_workflows.zip`) and Airtable base `appNkUL50eF601ejN`. Five concrete defects caused the looping/stalling. None of them are in the rules; all are in the plumbing.
 
@@ -46,7 +46,7 @@ This is exactly the chain the System Replication Manual Part 3.2 already documen
 | `automation/airtable_schema.json` | `Status` single-select with the 12 canonical options; adds guard fields (`Brief Link`, `Draft Link`, `Humanized Link`, `Polished Link`), `Attempt Count`, `Return To`, `Last Error`. |
 | `automation/n8n_pipeline_corrected.json` | One importable workflow per stage pattern with precise filter **+ production guard + error route**; base/table/credential via `{{PLACEHOLDERS}}`. |
 | `automation/build_airtable_base.py` | Builds the schema; skips computed fields. |
-| `config/SITE_CONFIG.md` | oceanalbatros values + blank fork template (keeps it website-agnostic). |
+| `config/SITE_CONFIG.md` | per-site values + blank fork template (keeps it website-agnostic). |
 | `validate_pipeline.py` | Verifies status-string consistency across schema + workflow + orchestrator, one-producer/one-consumer, error route per stage, terminal state present. |
 
 **Rules left untouched:** every file in `00 Master Rules` (guardrails, facts, prompts, personas, auditor checklist) is referenced as-is. The fixes are entirely in the state machine and wiring.

@@ -11,8 +11,8 @@ Create (or open) your Perplexity Space and upload the contents of this zip:
 ## Step 2 — upload your context files
 After the engine is in place, upload your existing context/rule files to the same Space — the ones that tell it **who to write for** and **what to write about**:
 - *Who to write for:* `AGENT_MANDATORY_BRIEFING.md`, the two `reader-persona-*` files, `MARCEL_PERKINS_VOICE_FINGERPRINT`.
-- *What to write about:* `MASTER_FACTS_FILE_v1.md`, `OceanAlbatros-Master-Content-Generation-Prompt.txt`, the page briefs.
-- *Guardrails:* Guardian of Truth, Content Fidelity, `auditor_agent_prompt.md`.
+- *What to write about:* `context-pack/MASTER_FACTS_FILE.md`, `context-pack/CONTENT_GENERATION_PROMPT.md`, the page briefs.
+- *Guardrails:* Guardian of Truth, Content Fidelity, `context-pack/guardrails/AUDITOR_PROMPT.md`.
 
 The orchestrator already references these by name and loads them once per run. It does **not** redefine or modify them — this engine never touches your rules.
 

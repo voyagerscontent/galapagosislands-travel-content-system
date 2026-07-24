@@ -1,6 +1,6 @@
 # Content Pipeline — project contract
 
-This repo authors and validates the oceanalbatros.com content pipeline
+This repo authors and validates the {{DOMAIN}} content pipeline
 (Perplexity orchestrator + Airtable state + n8n automation). Claude Code is the
 build/maintain environment; the pipeline itself runs on those external tools.
 

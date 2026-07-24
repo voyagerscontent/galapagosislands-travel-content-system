@@ -2,16 +2,16 @@
 
 The only values that change per site. The pipeline (status model, orchestrator, schema, workflow) stays identical. Plain ASCII status values keep n8n + Airtable + Perplexity byte-for-byte aligned.
 
-## oceanalbatros.com (reference — filled)
+## {{DOMAIN}} (reference — filled)
 ```
-site_name: oceanalbatros.com
-site_id: oceanalbatros-com-v1
+site_name: {{DOMAIN}}
+site_id: {{SITE_ID}}
 operator: Polar Latitudes Expeditions
 gsa: Latin Trails
 default_voice: Marcel Perkins (CEO & MD, Latin Trails)
 airtable_base: appNkUL50eF601ejN
 airtable_table: tblUgxSGGfeJIL5GD
-airtable_credential_name: Airtable API - oceanalbatros.com
+airtable_credential_name: Airtable API - {{DOMAIN}}
 n8n_poll_minutes: 5
 status_field: Status
 status_values: [Backlog, Scoring, Brief Ready, Drafting, Truth Check, Humanizing, Polishing, Auditor Review, Editor Review, Ready to Publish, Published, Needs Attention]
