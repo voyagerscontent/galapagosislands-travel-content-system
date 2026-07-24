@@ -207,72 +207,65 @@ def _paragraph_tags(paragraph: str, lexicon: dict) -> set:
     return tags
 
 
-def inject_salt(text: str, lexicon: dict) -> tuple:
-    """Splice ONE verbatim human sentence into the MIDDLE of each eligible paragraph.
+def inject_salt(text: str, lexicon: dict, max_long: int = 1, max_phrase: int = 3) -> tuple:
+    """Splice verbatim human 'salt' sentences into paragraph MIDDLES — SPARINGLY.
 
-    Eligibility: paragraph must have >= 3 sentences. Each paragraph gets exactly
-    one injection (the best tag-matched candidate not yet used in this article).
-    Alternates long/phrase by paragraph index (even=phrase, odd=long) so the
-    article gets a natural mix rather than all-long or all-phrase.
+    Salt is seasoning, not the main course: its perplexity benefit saturates fast,
+    and one verbatim forum line in EVERY paragraph reads as non-sequiturs (editors
+    flag it). So it is capped per article (default 1 long + 3 phrase) and SPREAD
+    across evenly-spaced eligible paragraphs (>= 3 sentences), tag-matched only. The
+    macro/micro burstiness guardrails — not salt density — carry the human structure.
 
-    Paragraph count never changes (salt is inserted inside the paragraph text,
-    not as a new paragraph). Each pool item used at most once per article.
-
+    Paragraph count never changes; each pool item used at most once.
     Returns (new_text, {"long": n, "phrase": n, "total": n}).
     """
     pool = lexicon.get("human_sentences", [])
+    caps = {"long": max_long, "phrase": max_phrase}
+    done = {"long": 0, "phrase": 0}
     if not pool:
         return text, {"long": 0, "phrase": 0, "total": 0}
 
     paras = tok.paragraphs(text)
-    used: set[int] = set()
-    counts = {"long": 0, "phrase": 0}
-    out = []
+    eligible = [i for i, p in enumerate(paras) if len(tok.sentences(p)) >= 3]
+    target = min(sum(caps.values()), len(eligible))
+    # evenly-spaced subset so salt is distributed, not front-loaded onto para 1..5
+    if target and target < len(eligible):
+        stp = len(eligible) / target
+        chosen_paras = {eligible[int(k * stp)] for k in range(target)}
+    else:
+        chosen_paras = set(eligible)
 
+    used: set = set()
+    out = []
     for para_idx, para in enumerate(paras):
-        sents = tok.sentences(para)
-        if len(sents) < 3:
-            # Too short to inject without dominating the paragraph.
+        if para_idx not in chosen_paras or sum(done.values()) >= sum(caps.values()):
             out.append(para)
             continue
-
+        sents = tok.sentences(para)
         ptags = _paragraph_tags(para, lexicon)
-        # Prefer alternating kind: even paragraphs get a phrase, odd get a long.
-        preferred_kind = "phrase" if para_idx % 2 == 0 else "long"
-        fallback_kind = "long" if preferred_kind == "phrase" else "phrase"
-
-        # Rank candidates: preferred kind first, then fallback, sorted by tag overlap.
-        def rank_key(item):
-            i, s = item
-            kind = s.get("kind", "phrase")
-            overlap = len(ptags & set(s.get("tags", [])))
-            kind_pref = 0 if kind == preferred_kind else 1
-            return (kind_pref, -overlap, _seed(para, str(i)))
-
+        preferred = "phrase" if para_idx % 2 == 0 else "long"
         cands = [
-            (i, s) for i, s in enumerate(pool)
-            if i not in used and (ptags & set(s.get("tags", [])))
+            (i, sc) for i, sc in enumerate(pool)
+            if i not in used and (ptags & set(sc.get("tags", [])))
+            and done[sc.get("kind", "phrase")] < caps[sc.get("kind", "phrase")]
         ]
-        cands.sort(key=rank_key)
-
+        cands.sort(key=lambda it: (
+            0 if it[1].get("kind", "phrase") == preferred else 1,
+            -len(ptags & set(it[1].get("tags", []))),
+            _seed(para, str(it[0])),
+        ))
         if not cands:
             out.append(para)
             continue
-
         idx, chosen = cands[0]
         used.add(idx)
-        kind = chosen.get("kind", "phrase")
-        counts[kind] += 1
-
+        done[chosen.get("kind", "phrase")] += 1
         mid = len(sents) // 2
-        new_para = " ".join(
-            s.strip() for s in (sents[:mid] + [chosen["text"].strip()] + sents[mid:])
-        )
-        out.append(new_para)
+        out.append(" ".join(x.strip() for x in (sents[:mid] + [chosen["text"].strip()] + sents[mid:])))
 
     final_text = "\n\n".join(out)
-    counts["total"] = counts["long"] + counts["phrase"]
-    return final_text, counts
+    done["total"] = done["long"] + done["phrase"]
+    return final_text, done
 
 
 def inject(text: str, lexicon: Optional[dict] = None, salt: bool = True,

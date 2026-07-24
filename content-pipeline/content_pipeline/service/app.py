@@ -33,6 +33,7 @@ from content_pipeline.macro_guardrail import macro
 from content_pipeline.micro_guardrail import micro
 from content_pipeline.lexical_injector import injector as lex
 from content_pipeline.common import tokenizer as tok
+from content_pipeline.structure_guard import structure_guard
 
 app = FastAPI(title="content-pipeline", version="1.1.0")
 
@@ -43,6 +44,7 @@ class TextIn(BaseModel):
     cv_min: Optional[float] = None
     salt: bool = True
     replace_verbs: bool = True   # POS-safe verb replacement — ON by default (v1.1)
+    before: Optional[str] = None  # pre-humanize text; if set, /verify also runs structure_guard
 
 
 class PosIn(BaseModel):
@@ -78,19 +80,30 @@ def micro_enforce(body: TextIn):
 
 @app.post("/verify")
 def verify(body: TextIn):
-    """Humanization-step structural integrity: macro verdict + micro pass."""
+    """Humanization-step structural integrity: macro + micro, plus structure_guard.
+
+    If ``before`` (the pre-humanize / optimized text) is supplied, structure_guard
+    also confirms the humanizer did not merge/split/drop/reorder paragraphs or change
+    headings — the skeleton lock. ``structural_ok`` folds all of it in, so n8n routes
+    a humanizer that flattened the macro/micro structure straight to Needs Attention.
+    """
     m = macro.evaluate(body.text, body.ncd_min or macro.DEFAULT_NCD_MIN)
     mic = micro.enforce(body.text, body.cv_min or micro.DEFAULT_CV_MIN)
-    return {
+    out = {
         "macro_passed": m.passed,
         "macro_ncd": m.ncd,
         "micro_passed": mic.passed,
         "micro_cv": mic.cv_after,
         "text": mic.text,
-        "structural_ok": (
-            m.passed and mic.passed and mic.paragraphs_in == mic.paragraphs_out
-        ),
     }
+    skeleton_ok = mic.paragraphs_in == mic.paragraphs_out
+    if body.before:
+        rep = structure_guard.verify(body.before, mic.text)
+        skeleton_ok = rep["headings_ok"] and rep["kinds_ok"] and rep["prose_count_ok"] and rep["paragraph_count_ok"]
+        out["skeleton_ok"] = skeleton_ok
+        out["skeleton_reasons"] = rep["reasons"]
+    out["structural_ok"] = m.passed and mic.passed and skeleton_ok
+    return out
 
 
 @app.post("/lexical/inject")

@@ -33,8 +33,18 @@ SERVICE_KEY = os.environ.get("PIPELINE_SERVICE_KEY", "")
 N8N_PUB    = os.environ.get("N8N_PUB", "")
 
 
-def http_node(name, url, body_expr, pos, node_id):
-    """Build an n8n httpRequest node that POSTs JSON to the Python service."""
+def http_node(name, url, body_expr, pos, node_id, extra_body=None):
+    """Build an n8n httpRequest node that POSTs JSON to the Python service.
+
+    extra_body: optional {name: value_expr} added to the JSON body (e.g. `before`
+    for the /verify call, so the service can run structure_guard skeleton checks)."""
+    params = [
+        {"name": "text", "value": body_expr},
+        {"name": "replace_verbs", "value": "true"},
+        {"name": "salt", "value": "true"},
+    ]
+    for k, v in (extra_body or {}).items():
+        params.append({"name": k, "value": v})
     return {
         "parameters": {
             "method": "POST",
@@ -47,13 +57,7 @@ def http_node(name, url, body_expr, pos, node_id):
                 ]
             },
             "sendBody": True,
-            "bodyParameters": {
-                "parameters": [
-                    {"name": "text", "value": body_expr},
-                    {"name": "replace_verbs", "value": "true"},
-                    {"name": "salt", "value": "true"},
-                ]
-            },
+            "bodyParameters": {"parameters": params},
             "options": {"timeout": 120000},
         },
         "id": node_id,
@@ -132,6 +136,8 @@ def patch_wfp5(wf: dict) -> dict:
         f"{SERVICE_URL}/verify",
         "={{ $('Finalize (code)').item.json.artifact }}",
         [dx + 220, dy], "wfp5-verify-http",
+        # pass the pre-humanize draft so /verify runs structure_guard (skeleton lock)
+        extra_body={"before": "={{ $('Re-check and Claim (guarded)').item.json['Draft Content'] }}"},
     )
     verify_check = code_node("Verify Check (code)", VERIFY_JS, [dx + 440, dy], "wfp5-verify-check")
     inject_http = http_node(
