@@ -5,17 +5,21 @@ Option A (all in n8n, no DigitalOcean): ports the macro paragraph-length burstin
 (gzip NCD) + micro sentence-CV check to a JS code node. After the humanized artifact
 is produced (post De-AI Dictionary), the gate runs:
 
-  pass  (macro NCD >= 0.28 AND sentence CV >= 0.45) -> advance to Polishing
-  fail  & Burstiness Retries < 3 -> bump the counter, clear Humanized Content, and
-        re-fire the humanize webhook (the LLM re-writes with the burstiness-aware
-        prompt) — a bounded self-retry, same shape as WFP6's Re-trigger.
+  pass  (macro CV >= 0.35 AND sentence CV >= 0.45) -> advance to Polishing
+  fail  & Burstiness Retries < 3 -> bump the counter and loop back to DRAFTING.
+        Macro burstiness (paragraph-length variance) is set at GENERATION, not at
+        humanization — re-humanizing uniform prose rarely fixes it. So we reset the
+        draft + downstream and re-fire the draft webhook; the chain re-runs
+        draft -> truth -> humanize -> gate with a fresh, more varied draft.
   fail  & Burstiness Retries >= 3 -> ADVISORY: advance anyway, writing the reason to
         the "Burstiness Notes" field for the editor. Never blocks forever.
 
-Deterministic, no LLM in the gate itself, no external service.
+Deterministic, no LLM in the gate itself, no external service. The Burstiness Retries
+counter persists across the draft loop (it is NOT reset by the draft stage); only the
+Advance-to-Polishing step resets it to 0 once the page finally passes.
 
   De-AI Dictionary -> Burstiness Gate (code) -> Retry Burstiness? (if)
-      true  -> Bump Burstiness (Airtable) -> Re-humanize (HTTP /humanize)
+      true  -> Bump Burstiness (Airtable: Status=Drafting, clear draft) -> Re-draft (HTTP /draft)
       false -> Output OK? (existing; Advance writes Burstiness Notes + resets counter)
 """
 import json, os, urllib.request, urllib.error
@@ -24,8 +28,8 @@ HERE = os.path.dirname(__file__)
 WF = os.path.join(HERE, "WFP5_humanize.json")
 N8N = "https://voyagerscontent.app.n8n.cloud"
 WID = "yh9kMFkbPY34vmVJ"
-HUMANIZE_WEBHOOK = N8N + "/webhook/galapagos-production/stage/humanize"
-NEW = ("Burstiness Gate (code)", "Retry Burstiness?", "Bump Burstiness", "Re-humanize")
+DRAFT_WEBHOOK = N8N + "/webhook/galapagos-production/stage/draft"
+NEW = ("Burstiness Gate (code)", "Retry Burstiness?", "Bump Burstiness", "Re-draft", "Re-humanize")
 
 GATE_JS = r"""
 // n8n sandboxes code nodes (no zlib/gzip). Macro burstiness = coefficient of
@@ -79,14 +83,20 @@ def main():
     retry_if = anode("Retry Burstiness?", {"conditions": {"string": [
         {"value1": "={{ $json.action }}", "value2": "retry"}]}},
         [ax + 140, ay + 160], "wfp5-burst-retry", ntype="n8n-nodes-base.if", tv=1)
+    # Loop back to DRAFTING (macro burstiness is set at generation, not humanization).
+    # Reset the draft + everything downstream so the chain re-drafts -> truth -> humanize
+    # -> gate. The Burstiness Retries counter persists across the loop (bounded to 3).
     bump = anode("Bump Burstiness", {
         "operation": "update",
         "base": {"__rl": True, "mode": "id", "value": "={{ $json.baseId }}"},
         "table": {"__rl": True, "mode": "id", "value": "={{ $json.tableId }}"},
         "columns": {"mappingMode": "defineBelow", "matchingColumns": ["id"], "value": {
             "id": "={{ $json.recordId }}",
-            "Status": "Humanizing",
+            "Status": "Drafting",
+            "Draft Content": "",
             "Humanized Content": "",
+            "Truth Check Notes": "",
+            "Attempt Count": "={{ 0 }}",
             "Burstiness Retries": "={{ $json.burstinessRetries + 1 }}",
         }}, "options": {}},
         [ax + 320, ay + 160], "wfp5-burst-bump", ntype="n8n-nodes-base.airtable", tv=2.1)
@@ -94,15 +104,15 @@ def main():
     _at = next((n for n in wf["nodes"] if n["type"].endswith("airtable") and n.get("credentials")), None)
     if _at:
         bump["credentials"] = _at["credentials"]
-    rehum = anode("Re-humanize", {
-        "method": "POST", "url": HUMANIZE_WEBHOOK, "sendBody": True, "specifyBody": "keypair",
+    redraft = anode("Re-draft", {
+        "method": "POST", "url": DRAFT_WEBHOOK, "sendBody": True, "specifyBody": "keypair",
         "bodyParameters": {"parameters": [
             {"name": "site_id", "value": "={{ $('Airtable Status Webhook').item.json.body.site_id }}"},
             {"name": "record_id", "value": "={{ $('Burstiness Gate (code)').item.json.recordId }}"},
         ]}, "options": {}},
-        [ax + 500, ay + 160], "wfp5-burst-rehum", ntype="n8n-nodes-base.httpRequest", tv=4.2)
+        [ax + 500, ay + 160], "wfp5-burst-redraft", ntype="n8n-nodes-base.httpRequest", tv=4.2)
 
-    wf["nodes"] += [gate, retry_if, bump, rehum]
+    wf["nodes"] += [gate, retry_if, bump, redraft]
 
     c = wf["connections"]
     c["De-AI Dictionary (no-LLM)"] = {"main": [[{"node": "Burstiness Gate (code)", "type": "main", "index": 0}]]}
@@ -111,7 +121,7 @@ def main():
         [{"node": "Bump Burstiness", "type": "main", "index": 0}],       # retry
         [{"node": "Output OK?", "type": "main", "index": 0}],            # pass / advisory
     ]}
-    c["Bump Burstiness"] = {"main": [[{"node": "Re-humanize", "type": "main", "index": 0}]]}
+    c["Bump Burstiness"] = {"main": [[{"node": "Re-draft", "type": "main", "index": 0}]]}
 
     # artifact + note now come from the gate node. Repoint BOTH the dictionary node
     # and the retired WFP5 "BCP Inject (no-LLM)" node (a stale ref left when injection

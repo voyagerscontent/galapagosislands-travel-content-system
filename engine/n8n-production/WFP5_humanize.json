@@ -148,7 +148,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        5640,
+        6040,
         300
       ],
       "id": "665c2078-6d27-4d80-9cea-b299f93fb313"
@@ -189,7 +189,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        5860,
+        6260,
         220
       ],
       "credentials": {
@@ -232,7 +232,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        5860,
+        6260,
         400
       ],
       "credentials": {
@@ -278,7 +278,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        5860,
+        6260,
         60
       ],
       "onError": "continueRegularOutput",
@@ -436,7 +436,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5200,
+        5600,
         300
       ]
     },
@@ -456,7 +456,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        5380,
+        5780,
         460
       ]
     },
@@ -480,8 +480,11 @@
           ],
           "value": {
             "id": "={{ $json.recordId }}",
-            "Status": "Humanizing",
+            "Status": "Drafting",
+            "Draft Content": "",
             "Humanized Content": "",
+            "Truth Check Notes": "",
+            "Attempt Count": "={{ 0 }}",
             "Burstiness Retries": "={{ $json.burstinessRetries + 1 }}"
           }
         },
@@ -492,7 +495,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        5560,
+        5960,
         460
       ],
       "credentials": {
@@ -505,7 +508,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/humanize",
+        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/draft",
         "sendBody": true,
         "specifyBody": "keypair",
         "bodyParameters": {
@@ -522,12 +525,12 @@
         },
         "options": {}
       },
-      "id": "wfp5-burst-rehum",
-      "name": "Re-humanize",
+      "id": "wfp5-burst-redraft",
+      "name": "Re-draft",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        5740,
+        6140,
         460
       ]
     }
@@ -745,7 +748,7 @@
       "main": [
         [
           {
-            "node": "Re-humanize",
+            "node": "Re-draft",
             "type": "main",
             "index": 0
           }
