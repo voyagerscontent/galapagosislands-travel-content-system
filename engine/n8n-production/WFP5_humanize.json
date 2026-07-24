@@ -148,7 +148,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        4840,
+        5640,
         300
       ],
       "id": "665c2078-6d27-4d80-9cea-b299f93fb313"
@@ -159,20 +159,20 @@
         "base": {
           "__rl": true,
           "mode": "id",
-          "value": "={{ $('BCP Inject (no-LLM)').item.json.baseId }}"
+          "value": "={{ $('Burstiness Gate (code)').item.json.baseId }}"
         },
         "table": {
           "__rl": true,
           "mode": "id",
-          "value": "={{ $('BCP Inject (no-LLM)').item.json.tableId }}"
+          "value": "={{ $('Burstiness Gate (code)').item.json.tableId }}"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "id": "={{ $('BCP Inject (no-LLM)').item.json.recordId }}",
+            "id": "={{ $('Burstiness Gate (code)').item.json.recordId }}",
             "Status": "Polishing",
             "Attempt Count": "={{ 0 }}",
-            "Humanized Content": "={{ $('BCP Inject (no-LLM)').item.json.artifact }}",
+            "Humanized Content": "={{ $('Burstiness Gate (code)').item.json.artifact }}",
             "Humanized Link": "={{ $json.id ? 'https://docs.google.com/document/d/' + $json.id + '/edit' : 'airtable://Humanized Content' }}",
             "De-AI Log": "={{ $('Burstiness Gate (code)').item.json.deaiLog }}",
             "Burstiness Notes": "={{ $('Burstiness Gate (code)').item.json.burstinessNote }}",
@@ -189,7 +189,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        5060,
+        5860,
         220
       ],
       "credentials": {
@@ -232,7 +232,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        5060,
+        5860,
         400
       ],
       "credentials": {
@@ -278,14 +278,14 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        5060,
+        5860,
         60
       ],
       "onError": "continueRegularOutput",
       "parameters": {
         "resource": "file",
         "operation": "createFromText",
-        "content": "={{ $('BCP Inject (no-LLM)').item.json.artifact }}",
+        "content": "={{ $('Burstiness Gate (code)').item.json.artifact }}",
         "name": "={{ ($('Re-check and Claim (guarded)').item.json['Name'] || $('Re-check and Claim (guarded)').item.json['Meta Title'] || 'Untitled') + ' — 06 Humanized' }}",
         "driveId": {
           "__rl": true,
@@ -429,14 +429,14 @@
     },
     {
       "parameters": {
-        "jsCode": "\nconst zlib = require('zlib');\nfunction C(b){ return zlib.gzipSync(b, {level: 9}).length; }\nfunction ncd(x, y){ const cx=C(x), cy=C(y), cxy=C(Buffer.concat([x,y])); const d=Math.max(cx,cy); return d ? (cxy-Math.min(cx,cy))/d : 0; }\nfunction paragraphs(t){ return String(t||'').trim().split(/\\n\\s*\\n+/).map(p=>p.trim()).filter(Boolean); }\nfunction proseNoTables(t){ return String(t||'').replace(/<table[\\s\\S]*?<\\/table>/gi,' ').replace(/(^|\\n)\\s*\\|.*\\|.*(?=\\n|$)/g,' ').replace(/<[^>]+>/g,' ').replace(/\\[(?:source|VERIFY|human)[^\\]]*\\]/g,' '); }\nfunction paraShape(sec){ const sh=[]; for(const p of paragraphs(sec)){ if(/^#{1,6}\\s/.test(p)) continue; const t=p.split(/\\s+/).filter(Boolean).length; const s=Math.max(1, p.split(/(?<=[.!?])\\s+/).filter(x=>x.trim().split(/\\s+/).length>=3).length); sh.push([t,s]); } return sh; }\nfunction sbytes(sh){ const b=[]; for(const p of sh){ b.push(Buffer.alloc(p[0],65)); b.push(Buffer.alloc(p[1],66)); b.push(Buffer.from('\\n')); } return Buffer.concat(b); }\nfunction baseline(sh){ const n=sh.length||1, at=Math.max(1,Math.round(sh.reduce((a,x)=>a+x[0],0)/n)), as=Math.max(1,Math.round(sh.reduce((a,x)=>a+x[1],0)/n)); return sbytes(sh.map(()=>[at,as])); }\nfunction macroEval(sec){ const sh=paraShape(sec); if(sh.length<3) return {passed:true, ncd:1, paras:sh.length}; const score=ncd(sbytes(sh), baseline(sh)); return {passed: score>=0.28, ncd: Math.round(score*1000)/1000, paras: sh.length}; }\nfunction microCV(sec){ const p=proseNoTables(sec); const s=p.split(/(?<=[.!?])\\s+/).map(x=>x.trim()).filter(x=>x.split(/\\s+/).filter(Boolean).length>=3); if(s.length<2) return 1; const L=s.map(x=>x.split(/\\s+/).filter(Boolean).length); const m=L.reduce((a,b)=>a+b,0)/L.length; if(!m) return 0; const v=L.reduce((a,b)=>a+(b-m)*(b-m),0)/L.length; return Math.sqrt(v)/m; }\n\nconst CV_MIN = 0.45;\nconst it = $json || {};\nconst rec = ($items('Re-check and Claim (guarded)')[0] || {json:{}}).json;\nif (!it.ok) {   // humanize/dictionary already failed upstream — don't gate; let Output OK? route it\n  return [{ json: Object.assign({}, it, { action: 'pass', burstinessNote: '' }) }];\n}\nconst art = String(it.artifact || '');\nconst retries = Number(rec['Burstiness Retries'] || 0);\nconst m = macroEval(art);\nconst cv = microCV(art);\nconst bok = m.passed && cv >= CV_MIN;\nconst action = bok ? 'pass' : (retries < 3 ? 'retry' : 'advisory');\nconst detail = 'macro NCD ' + m.ncd + ' (min 0.28), sentence CV ' + cv.toFixed(2) + ' (min ' + CV_MIN + '), ' + m.paras + ' paragraphs';\nconst note = action === 'advisory' ? ('ADVISORY — burstiness below threshold after 3 retries: ' + detail)\n           : (bok ? '' : ('retry ' + (retries + 1) + '/3: ' + detail));\nreturn [{ json: Object.assign({}, it, {\n  action: action, burstinessRetries: retries,\n  macroNcd: m.ncd, microCv: Math.round(cv * 100) / 100, burstinessNote: note\n}) }];\n"
+        "jsCode": "\n// n8n sandboxes code nodes (no zlib/gzip). Macro burstiness = coefficient of\n// variation of PARAGRAPH lengths (uniform blocks -> low CV -> robotic); micro\n// burstiness = CV of SENTENCE lengths. Both pure JS, no external modules.\nfunction cv(arr){ if(arr.length<2) return 1; const m=arr.reduce((a,b)=>a+b,0)/arr.length; if(!m) return 0; const v=arr.reduce((a,b)=>a+(b-m)*(b-m),0)/arr.length; return Math.sqrt(v)/m; }\nfunction paragraphs(t){ return String(t||'').trim().split(/\\n\\s*\\n+/).map(p=>p.trim()).filter(Boolean); }\nfunction proseNoTables(t){ return String(t||'').replace(/<table[\\s\\S]*?<\\/table>/gi,' ').replace(/(^|\\n)\\s*\\|.*\\|.*(?=\\n|$)/g,' ').replace(/<[^>]+>/g,' ').replace(/\\[(?:source|VERIFY|human)[^\\]]*\\]/g,' '); }\nfunction paraLengths(sec){ const L=[]; for(const p of paragraphs(sec)){ if(/^#{1,6}\\s/.test(p)) continue; L.push(p.split(/\\s+/).filter(Boolean).length); } return L; }\nfunction macroEval(sec){ const L=paraLengths(sec); if(L.length<3) return {passed:true, cv:1, paras:L.length}; const c=cv(L); return {passed: c>=0.35, cv: Math.round(c*1000)/1000, paras: L.length}; }\nfunction microCV(sec){ const p=proseNoTables(sec); const s=p.split(/(?<=[.!?])\\s+/).map(x=>x.trim()).filter(x=>x.split(/\\s+/).filter(Boolean).length>=3); if(s.length<2) return 1; return cv(s.map(x=>x.split(/\\s+/).filter(Boolean).length)); }\n\nconst CV_MIN = 0.45;\nconst it = $json || {};\nconst rec = ($items('Re-check and Claim (guarded)')[0] || {json:{}}).json;\nif (!it.ok) {   // humanize/dictionary already failed upstream — don't gate; let Output OK? route it\n  return [{ json: Object.assign({}, it, { action: 'pass', burstinessNote: '' }) }];\n}\nconst art = String(it.artifact || '');\nconst retries = Number(rec['Burstiness Retries'] || 0);\nconst m = macroEval(art);\nconst microCv = microCV(art);\nconst bok = m.passed && microCv >= CV_MIN;\nconst action = bok ? 'pass' : (retries < 3 ? 'retry' : 'advisory');\nconst detail = 'macro paragraph-length CV ' + m.cv + ' (min 0.35), sentence CV ' + microCv.toFixed(2) + ' (min ' + CV_MIN + '), ' + m.paras + ' paragraphs';\nconst note = action === 'advisory' ? ('ADVISORY — burstiness below threshold after 3 retries: ' + detail)\n           : (bok ? '' : ('retry ' + (retries + 1) + '/3: ' + detail));\nreturn [{ json: Object.assign({}, it, {\n  action: action, burstinessRetries: retries,\n  macroCv: m.cv, microCv: Math.round(microCv * 100) / 100, burstinessNote: note\n}) }];\n"
       },
       "id": "wfp5-burst-gate",
       "name": "Burstiness Gate (code)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4400,
+        5200,
         300
       ]
     },
@@ -456,7 +456,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        4580,
+        5380,
         460
       ]
     },
@@ -492,7 +492,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        4760,
+        5560,
         460
       ],
       "credentials": {
@@ -527,7 +527,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        4940,
+        5740,
         460
       ]
     }

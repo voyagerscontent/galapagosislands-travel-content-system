@@ -28,16 +28,15 @@ HUMANIZE_WEBHOOK = N8N + "/webhook/galapagos-production/stage/humanize"
 NEW = ("Burstiness Gate (code)", "Retry Burstiness?", "Bump Burstiness", "Re-humanize")
 
 GATE_JS = r"""
-const zlib = require('zlib');
-function C(b){ return zlib.gzipSync(b, {level: 9}).length; }
-function ncd(x, y){ const cx=C(x), cy=C(y), cxy=C(Buffer.concat([x,y])); const d=Math.max(cx,cy); return d ? (cxy-Math.min(cx,cy))/d : 0; }
+// n8n sandboxes code nodes (no zlib/gzip). Macro burstiness = coefficient of
+// variation of PARAGRAPH lengths (uniform blocks -> low CV -> robotic); micro
+// burstiness = CV of SENTENCE lengths. Both pure JS, no external modules.
+function cv(arr){ if(arr.length<2) return 1; const m=arr.reduce((a,b)=>a+b,0)/arr.length; if(!m) return 0; const v=arr.reduce((a,b)=>a+(b-m)*(b-m),0)/arr.length; return Math.sqrt(v)/m; }
 function paragraphs(t){ return String(t||'').trim().split(/\n\s*\n+/).map(p=>p.trim()).filter(Boolean); }
 function proseNoTables(t){ return String(t||'').replace(/<table[\s\S]*?<\/table>/gi,' ').replace(/(^|\n)\s*\|.*\|.*(?=\n|$)/g,' ').replace(/<[^>]+>/g,' ').replace(/\[(?:source|VERIFY|human)[^\]]*\]/g,' '); }
-function paraShape(sec){ const sh=[]; for(const p of paragraphs(sec)){ if(/^#{1,6}\s/.test(p)) continue; const t=p.split(/\s+/).filter(Boolean).length; const s=Math.max(1, p.split(/(?<=[.!?])\s+/).filter(x=>x.trim().split(/\s+/).length>=3).length); sh.push([t,s]); } return sh; }
-function sbytes(sh){ const b=[]; for(const p of sh){ b.push(Buffer.alloc(p[0],65)); b.push(Buffer.alloc(p[1],66)); b.push(Buffer.from('\n')); } return Buffer.concat(b); }
-function baseline(sh){ const n=sh.length||1, at=Math.max(1,Math.round(sh.reduce((a,x)=>a+x[0],0)/n)), as=Math.max(1,Math.round(sh.reduce((a,x)=>a+x[1],0)/n)); return sbytes(sh.map(()=>[at,as])); }
-function macroEval(sec){ const sh=paraShape(sec); if(sh.length<3) return {passed:true, ncd:1, paras:sh.length}; const score=ncd(sbytes(sh), baseline(sh)); return {passed: score>=0.28, ncd: Math.round(score*1000)/1000, paras: sh.length}; }
-function microCV(sec){ const p=proseNoTables(sec); const s=p.split(/(?<=[.!?])\s+/).map(x=>x.trim()).filter(x=>x.split(/\s+/).filter(Boolean).length>=3); if(s.length<2) return 1; const L=s.map(x=>x.split(/\s+/).filter(Boolean).length); const m=L.reduce((a,b)=>a+b,0)/L.length; if(!m) return 0; const v=L.reduce((a,b)=>a+(b-m)*(b-m),0)/L.length; return Math.sqrt(v)/m; }
+function paraLengths(sec){ const L=[]; for(const p of paragraphs(sec)){ if(/^#{1,6}\s/.test(p)) continue; L.push(p.split(/\s+/).filter(Boolean).length); } return L; }
+function macroEval(sec){ const L=paraLengths(sec); if(L.length<3) return {passed:true, cv:1, paras:L.length}; const c=cv(L); return {passed: c>=0.35, cv: Math.round(c*1000)/1000, paras: L.length}; }
+function microCV(sec){ const p=proseNoTables(sec); const s=p.split(/(?<=[.!?])\s+/).map(x=>x.trim()).filter(x=>x.split(/\s+/).filter(Boolean).length>=3); if(s.length<2) return 1; return cv(s.map(x=>x.split(/\s+/).filter(Boolean).length)); }
 
 const CV_MIN = 0.45;
 const it = $json || {};
@@ -48,15 +47,15 @@ if (!it.ok) {   // humanize/dictionary already failed upstream — don't gate; l
 const art = String(it.artifact || '');
 const retries = Number(rec['Burstiness Retries'] || 0);
 const m = macroEval(art);
-const cv = microCV(art);
-const bok = m.passed && cv >= CV_MIN;
+const microCv = microCV(art);
+const bok = m.passed && microCv >= CV_MIN;
 const action = bok ? 'pass' : (retries < 3 ? 'retry' : 'advisory');
-const detail = 'macro NCD ' + m.ncd + ' (min 0.28), sentence CV ' + cv.toFixed(2) + ' (min ' + CV_MIN + '), ' + m.paras + ' paragraphs';
+const detail = 'macro paragraph-length CV ' + m.cv + ' (min 0.35), sentence CV ' + microCv.toFixed(2) + ' (min ' + CV_MIN + '), ' + m.paras + ' paragraphs';
 const note = action === 'advisory' ? ('ADVISORY — burstiness below threshold after 3 retries: ' + detail)
            : (bok ? '' : ('retry ' + (retries + 1) + '/3: ' + detail));
 return [{ json: Object.assign({}, it, {
   action: action, burstinessRetries: retries,
-  macroNcd: m.ncd, microCv: Math.round(cv * 100) / 100, burstinessNote: note
+  macroCv: m.cv, microCv: Math.round(microCv * 100) / 100, burstinessNote: note
 }) }];
 """
 
@@ -114,9 +113,13 @@ def main():
     ]}
     c["Bump Burstiness"] = {"main": [[{"node": "Re-humanize", "type": "main", "index": 0}]]}
 
-    # artifact + note now come from the gate node
+    # artifact + note now come from the gate node. Repoint BOTH the dictionary node
+    # and the retired WFP5 "BCP Inject (no-LLM)" node (a stale ref left when injection
+    # moved to WFP7) to the gate, which passes recordId/artifact/deaiLog through.
     for nm in ("Export to Drive", "Advance to Polishing"):
-        s = json.dumps(nodes[nm]["parameters"]).replace("$('De-AI Dictionary (no-LLM)')", "$('Burstiness Gate (code)')")
+        s = json.dumps(nodes[nm]["parameters"])
+        s = s.replace("$('De-AI Dictionary (no-LLM)')", "$('Burstiness Gate (code)')")
+        s = s.replace("$('BCP Inject (no-LLM)')", "$('Burstiness Gate (code)')")
         nodes[nm]["parameters"] = json.loads(s)
     adv = nodes["Advance to Polishing"]["parameters"]["columns"]["value"]
     adv["Burstiness Notes"] = "={{ $('Burstiness Gate (code)').item.json.burstinessNote }}"
