@@ -35,7 +35,64 @@ TYPE_MAP = {"Adjective": "adjective", "Sensory": "sensory", "Verb": "verb",
 GROUP_MAP = {"Destination": "destination", "Activity": "activity", "Feeling": "feeling"}
 
 
-def main(xlsx: str):
+import re as _re
+
+# Salt sources appropriate for GALAPAGOS content (generic travel/cruise + Galapagos).
+# Other-destination + off-topic sources are excluded so we never splice, e.g., a UK
+# car-park line or a South Georgia penguin line into a Galapagos article.
+# GALAPAGOS-SPECIFIC sources only. General "Cruise"/"travel" forums carry
+# Mediterranean/Alaska/polar cruise talk, so they are excluded; the allow-list is
+# Galapagos threads + Galapagos operators/blogs (Quasar, Pikaia, Lindblad, etc.).
+_SALT_ALLOW = _re.compile(r"galapagos|quasar|pikaia|lindblad|nathab|thinkgalapagos|"
+                          r"metropolitan|happygringo|itchyfeet|andysworld|laidback|"
+                          r"ciaobambino|bucketlist|roadto197|suewhere|velvetescape|"
+                          r"globetrotter|shoestring", _re.I)
+# Content-level safety net: drop any sentence naming a non-Galapagos place/animal,
+# incl. polar wildlife/terms that leak in via general/expedition cruise forums.
+_SALT_DENY = _re.compile(
+    r"\b(vietnam|danang|hoi an|patagonia|antarctic|antarctica|south georgia|falkland|"
+    r"cusco|machu|iquitos|loreto|brasilia|sao paolo|sao paulo|el calafate|chile|"
+    r"argentina|peru|brazil|south africa|car park|parking|pod |terminal|shuttle|"
+    r"skua|iceberg|glacier|tundra|gentoo|adelie|chinstrap|king penguin|emperor|krill|"
+    r"orca|humpback|leopard seal|elephant seal|peninsula|moss|types of penguin|"
+    r"\d+\s+(?:types|different)\s+.*penguin|hundreds of penguin|100s of penguin)", _re.I)
+
+
+def load_salt(xlsx: str, cap: int = 1200) -> list:
+    """Load verbatim human 'salt' sentences from the master travel-phrases workbook,
+    filtered to complete, Galapagos-appropriate lines and tagged by source."""
+    import openpyxl
+    wb = openpyxl.load_workbook(xlsx, read_only=True, data_only=True)
+    ws = wb["phrases"]
+    seen, out = set(), []
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        txt = (str(row[0]).strip() if row[0] else "")
+        src = str(row[4] or "")
+        if not txt or txt.lower() in seen:
+            continue
+        wc = len(txt.split())
+        if not (4 <= wc <= 14):                       # complete-but-short
+            continue
+        if not txt[0].isupper() or not txt.rstrip().endswith((".", "!", "?")):
+            continue                                   # must be a complete sentence
+        if "http" in txt or "@" in txt or "/" in txt:
+            continue
+        if not _SALT_ALLOW.search(src) or _SALT_DENY.search(txt):
+            continue
+        seen.add(txt.lower())
+        low = src.lower()
+        tags = ["general"]
+        if "galapagos" in low:
+            tags += ["galapagos", "wildlife", "destination"]
+        if _re.search(r"cruise|ship|expedition|quasar|pikaia|lindblad", low):
+            tags += ["cruise", "activity"]
+        out.append({"text": txt, "tags": sorted(set(tags))})
+        if len(out) >= cap:
+            break
+    return out
+
+
+def main(xlsx: str, salt_xlsx: str = None):
     import openpyxl
     wb = openpyxl.load_workbook(xlsx, read_only=True, data_only=True)
     ws = wb["All Words"]
@@ -69,17 +126,14 @@ def main(xlsx: str):
         "generic_adjectives": GENERIC_ADJECTIVES,
         "generic_verbs": GENERIC_VERBS,
         "pools": pools,
-        # verbatim human "salt" sentences are a separate database — seed kept from v0.
-        "human_sentences": [
+        # verbatim human "salt" sentences from the master travel-phrases workbook
+        # (Galapagos-appropriate, complete, tagged). Falls back to a small seed.
+        "human_sentences": (load_salt(salt_xlsx) if salt_xlsx else [
             {"text": "You forget your phone exists out there, and it takes a day to notice.", "tags": ["feeling", "general"]},
             {"text": "Bring a dry bag; the wet landings soak everything you love.", "tags": ["activity", "packing"]},
-            {"text": "The sea lions do not care that you paid to be there.", "tags": ["wildlife", "feeling"]},
-            {"text": "Half the trip is the panga rides between the good stuff.", "tags": ["activity", "cruise"]},
-            {"text": "Nobody warns you how loud the frigatebirds get at dawn.", "tags": ["wildlife", "destination"]},
-            {"text": "The water is colder than the brochures let on, even in a wetsuit.", "tags": ["activity", "snorkel"]},
-            {"text": "You will run out of adjectives by day three; stop trying.", "tags": ["feeling", "general"]}
-        ],
+        ]),
     }
+    out["_meta"]["salt_sentences"] = len(out["human_sentences"])
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(out, fh, ensure_ascii=False, indent=1)
     ncats = sum(len(v) for v in pools.values())
@@ -89,4 +143,4 @@ def main(xlsx: str):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit("usage: build_lexicon_from_xlsx.py <xlsx path>")
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
