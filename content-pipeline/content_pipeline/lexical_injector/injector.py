@@ -207,12 +207,12 @@ def _paragraph_tags(paragraph: str, lexicon: dict) -> set:
     return tags
 
 
-def inject_salt(text: str, lexicon: dict, max_long: int = 1, max_phrase: int = 3) -> tuple:
+def inject_salt(text: str, lexicon: dict, max_long: int = 2, max_phrase: int = 3) -> tuple:
     """Splice verbatim human 'salt' sentences into paragraph MIDDLES — SPARINGLY.
 
     Salt is seasoning, not the main course: its perplexity benefit saturates fast,
     and one verbatim forum line in EVERY paragraph reads as non-sequiturs (editors
-    flag it). So it is capped per article (default 1 long + 3 phrase) and SPREAD
+    flag it). So it is capped per article (default 2 long + 3 phrase) and SPREAD
     across evenly-spaced eligible paragraphs (>= 3 sentences), tag-matched only. The
     macro/micro burstiness guardrails — not salt density — carry the human structure.
 
