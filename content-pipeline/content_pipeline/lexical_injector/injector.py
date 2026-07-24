@@ -61,41 +61,95 @@ class InjectionResult:
     paragraphs_out: int = 0
 
 
-def replace_generic(text: str, lexicon: dict) -> tuple:
-    """Swap generic high-probability JJ/VB tokens for mapped low-probability ones.
+def _context_category(paragraph: str, lexicon: dict) -> tuple:
+    """Best (group, category) match for a paragraph, by counting how many of each
+    category's distinctive words (nouns/places) appear. Returns (None, None) if
+    nothing matches — the caller then uses a general feeling pool."""
+    low = paragraph.lower()
+    best, best_hits = (None, None), 0
+    for group, cats in lexicon.get("pools", {}).items():
+        for cat, buckets in cats.items():
+            hits = 0
+            for w in buckets.get("noun", []) + buckets.get("place", []):
+                if len(w) >= 5 and w.lower() in low:
+                    hits += 1
+            if hits > best_hits:
+                best_hits, best = hits, (group, cat)
+    return best
 
-    Returns (new_text, replacements). Only whole-word, POS-confirmed matches are
-    touched; everything else is left byte-for-byte."""
-    rules = {k.lower(): v for k, v in lexicon.get("generic_replacements", {}).items()}
-    if not rules:
+
+# A clean drop-in replacement is a single lowercase alphabetic word (no hyphenated
+# compounds, place names, or the workbook's occasional POS mislabels like "dry-dock").
+_CLEAN = re.compile(r"^[a-z]{4,}$")
+
+
+def _clean_pool(words: list) -> list:
+    return [w for w in words if _CLEAN.match(w)]
+
+
+def _replacement_pool(lexicon: dict, group, category, buckets: list) -> list:
+    """Clean words of the requested POS buckets for a (group, category), with
+    fallbacks: the category → its whole group → the feeling group (universal)."""
+    pools = lexicon.get("pools", {})
+    def collect(scope_cats):
+        out = []
+        for cat in scope_cats:
+            for b in buckets:
+                out += cat.get(b, [])
+        return _clean_pool(out)
+    if group and category:
+        got = collect([pools.get(group, {}).get(category, {})])
+        if got:
+            return got
+    if group:
+        got = collect(list(pools.get(group, {}).values()))
+        if got:
+            return got
+    return collect(list(pools.get("feeling", {}).values()))
+
+
+def replace_generic(text: str, lexicon: dict, replace_verbs: bool = False) -> tuple:
+    """Swap generic high-probability adjectives (and optionally verbs) for
+    contextually-mapped high-BCP words from the workbook pools. Per paragraph:
+    detect the context category, then replace generic JJ -> adjective/sensory
+    pool. Verb replacement is OFF by default: arbitrary domain verbs break
+    transitivity ("see turtles" -> "snorkel turtles"); enable with care.
+    POS-confirmed, whole-word, case-preserving. Returns (text, replacements)."""
+    gen_adj = set(w.lower() for w in lexicon.get("generic_adjectives", []))
+    gen_vb = set(w.lower() for w in lexicon.get("generic_verbs", [])) if replace_verbs else set()
+    if not gen_adj and not gen_vb:
         return text, []
     replacements = []
-    # POS-tag once; then do targeted, boundary-safe substitutions on the raw text.
-    tags = dict()
-    for token, tag in tok.pos_tags(text):
-        tags.setdefault(token.lower(), tag)
+    out_paras = []
+    for para in tok.paragraphs(text) or [text]:
+        group, category = _context_category(para, lexicon)
+        adj_pool = _replacement_pool(lexicon, group, category, ["adjective", "sensory"])
+        vb_pool = _replacement_pool(lexicon, group, category, ["verb"])
+        tags = {}
+        for token, tag in tok.pos_tags(para):
+            tags.setdefault(token.lower(), tag)
 
-    def sub(m):
-        w = m.group(0)
-        key = w.lower()
-        rule = rules.get(key)
-        if not rule:
-            return w
-        want = rule.get("pos", "")[:2]           # JJ or VB family
-        got = tags.get(key, "")
-        if want and not got.startswith(want):
-            return w                              # POS doesn't match -> skip
-        rep = _pick(rule.get("options", []), key, m.string[max(0, m.start() - 24):m.start()])
-        if not rep:
-            return w
-        rep = _preserve_case(w, rep)
-        replacements.append({"from": w, "to": rep, "category": rule.get("category")})
-        return rep
+        def sub(m):
+            w = m.group(0)
+            key = w.lower()
+            got = tags.get(key, "")
+            if key in gen_adj and got.startswith("JJ"):
+                pool = adj_pool
+            elif key in gen_vb and got.startswith("VB"):
+                pool = vb_pool
+            else:
+                return w
+            rep = _pick(pool, key, m.string[max(0, m.start() - 24):m.start()], category or "")
+            if not rep or rep.lower() == key:
+                return w
+            rep = _preserve_case(w, rep)
+            replacements.append({"from": w, "to": rep, "category": category})
+            return rep
 
-    keys = sorted(rules, key=len, reverse=True)
-    pattern = re.compile(r"\b(" + "|".join(re.escape(k) for k in keys) + r")\b", re.I)
-    new_text = pattern.sub(sub, text)
-    return new_text, replacements
+        keys = sorted(gen_adj | gen_vb, key=len, reverse=True)
+        pattern = re.compile(r"\b(" + "|".join(re.escape(k) for k in keys) + r")\b", re.I)
+        out_paras.append(pattern.sub(sub, para))
+    return "\n\n".join(out_paras), replacements
 
 
 def _paragraph_tags(paragraph: str, lexicon: dict) -> set:
@@ -150,10 +204,10 @@ def inject_salt(text: str, lexicon: dict, max_salted: Optional[int] = None) -> t
 
 
 def inject(text: str, lexicon: Optional[dict] = None, salt: bool = True,
-           max_salted: Optional[int] = None) -> InjectionResult:
+           replace_verbs: bool = False, max_salted: Optional[int] = None) -> InjectionResult:
     """Full final-stage injection: replace generics, then salt. Paragraph-preserving."""
     lex = lexicon or load_lexicon()
     paras_in = len(tok.paragraphs(text))
-    swapped, reps = replace_generic(text, lex)
+    swapped, reps = replace_generic(text, lex, replace_verbs=replace_verbs)
     salted_text, n_salt = (inject_salt(swapped, lex, max_salted) if salt else (swapped, 0))
     return InjectionResult(salted_text, reps, n_salt, paras_in, len(tok.paragraphs(salted_text)))
