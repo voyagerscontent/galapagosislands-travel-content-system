@@ -1,0 +1,63 @@
+{
+  "total_responses": 1162,
+  "total_sentences": 4980,
+  "sentence_length": {
+    "mean": 19.2,
+    "median": 16.0,
+    "stdev": 13.5,
+    "distribution": {
+      "Very short (1-5)": 380,
+      "Short (6-10)": 966,
+      "Medium (11-16)": 1163,
+      "Long (17-25)": 1356,
+      "Very long (26+)": 1115
+    }
+  },
+  "opener_profile": {
+    "the": 6.04,
+    "you": 4.46,
+    "if": 3.8,
+    "it": 2.65,
+    "there": 2.61,
+    "but": 2.15,
+    "they": 1.67,
+    "as": 1.61,
+    "this": 1.43,
+    "some": 1.27,
+    "in": 1.2,
+    "we": 0.9,
+    "what": 0.74,
+    "for": 0.72,
+    "so": 0.68,
+    "of": 0.6,
+    "otherwise": 0.58,
+    "while": 0.58,
+    "and": 0.56,
+    "these": 0.56,
+    "no": 0.54,
+    "that": 0.54,
+    "my": 0.52,
+    "all": 0.46,
+    "galapagos": 0.46
+  },
+  "the_starter_pct": 6.04,
+  "i_starter_pct": 0.0,
+  "you_starter_pct": 4.46,
+  "good_example_sentences": [
+    "So a 100 passenger ship (the absolute maximum capacity ship in Galapagos) will not have any other ship with it.",
+    "If so, they have been around for a while, and are likely the biggest Galapagos travel agent I think.",
+    "You can imagine what a mess this is for the ship owners and that their cash flow situation right now could be better.",
+    "Some are almost all lava fields, others have rich soils.",
+    "But there may be more mosquitoes about - in lower end places, there may not be excellent barriers to letting them in.",
+    "If being on the \"newest ship\" is important to you - you might want to confirm such a statement, if made on the said ship's website, with its representatives.",
+    "But in Galapagos is not just any old town on the continent looking for economic develop opportunities.",
+    "This time of year though, you can expect mostly sunny skies, with the odd short lived downpour.",
+    "You can find (ta &&\n\nDear Jamie,\nGalapagos is a unique destination on the planet.",
+    "There have been such rumours for years and years, but there is never any real consideration of imposing limits on the number of visitors on the part of the government.",
+    "You might want to research the \"pros and cons\" of visiting the island by ship vs by land.",
+    "I was not able to access by on-line bookkeeping platform while in the islands (QuickBooks) for instance, while I could access NetFlix (if I remember).",
+    "I asked my associate in Quito, who buys a lot of domestic tickets for me.",
+    "This doesn't come across as very serious at best, and downright \"under the table\" and very risky, at worst.",
+    "But you can find chop any time of year, and calm seas any time of year."
+  ]
+}

@@ -6,15 +6,15 @@ produces NEW pages on the production status model:
 
 ## Instance
 - n8n: `https://voyagerscontent.app.n8n.cloud`
-- Credentials present: Anthropic (`fQbptY6CtcIWVwYp`), Airtable (`mITfEGdTPqCCNrsT`), SMTP, DataForSEO.
-- **Missing: a Google Drive credential** — required for stages that write Docs to Drive.
+- Credentials present: Anthropic (`fQbptY6CtcIWVwYp`), Airtable (`mITfEGdTPqCCNrsT`),
+  **Google Drive (`BXOLO4YcNnpHp3SD`)**, SMTP, DataForSEO.
 
 ## Multi-tenant registry (built)
 - Ops base `appPlU9eC5GL6ncjZ` → table **Content Production Sites** `tblOkOXzm2GZUMkYs`.
 - Row: `galapagosislands-travel-v1` → Base `appNkUL50eF601ejN`, Table `tblUgxSGGfeJIL5GD`,
   Drive folder `1_Tliljbgdl0HBqBcBfrtd6CPHMdOmtaE`, intake path `galapagos-production/stage/intake`.
 
-## Built — ALL stages (inactive, for review before activation)
+## Built — ALL stages (ACTIVE; verified end-to-end 2026-07-16)
 | Workflow | n8n id | Webhook path | Transition |
 |---|---|---|---|
 | WFP0 Production Intake | `i8xtkx9GBw1aRdkP` | `…/intake` | Backlog → Scoring |
@@ -44,13 +44,99 @@ So one POST to the intake webhook (or setting a record to Backlog + POSTing inta
 runs the whole chain autonomously to **Editor Review**, where WFP7 stops (human gate).
 Applier: `add_self_chaining.py`. On the `Needs Attention` branch nothing chains (it halts).
 
-## Remaining to go live
-1. **Top up Anthropic API credits** (account behind the `fQbptY6CtcIWVwYp` credential) — the one true blocker (verified by the controlled test).
-2. **Activate** WFP0–WFP7 (currently inactive). Activate each; activation registers its webhook.
-3. **Kick off** a record: POST `{site_id:'galapagosislands-travel-v1', record_id:'recXXXX'}` to
-   `…/webhook/galapagos-production/stage/intake` (record must be at `Backlog`). It self-chains to Editor Review.
-4. **Google-Doc export (enhancement):** add a Google Drive credential in n8n, then a Drive node on
-   the output stages writes a real Doc into folder `1_Tliljbgdl0HBqBcBfrtd6CPHMdOmtaE` alongside the `airtable://` link.
+## LIVE — verified end-to-end (2026-07-16)
+`rec00MZWBXL4n8yRm` "Daily Budget on the Galápagos" ran Backlog → **Editor Review** with a clean
+auditor pass: 0 marker leaks, 0 guardrail echo, `<title>` 55 chars, 4 Docs written to Drive.
+
+**Kick off a record:** POST `{site_id:'galapagosislands-travel-v1', record_id:'recXXXX'}` to
+`…/webhook/galapagos-production/stage/intake` (record must be at `Backlog`, and every
+`* Content` field must be empty — the stage claim-guards check `{X Content} = ''`).
+It self-chains to Editor Review. To resume a `Needs Attention` record, set `Status` to the
+`Return To` value, clear `Last Error`/`Return To`, and POST that stage's webhook directly.
+
+## Google Doc export (built — `add_drive_export.py`)
+Content stages write a real Google Doc into the ContentEngine stage folder and set the record's
+`* Link` to the Doc URL. QA stages (WFP4/WFP7) emit pass/fail + notes, not documents, so they
+export nothing — their findings live in `Truth Check Notes` / `Audit Notes`.
+
+| Stage | Drive folder | Folder id |
+|---|---|---|
+| WFP2 brief | `03 Page briefs` | `1SF2xCX0_ZLVLtdMV0HCADeeRqnhPuTTh` |
+| WFP3 draft | `04 First Drafts` | `1DRmnqM32E40vKB_9JRJNO-yPLD1hl2Nb` |
+| WFP5 humanize | `06 Humanized` | `1IFBQB6v6ht2jS4mNm5RPjMZryf4ro-9Y` |
+| WFP6 polish | `07 Polished for Editor` | `1jf8kwaFmFHpYTgmLYSVSMU4yq-YBM5bH` |
+
+Inserted as `Output OK? --true--> Export to Drive --> Advance to X`. Because the Drive node
+replaces `$json`, each `Advance to X` reads the record/artifact from `$('Validate Output')`
+explicitly. Drive failure is non-fatal (`continueRegularOutput`) — Airtable stays the system of
+record and the Link falls back to `airtable://<field>`.
+
+**Known rough edge:** WFP6's artifact is production HTML, so its Doc in `07 Polished for Editor`
+contains HTML source rather than readable prose. Fine for CMS hand-off, awkward for a human
+editor. Options: export `.html` un-converted, or render a reader-facing Doc alongside it.
+
+## The guardrail-leak class of bug (fixed 2026-07-16 — read before touching prompts)
+Pages were shipping internal grounding markers (`[GC][GCT][CDF]`) in body copy, tables and
+JSON-LD — 100+ on the land-iguana page — and reciting their own guardrails as prose
+("with no operator favoritism", "Luxury is the boat, not the map"). Three causes, all fixed:
+1. `enrich_stage_prompts.py` told every stage to "cite its tag". Markers are now declared
+   **internal**, required at draft, forbidden at publication (`GROUNDING` block).
+2. WFP6's task said "keep every grounded fact **and citation** intact" — which kept the tags.
+   Polish is now explicitly the publication boundary and must strip them.
+3. `GUIDE_PAGE_SPEC.md` demanded HARD TRUTHS "always both, where relevant", so a wildlife page
+   got a stock timing paragraph. HT-1/HT-2 are now constraints on claims, copy only on-topic.
+
+**Every stage prompt states its own position in the chain.** This matters: the first fixed run
+failed because WFP4 applied the *publication* standard to a *draft* and rejected the very markers
+the draft is required to carry. A stage that doesn't know where it sits will judge by the wrong
+standard. `WFP5` was also running the old 1.6k-char prompt with no context pack — it now shares
+the same head as the rest.
+
+## Deployed snapshots (the entire live workflow, committed)
+The `WFP*.json` files here plus `PB_pattern_breaker.deployed.json` and
+`WFPD_dispatcher.json` are exported verbatim from the live n8n instance (runtime-only
+fields stripped). They are the source of truth for what actually runs. Re-export after
+any live change with the export step so the repo never drifts from production.
+
+## Humanizer post-processing chain (WFP5)
+**Current live chain:** `Normalize (no LLM)` → `De-AI Dictionary (no LLM)`.
+**Pattern-Breaker is SUSPENDED** (2026-07-23) pending fine-tuning — it over-fired
+(~183 spans / ~183 Sonnet calls on a 1.6k-word page). It is bypassed in WFP5 and its
+standalone workflow is deactivated in n8n (not deleted). To restore: set
+`PB_ENABLED = True` in `add_post_humanizer.py`, re-run it, and re-activate the
+`Pattern Breaker (native, 2-phase)` workflow. Full intended order once back:
+`Normalize` → `Pattern-Breaker (call)` → `PB Merge` → `De-AI Dictionary`.
+- **Normalize** and **De-AI Dictionary** are pure code (vendored `engine/vendor/text-normalizer`
+  and `engine/vendor/human-dictionary-travel`). Dictionary swaps AI vocabulary → plain human/
+  travel wording and writes the swaps to the **De-AI Log** field.
+- **Pattern-Breaker** (`engine/vendor/pattern-breaker`, deployed as its own workflow, called over
+  `/webhook/pattern-breaker`) is Phase-1 deterministic detection + Phase-2 *leashed, fact-guarded*
+  Sonnet on flagged spans only — so this step is **not** fully LLM-free. `PB Merge` strips
+  `[[PB-REVIEW]]` wrappers and falls back to the normalized text if the call fails.
+- Appliers: `add_humanizer_deai.py` (de-AI gate + reconstruction), `add_post_humanizer.py`
+  (this chain). Re-run after a `git subtree pull` of a vendored skill.
+- **Known tuning issue:** pattern-breaker over-fires on markdown with tables/lists (183 spans on a
+  1.6k-word page = ~183 Sonnet calls). Tune `engine/vendor/pattern-breaker/config/thresholds.json`
+  or scope it to prose before relying on it at volume.
+
+## Deterministic QA gate (WFP7 — code, not LLM judgment)
+Every OBJECTIVE publication check now runs in code **before** the auditor model, so a
+model can neither miscount nor override a hard failure, and a broken page never spends a
+token. Flow: `Re-check and Claim ─► QA Gate (code) ─► Gate OK? ─► {false → Needs Attention |
+true → Run Stage Agent (LLM) → …}`. The gate logic lives in **`qa_gate.js`** (single source
+of truth); **`add_deterministic_auditor_gate.py`** embeds it into the node and pushes — edit
+the `.js`, re-run the applier, commit; never hand-edit the node in n8n.
+
+Hard-fails (all measured on the bytes of the polished page): internal marker leakage (the
+11-token set incl. inside JSON-LD), guardrail recital sentences (OUTPUT_HYGIENE §1), banned
+entity strings (`Galapagos Travel Center`, `galapagosislands.com`), surviving markdown / bare
+`~`, `<title>` 50–60 and meta description 140–160, dual CTA present + retired CTA absent, valid
+& declared JSON-LD (`Schema Markup Type` @types must appear), author entity + named author,
+and prose word count within 0.8–1.6× of `Suggested Word Count` (**tables excluded** so data
+pages aren't punished). Thresholds are tunable constants at the top of `qa_gate.js`. The LLM
+that runs after a PASS judges only the irreducibly semantic calls — truth-grounding, Juan
+voice, fidelity. Unit-tested against all 9 produced pages (`node`-runnable); it correctly
+fails every pre-CTA page and passes a CTA-compliant one.
 
 ## Loop-safety (unchanged contract)
 One `Status` field; each stage has input filter + output guard + error route to

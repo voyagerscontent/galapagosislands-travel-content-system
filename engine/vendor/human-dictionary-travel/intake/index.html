@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Voyagers · Human Dictionary Intake</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #161b22;
+    --panel-2: #1c2430;
+    --ink: #e6edf3;
+    --ink-dim: #9aa4b2;
+    --accent: #4cc38a;
+    --accent-dim: #2e7d5c;
+    --danger: #f2777a;
+    --warn: #e8c37a;
+    --border: #2a313c;
+    --radius: 10px;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 28px 24px 80px; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  header h1 { font-size: 20px; margin: 0; font-weight: 600; }
+  header .sub { color: var(--ink-dim); font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--panel-2); color: var(--ink-dim); font-size: 12px; margin-left: 8px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-dim); margin: 0 0 10px; font-weight: 600; }
+  textarea, .output {
+    width: 100%; min-height: 360px; resize: vertical;
+    background: var(--panel-2); color: var(--ink);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; font-family: var(--sans); font-size: 14.5px; line-height: 1.55;
+    outline: none;
+  }
+  .output { white-space: pre-wrap; overflow: auto; }
+  textarea:focus { border-color: var(--accent-dim); }
+  .toolbar { display: flex; align-items: center; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
+  button {
+    background: var(--accent); color: #0b0f14; border: 0; padding: 10px 18px;
+    border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;
+  }
+  button.secondary { background: var(--panel-2); color: var(--ink); border: 1px solid var(--border); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  input[type="text"] {
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 10px; font-family: var(--mono); font-size: 12px; width: 200px;
+  }
+  label { color: var(--ink-dim); font-size: 12px; margin-right: 6px; }
+  .stats { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink-dim); }
+  .stats b { color: var(--ink); font-weight: 600; }
+  .stats .over { color: var(--danger); }
+  .replacements {
+    max-height: 320px; overflow: auto; font-family: var(--mono); font-size: 12.5px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+  }
+  .replacements table { width: 100%; border-collapse: collapse; }
+  .replacements th, .replacements td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  .replacements th { color: var(--ink-dim); font-weight: 600; }
+  .replacements td.from { color: var(--danger); }
+  .replacements td.to   { color: var(--accent); }
+  .replacements td.src  { color: var(--ink-dim); }
+  .replacements td.var  { color: var(--warn); text-align: center; }
+  .foot { color: var(--ink-dim); font-size: 12px; margin-top: 24px; line-height: 1.5; }
+  .kbd { font-family: var(--mono); background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 12px; color: var(--ink-dim); }
+
+  /* v1.4: flagged spans + tooltips */
+  .flag {
+    background: rgba(232,195,122,0.18);
+    border-bottom: 1px dashed var(--warn);
+    padding: 0 2px; cursor: help;
+    position: relative;
+  }
+  .flag.applied { background: rgba(76,195,138,0.18); border-bottom-color: var(--accent); }
+  .flag[data-tooltip]:hover::after {
+    content: attr(data-tooltip); position: absolute; left: 0; top: 100%;
+    background: var(--panel-2); color: var(--ink); font-family: var(--mono);
+    font-size: 12px; line-height: 1.4; padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: 6px; white-space: pre-wrap; z-index: 20; min-width: 320px; max-width: 480px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  .flag-note { margin-top: 8px; font-size: 12px; color: var(--ink-dim); }
+  .flag-note .warn-dot { color: var(--warn); }
+  .flag-note .ok-dot { color: var(--accent); }
+  #apiKeyBox { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  #apiKeyBox input[type="password"] {
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 8px; font-family: var(--mono); font-size: 12px; width: 320px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Voyagers · Human Dictionary Intake <span class="badge" id="entryCount">loading…</span></h1>
+      <div class="sub">Deterministic AI-quirk → plain-English rewriter for travel copy. No LLM. Max 3000 words per submission. Markov-picked variants for non-patterned output.</div>
+    </div>
+    <div class="sub">v1.4.0</div>
+  </header>
+
+  <div class="toolbar">
+    <button id="runBtn">Humanize</button>
+    <button id="clearBtn" class="secondary">Clear</button>
+    <button id="copyBtn" class="secondary">Copy output</button>
+    <button id="dlBtn"   class="secondary">Download .txt</button>
+    <label for="seed">Seed:</label>
+    <input type="text" id="seed" placeholder="(auto)" title="Optional string seed. Changing the seed produces a different but still-deterministic variant walk." />
+    <div class="stats">
+      <span>Words: <b id="wordCount">0</b> / 3000</span>
+      <span>Replacements: <b id="repCount">0</b></span>
+      <span>Flagged: <b id="flagCount">0</b></span>
+      <span id="truncFlag"></span>
+    </div>
+  </div>
+
+  <div id="apiKeyBox">
+    <label for="apiKey">OpenAI API key (optional — kept in your browser only):</label>
+    <input type="password" id="apiKey" placeholder="sk-... (leave blank for flag-only mode)" autocomplete="off" />
+    <button id="llmBtn" class="secondary" title="Rewrite flagged sentences via OpenAI with a verbatim-variant guardrail">Rewrite flagged</button>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Input · AI-generated copy</h2>
+      <textarea id="input" placeholder="Paste up to 3,000 words of AI-generated travel copy here. Then click Humanize."></textarea>
+    </div>
+    <div class="panel">
+      <h2>Output · humanized</h2>
+      <div id="output" class="output"></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:16px;">
+    <h2>Replacements (deterministic, source-tagged, Markov-picked)</h2>
+    <div id="replacements" class="replacements">Nothing yet — paste text and click Humanize.</div>
+  </div>
+
+  <div class="panel" style="margin-top:16px;">
+    <h2>Flagged spans (context-trigger layer)</h2>
+    <div id="flags" class="replacements">No flags yet.</div>
+    <div class="flag-note">
+      <span class="warn-dot">●</span> Flagged (regex layer can't cleanly rewrite — needs LLM rewrite with verbatim guardrail).
+      <span class="ok-dot">●</span> Applied (LLM output contained a pre-approved variant character-for-character).
+    </div>
+  </div>
+
+  <div class="foot">
+    100% client-side. Rules compiled from
+    <span class="kbd">travel_variants</span> +
+    <span class="kbd">travel_phrases</span> +
+    <span class="kbd">core_phrases</span> +
+    <span class="kbd">travel_words</span> +
+    <span class="kbd">core_words</span>.
+    When multiple human alternatives exist, a first-order Markov walker picks
+    one per occurrence — deterministic given the input+seed, but non-repeating
+    across consecutive matches so the output doesn't fall into a pattern.
+  </div>
+</div>
+
+<script src="dictionary.bundle.js"></script>
+<script>
+(function () {
+  const MAX_WORDS = 3000;
+  const rules = window.__HUMANIZER_RULES__ || [];
+  const triggers = window.__HUMANIZER_TRIGGERS__ || [];
+  const totalVariants = rules.reduce((s, r) => s + (r.variants ? r.variants.length : 1), 0);
+  document.getElementById("entryCount").textContent =
+    rules.length + " rules · " + totalVariants + " variants · " + triggers.length + " triggers";
+
+  // Persist API key in localStorage so users don't retype every visit.
+  const apiKeyEl = document.getElementById("apiKey");
+  apiKeyEl.value = localStorage.getItem("voyagers_openai_key") || "";
+  apiKeyEl.addEventListener("change", () => {
+    localStorage.setItem("voyagers_openai_key", apiKeyEl.value.trim());
+  });
+
+  // Compile context triggers. Strip inline (?i)/(?is) flags because JS
+  // regex doesn't accept them, and add the equivalent flag letters.
+  const compiledTriggers = triggers.map(t => {
+    let pat = t.pattern;
+    let flags = "g";
+    const m = pat.match(/^\(\?([a-z]+)\)/);
+    if (m) {
+      if (m[1].includes("i")) flags += "i";
+      if (m[1].includes("s")) flags += "s";
+      pat = pat.slice(m[0].length);
+    } else if (/\(\?i\)/.test(pat)) {
+      flags += "i";
+      pat = pat.replace(/\(\?i\)/g, "");
+    }
+    return {
+      id: t.id,
+      re: new RegExp(pat, flags),
+      variants: (t.human_variants || []).map(v => (typeof v === "string") ? v : (v.text || "")),
+      instruction: t.instruction_to_llm || "",
+      topic_bucket: t.topic_bucket || "",
+      reason: t.reason || "",
+    };
+  });
+
+  const compiled = rules.map(r => ({
+    re: new RegExp(r.pattern, r.flags),
+    key: r.key || (r.pattern.replace(/\\/g, '').replace(/\(\?<!\\w\)|\(\?!\\w\)/g, '')),
+    variants: r.variants && r.variants.length ? r.variants : [r.replacement || ""],
+    source: r.source,
+  }));
+
+  // -- Stable hash (FNV-1a 32-bit, matches Python's BLAKE2b modulo intent
+  //    for "deterministic small integer") --
+  function fnv1a(s) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    return h >>> 0;
+  }
+  function stableHash(...parts) {
+    return fnv1a(parts.join("\u001f"));
+  }
+
+  function countWords(t) {
+    const m = t.match(/\S+/g);
+    return m ? m.length : 0;
+  }
+
+  function preserveCase(src, rep) {
+    if (!rep) return "";
+    const trimmed = src.trim();
+    const isUpper = trimmed.toUpperCase() === trimmed && /[A-Z]/.test(trimmed);
+    if (isUpper) return rep.toUpperCase();
+    const m = trimmed.match(/[a-zA-Z]/);
+    if (m && m[0] === m[0].toUpperCase()) {
+      const idx = rep.search(/[a-zA-Z]/);
+      if (idx >= 0) return rep.slice(0, idx) + rep[idx].toUpperCase() + rep.slice(idx + 1);
+    }
+    return rep;
+  }
+
+  function makePicker(seed) {
+    const state = new Map(); // key -> [prevIdx, occ]
+    return function pick(key, variants, context) {
+      const n = variants.length;
+      if (n === 0) return { idx: 0, text: "" };
+      if (n === 1) return { idx: 0, text: variants[0] };
+      const st = state.get(key) || [-1, 0];
+      const prev = st[0], occ = st[1];
+      const h = stableHash(seed, key, String(prev), String(occ), context.slice(-64));
+      const cand = [];
+      for (let i = 0; i < n; i++) if (i !== prev) cand.push(i);
+      const pool = cand.length ? cand : Array.from({length:n}, (_,i)=>i);
+      const chosen = pool[h % pool.length];
+      state.set(key, [chosen, occ + 1]);
+      return { idx: chosen, text: variants[chosen] };
+    };
+  }
+
+  function humanize(text, seedIn) {
+    const original = text;
+    let truncated = false;
+    const wc = countWords(text);
+    if (wc > MAX_WORDS) {
+      const tokens = text.match(/\S+|\s+/g) || [];
+      const kept = [];
+      let n = 0;
+      for (const t of tokens) {
+        if (/\S/.test(t)) {
+          if (n >= MAX_WORDS) break;
+          n++;
+        }
+        kept.push(t);
+      }
+      text = kept.join("");
+      truncated = true;
+    }
+
+    const seed = seedIn || String(stableHash(text.slice(0, 256)));
+    const pick = makePicker(seed);
+
+    const replacements = [];
+    let out = text;
+
+    for (const c of compiled) {
+      out = out.replace(c.re, (match, _p1, offset, whole) => {
+        const start = Math.max(0, offset - 32);
+        const end = Math.min(whole.length, offset + match.length + 32);
+        const context = whole.slice(start, end);
+        const { idx, text: chosen } = pick(c.key, c.variants, context);
+        const cased = preserveCase(match, chosen);
+        replacements.push({
+          from: match, to: cased, source: c.source,
+          variantIndex: idx, variantCount: c.variants.length,
+        });
+        return cased;
+      });
+    }
+
+    out = out.replace(/[ \t]{2,}/g, " ")
+             .replace(/ +([,.!?;:])/g, "$1")
+             .replace(/(^|\n)[ \t]*[,;][ \t]*/g, "$1");
+
+    // ---- context-trigger flagging pass (no substitution) ----
+    const rawFlags = [];
+    for (const t of compiledTriggers) {
+      t.re.lastIndex = 0;
+      let mm;
+      while ((mm = t.re.exec(out)) !== null) {
+        if (mm[0].length === 0) { t.re.lastIndex++; continue; }
+        rawFlags.push({ start: mm.index, end: mm.index + mm[0].length, trig: t, txt: mm[0] });
+        if (!t.re.global) break;
+      }
+    }
+    rawFlags.sort((a,b) => a.start - b.start || (b.end - b.start) - (a.end - a.start));
+    const kept = [];
+    let cursor = 0;
+    for (const f of rawFlags) {
+      if (f.start < cursor) continue;
+      kept.push(f); cursor = f.end;
+    }
+    const flaggedSpans = kept.map(f => {
+      const before = out.slice(Math.max(0, f.start - 80), f.start);
+      const after = out.slice(f.end, Math.min(out.length, f.end + 80));
+      const picked = pick("trigger:" + f.trig.id, f.trig.variants, before + after);
+      const ordered = [f.trig.variants[picked.idx]].concat(
+        f.trig.variants.filter((_, i) => i !== picked.idx)
+      );
+      return {
+        trigger_id: f.trig.id,
+        matched_text: f.txt,
+        start: f.start, end: f.end,
+        context_before: before, context_after: after,
+        candidate_variants: ordered.slice(0, 6),
+        llm_instruction: f.trig.instruction,
+        topic_bucket: f.trig.topic_bucket,
+        reason: f.trig.reason,
+        applied: false,
+        replacement: null,
+      };
+    });
+
+    return {
+      text: out, original,
+      wordCount: Math.min(wc, MAX_WORDS),
+      truncated, replacements,
+      flaggedSpans,
+    };
+  }
+
+  // Cache the latest result so the LLM-rewrite button can re-render.
+  let lastResult = null;
+
+  function renderOutputWithFlags(result) {
+    const outEl = document.getElementById("output");
+    outEl.innerHTML = "";
+    if (!result.flaggedSpans || !result.flaggedSpans.length) {
+      outEl.textContent = result.text;
+      return;
+    }
+    const spans = [...result.flaggedSpans].sort((a,b) => a.start - b.start);
+    let cur = 0;
+    for (const s of spans) {
+      if (s.start > cur) outEl.appendChild(document.createTextNode(result.text.slice(cur, s.start)));
+      const span = document.createElement("span");
+      span.className = "flag" + (s.applied ? " applied" : "");
+      const tooltip = (
+        "[" + s.trigger_id + "]  " + s.topic_bucket + "\n" +
+        s.reason + "\n\n" +
+        "Approved human variants:\n" +
+        s.candidate_variants.map((v,i) => "  " + (i+1) + ". " + v).join("\n") +
+        (s.applied ? "\n\nLLM rewrite applied \u2713" : "")
+      );
+      span.setAttribute("data-tooltip", tooltip);
+      span.textContent = s.applied && s.replacement ? s.replacement : result.text.slice(s.start, s.end);
+      outEl.appendChild(span);
+      cur = s.end;
+    }
+    if (cur < result.text.length) outEl.appendChild(document.createTextNode(result.text.slice(cur)));
+  }
+
+  function render(result) {
+    lastResult = result;
+    renderOutputWithFlags(result);
+    document.getElementById("wordCount").textContent = result.wordCount;
+    document.getElementById("repCount").textContent = result.replacements.length;
+    document.getElementById("flagCount").textContent = result.flaggedSpans.length;
+    document.getElementById("truncFlag").innerHTML =
+      result.truncated ? '<span class="over">Truncated to 3000 words</span>' : "";
+    // Replacements table
+    const tbl = document.getElementById("replacements");
+    if (!result.replacements.length) {
+      tbl.textContent = "No AI-quirks matched.";
+    } else {
+      const rows = result.replacements.map(r => `
+        <tr>
+          <td class="from">${escapeHtml(r.from)}</td>
+          <td class="to">${escapeHtml(r.to) || "<em style='color:#666'>(deleted)</em>"}</td>
+          <td class="var">${r.variantIndex + 1}/${r.variantCount}</td>
+          <td class="src">${escapeHtml(r.source)}</td>
+        </tr>`).join("");
+      tbl.innerHTML = `<table>
+        <thead><tr><th>From</th><th>To</th><th>Variant</th><th>Source</th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }
+    // Flags table
+    const fbl = document.getElementById("flags");
+    if (!result.flaggedSpans.length) {
+      fbl.textContent = "No flags matched.";
+    } else {
+      const rows = result.flaggedSpans.map((s, i) => `
+        <tr>
+          <td>${i+1}</td>
+          <td class="src">${escapeHtml(s.trigger_id)}</td>
+          <td class="from">${escapeHtml(s.matched_text.slice(0,80))}${s.matched_text.length>80?"…":""}</td>
+          <td class="to">${s.applied ? escapeHtml(s.replacement || "") : "<em style='color:#666'>(pending)</em>"}</td>
+          <td class="var">${s.candidate_variants.length}</td>
+        </tr>`).join("");
+      fbl.innerHTML = `<table>
+        <thead><tr><th>#</th><th>Trigger</th><th>Matched</th><th>Rewrite</th><th>Variants</th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }
+  }
+  function escapeHtml(s){return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+  function updateInputStats() {
+    const t = document.getElementById("input").value;
+    const wc = countWords(t);
+    const el = document.getElementById("wordCount");
+    el.textContent = wc;
+    el.parentElement.classList.toggle("over", wc > MAX_WORDS);
+  }
+
+  document.getElementById("input").addEventListener("input", updateInputStats);
+  document.getElementById("runBtn").addEventListener("click", () => {
+    const text = document.getElementById("input").value;
+    const seed = document.getElementById("seed").value.trim();
+    const r = humanize(text, seed);
+    render(r);
+  });
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    document.getElementById("input").value = "";
+    document.getElementById("output").textContent = "";
+    document.getElementById("replacements").textContent = "Nothing yet — paste text and click Humanize.";
+    document.getElementById("flags").textContent = "No flags yet.";
+    updateInputStats();
+    document.getElementById("repCount").textContent = "0";
+    document.getElementById("flagCount").textContent = "0";
+    document.getElementById("truncFlag").innerHTML = "";
+    lastResult = null;
+  });
+
+  // ---- Optional: browser-side OpenAI rewrite for flagged spans ----
+  // Runs only when the user provides an API key. Requests use
+  // temperature=0 + seed=42 for determinism and enforce the verbatim
+  // guardrail (LLM output must contain one candidate variant
+  // character-for-character, else we keep the original flagged text).
+  const SYSTEM_PROMPT = "You rewrite an AI-sounding sentence so it reads like a real traveler wrote it. You MUST include exactly one of the provided human_variants verbatim (character-for-character) in your output. Do not translate, paraphrase, or modify the chosen variant. Keep the rewrite short (1-2 sentences). Match tense and person to the surrounding text. Reply with only the rewritten sentence — no quotes, no explanation.";
+
+  async function rewriteSpan(span, apiKey) {
+    const userMsg = (
+      "Trigger reason: " + span.reason + "\n\n" +
+      "Instruction: " + span.llm_instruction + "\n\n" +
+      "Context before: " + span.context_before + "\n" +
+      "AI sentence to rewrite: " + span.matched_text + "\n" +
+      "Context after: " + span.context_after + "\n\n" +
+      "Approved human_variants (pick ONE and include it verbatim):\n" +
+      span.candidate_variants.map((v,i) => (i+1) + ". " + v).join("\n")
+    );
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        temperature: 0,
+        seed: 42,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: userMsg },
+        ],
+      }),
+    });
+    if (!resp.ok) throw new Error("OpenAI " + resp.status + ": " + (await resp.text()).slice(0,200));
+    const data = await resp.json();
+    const content = String(data.choices?.[0]?.message?.content || "").trim();
+    // Guardrail
+    const accepted = span.candidate_variants.some(v => content.includes(v));
+    return { content, accepted };
+  }
+
+  document.getElementById("llmBtn").addEventListener("click", async () => {
+    if (!lastResult) { alert("Run Humanize first."); return; }
+    const key = document.getElementById("apiKey").value.trim();
+    if (!key) { alert("Paste your OpenAI API key first. It stays in your browser only."); return; }
+    if (!lastResult.flaggedSpans.length) { alert("No flagged spans to rewrite."); return; }
+    const btn = document.getElementById("llmBtn");
+    btn.disabled = true;
+    const prev = btn.textContent;
+    btn.textContent = "Rewriting…";
+    let ok = 0, fail = 0;
+    for (const s of lastResult.flaggedSpans) {
+      try {
+        const { content, accepted } = await rewriteSpan(s, key);
+        if (accepted) {
+          s.applied = true;
+          s.replacement = content;
+          ok++;
+        } else {
+          s.applied = false;
+          s.replacement = null;
+          fail++;
+        }
+      } catch (err) {
+        s.applied = false;
+        s.replacement = null;
+        fail++;
+        console.error(err);
+      }
+    }
+    btn.textContent = prev + " (" + ok + " applied, " + fail + " kept)";
+    setTimeout(() => { btn.textContent = prev; btn.disabled = false; }, 2500);
+    render(lastResult);
+  });
+  function currentOutputText() {
+    // Build final text applying any accepted LLM rewrites, right-to-left.
+    if (!lastResult) return "";
+    let text = lastResult.text;
+    const applied = (lastResult.flaggedSpans || []).filter(s => s.applied && s.replacement);
+    const sorted = [...applied].sort((a,b) => b.start - a.start);
+    for (const s of sorted) {
+      if (text.slice(s.start, s.end) === s.matched_text) {
+        text = text.slice(0, s.start) + s.replacement + text.slice(s.end);
+      }
+    }
+    return text;
+  }
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    const t = currentOutputText();
+    if (!t) return;
+    await navigator.clipboard.writeText(t);
+    const b = document.getElementById("copyBtn");
+    const prev = b.textContent; b.textContent = "Copied ✓";
+    setTimeout(()=>b.textContent=prev, 1200);
+  });
+  document.getElementById("dlBtn").addEventListener("click", () => {
+    const t = currentOutputText();
+    if (!t) return;
+    const blob = new Blob([t], {type: "text/plain;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "humanized.txt";
+    a.click();
+  });
+})();
+</script>
+</body>
+</html>

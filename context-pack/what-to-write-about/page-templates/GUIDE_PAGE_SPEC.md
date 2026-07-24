@@ -149,7 +149,7 @@ hard-coded per guide. The inventory/brand layer stays ACF (see
 | Answer-box figure | "$250–$400 (budget) … $1,000–$2,500+/day (yacht)" | the headline number/range |
 | Data table | cost table, 3 travel styles | the guide's core comparison |
 | FAQ set | 6 cost PAA questions | People-Also-Ask for this query |
-| HARD TRUTHS applied | HT-1 timing, HT-2 islands/luxury | always both, where relevant |
+| HARD TRUTHS applied | HT-1 timing, HT-2 islands/luxury | as constraints on every claim; as *copy* only when the guide's topic is timing or island/luxury choice — never a stock paragraph |
 
 ---
 
@@ -163,6 +163,8 @@ Fail the build if any is false:
 - [ ] ≥1 data table + key-takeaways list + ≥6-question FAQ.
 - [ ] JSON-LD: BreadcrumbList + Article + FAQPage, all valid in Rich Results Test, **mirroring visible content**.
 - [ ] AIO Block Count ≥ 4; `speakable` present.
-- [ ] Every figure sourced or `[VERIFY]`; HARD TRUTHS honored (no "best" without a what-for; luxury = the yacht; only Fernandina + W Isabela need 5-day+).
+- [ ] Every figure grounded; HARD TRUTHS honored (no "best" without a what-for; luxury = the yacht; only Fernandina + W Isabela need 5-day+).
+- [ ] **No internal markers in the page.** Zero `[GC]` / `[GCT]` / `[CDF]` / `[DPNG]` / `[VERIFY]` brackets anywhere — body, tables, FAQ, or JSON-LD. These are draft-stage provenance only; polish converts them to prose attribution + a Sources block.
+- [ ] **No guardrail echo.** The page never recites its own rules — no "an honest trade-off, not a ranking", "with no operator favoritism", "an independent editorial guide", or a stock HT-1/HT-2 paragraph on a page that isn't about timing or luxury. Guardrails constrain claims; they are not copy.
 - [ ] One primary CTA, help-first, late; no hero modal; no fake scarcity.
 - [ ] Banned words / clichés absent; answer-first; paras ≤60 words with a visual break every 150–200 words.

@@ -1,0 +1,45 @@
+name: Deploy pattern-breaker to n8n
+
+# GitHub is the source of truth. Every push to main that changes the n8n
+# workflow source (or a manual run) redeploys the live workflow so n8n always
+# matches the repo.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "n8n/**"
+      - ".github/workflows/deploy-n8n.yml"
+  workflow_dispatch: {}
+
+# Avoid overlapping deploys clobbering each other.
+concurrency:
+  group: deploy-n8n
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Deploy to n8n
+        env:
+          N8N_BASE_URL: ${{ vars.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+          N8N_WORKFLOW_ID: ${{ vars.N8N_WORKFLOW_ID }}
+        run: |
+          if [ -z "$N8N_BASE_URL" ]; then
+            echo "N8N_BASE_URL repo variable not set; defaulting."
+            export N8N_BASE_URL="https://voyagerscontent.app.n8n.cloud"
+          fi
+          if [ -z "$N8N_WORKFLOW_ID" ]; then
+            export N8N_WORKFLOW_ID="2ToiqCivCTCj74oK"
+          fi
+          python3 n8n/deploy_to_n8n.py

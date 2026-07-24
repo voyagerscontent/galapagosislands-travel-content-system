@@ -20,13 +20,17 @@ DOMAIN: "galapagosislands.travel"          # canonical domain (links, emails, ci
 TAGLINE: "an independent editorial travel guide to the Galápagos"
 
 # --- publisher / relationship --------------------------------------------
-# The site is the brand itself. If a parent agency or operator exists, name it
-# here; leave blank to keep the guide purely brand-first with no parent.
-PUBLISHER: "Galapagos Islands.Travel"      # was "Voyagers Travel Company" — now brand-first
-PUBLISHER_NOTE: ""                          # optional transparency line; blank = none
+# The guide is run by two operators, disclosed in the footer CTA (see below):
+# Voyagers Travel Company (consumer travel planning) and Latin Trails (Galápagos DMC / trade).
+PUBLISHER: "Voyagers Travel Company & Latin Trails"
+PUBLISHER_NOTE: "This guide is run by Voyagers Travel Company (traveller planning) and Latin Trails (Galápagos DMC services for the trade)."
 
 # --- conversion -----------------------------------------------------------
-PRIMARY_CTA: "Talk to a Galápagos Specialist"   # a lead/enquiry, never "Book Now"
+# The CTA is a SUBTLE dual close hardcoded at the foot of every page — see
+# context-pack/guardrails/CTA_BLOCK.md for the verbatim copy and rules.
+PRIMARY_CTA: "Travelers can contact Voyagers Travel Company for a full travel-planning service. Travel agents and tour operators looking for expert DMC services in the Galápagos can reach out to Latin Trails."
+CTA_TRAVELER_URL: "https://www.voyagers.travel/galapagos"   # confirmed by webmaster 2026-07-20
+CTA_TRADE_URL: "https://www.latintrails.com"
 
 # --- contributors (optional) ---------------------------------------------
 # Named expert voices to attribute where authorship is shown. Leave empty to

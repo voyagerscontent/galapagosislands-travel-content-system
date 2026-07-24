@@ -1,0 +1,659 @@
+{
+  "name": "WFPD Dispatcher - Content Production (polls Airtable)",
+  "description": null,
+  "isArchived": false,
+  "nodes": [
+    {
+      "name": "Every 2 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "e7444bdd-f948-4456-a089-e100b501abca"
+    },
+    {
+      "name": "Lookup Active Sites",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        0
+      ],
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appPlU9eC5GL6ncjZ"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblOkOXzm2GZUMkYs"
+        },
+        "filterByFormula": "={Active} = TRUE()",
+        "returnAll": true,
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      },
+      "id": "136e5648-7974-48f3-8599-ae18439b876b"
+    },
+    {
+      "name": "Find Backlog",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        -140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+        },
+        "filterByFormula": "={Status} = 'Backlog'",
+        "returnAll": true,
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      },
+      "id": "515fc615-00a9-45ba-8fe9-b88cf9fe458c"
+    },
+    {
+      "name": "Start intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        -140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/intake",
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site_id",
+              "value": "={{ $('Lookup Active Sites').item.json['Site ID'] || $('Lookup Active Sites').item.json['Name'] }}"
+            },
+            {
+              "name": "record_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d01f71c0-2207-4e0e-9baa-6ddafe1f5cd2"
+    },
+    {
+      "name": "Find Gate Released",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+        },
+        "filterByFormula": "=AND({Status} = 'Brief Ready', NOT({MarketMuse Score} = BLANK()), {Brief Content} != '')",
+        "returnAll": true,
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      },
+      "id": "fa76de93-286e-435c-8544-7d00afc633ea"
+    },
+    {
+      "name": "Set Drafting",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [],
+          "value": {
+            "id": "={{ $json.id }}",
+            "Status": "Drafting",
+            "Attempt Count": "={{ 0 }}"
+          }
+        },
+        "options": {}
+      },
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      },
+      "id": "eb59f7e9-0e08-4e96-abe3-bdd3263eb6a2"
+    },
+    {
+      "name": "Start draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        140
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "method": "POST",
+        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/draft",
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site_id",
+              "value": "={{ $('Lookup Active Sites').item.json['Site ID'] || $('Lookup Active Sites').item.json['Name'] }}"
+            },
+            {
+              "name": "record_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c9b4b33f-cf9c-4484-9b65-e05577f007bf"
+    }
+  ],
+  "connections": {
+    "Lookup Active Sites": {
+      "main": [
+        [
+          {
+            "node": "Find Backlog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Find Gate Released",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Backlog": {
+      "main": [
+        [
+          {
+            "node": "Start intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Gate Released": {
+      "main": [
+        [
+          {
+            "node": "Set Drafting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Drafting": {
+      "main": [
+        [
+          {
+            "node": "Start draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 2 hours": {
+      "main": [
+        [
+          {
+            "node": "Lookup Active Sites",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodeGroups": [],
+  "activeVersionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+  "versionCounter": 4,
+  "sourceWorkflowId": null,
+  "activeVersion": {
+    "updatedAt": "2026-07-21T15:14:33.942Z",
+    "createdAt": "2026-07-21T15:14:33.942Z",
+    "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+    "workflowId": "WtZIoSBy6mgUvQMe",
+    "nodes": [
+      {
+        "name": "Every 2 hours",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          0
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 2
+              }
+            ]
+          }
+        },
+        "id": "e7444bdd-f948-4456-a089-e100b501abca"
+      },
+      {
+        "name": "Lookup Active Sites",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          200,
+          0
+        ],
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "appPlU9eC5GL6ncjZ"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "tblOkOXzm2GZUMkYs"
+          },
+          "filterByFormula": "={Active} = TRUE()",
+          "returnAll": true,
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "136e5648-7974-48f3-8599-ae18439b876b"
+      },
+      {
+        "name": "Find Backlog",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          420,
+          -140
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+          },
+          "filterByFormula": "={Status} = 'Backlog'",
+          "returnAll": true,
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "515fc615-00a9-45ba-8fe9-b88cf9fe458c"
+      },
+      {
+        "name": "Start intake",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          640,
+          -140
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "POST",
+          "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/intake",
+          "sendBody": true,
+          "specifyBody": "keypair",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "site_id",
+                "value": "={{ $('Lookup Active Sites').item.json['Site ID'] || $('Lookup Active Sites').item.json['Name'] }}"
+              },
+              {
+                "name": "record_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d01f71c0-2207-4e0e-9baa-6ddafe1f5cd2"
+      },
+      {
+        "name": "Find Gate Released",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          420,
+          140
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+          },
+          "filterByFormula": "=AND({Status} = 'Brief Ready', NOT({MarketMuse Score} = BLANK()), {Brief Content} != '')",
+          "returnAll": true,
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "fa76de93-286e-435c-8544-7d00afc633ea"
+      },
+      {
+        "name": "Set Drafting",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          640,
+          140
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "operation": "update",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Lookup Active Sites').item.json['Base ID'] }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $('Lookup Active Sites').item.json['Table ID'] }}"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [],
+            "value": {
+              "id": "={{ $json.id }}",
+              "Status": "Drafting",
+              "Attempt Count": "={{ 0 }}"
+            }
+          },
+          "options": {}
+        },
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "eb59f7e9-0e08-4e96-abe3-bdd3263eb6a2"
+      },
+      {
+        "name": "Start draft",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          860,
+          140
+        ],
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "method": "POST",
+          "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/draft",
+          "sendBody": true,
+          "specifyBody": "keypair",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "site_id",
+                "value": "={{ $('Lookup Active Sites').item.json['Site ID'] || $('Lookup Active Sites').item.json['Name'] }}"
+              },
+              {
+                "name": "record_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "c9b4b33f-cf9c-4484-9b65-e05577f007bf"
+      }
+    ],
+    "connections": {
+      "Lookup Active Sites": {
+        "main": [
+          [
+            {
+              "node": "Find Backlog",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Find Gate Released",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Find Backlog": {
+        "main": [
+          [
+            {
+              "node": "Start intake",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Find Gate Released": {
+        "main": [
+          [
+            {
+              "node": "Set Drafting",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Drafting": {
+        "main": [
+          [
+            {
+              "node": "Start draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Every 2 hours": {
+        "main": [
+          [
+            {
+              "node": "Lookup Active Sites",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Marcel Perkins",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-07-21T15:14:34.173Z",
+        "id": 472,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "activated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-21T15:28:20.829Z",
+        "id": 474,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "activated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-21T15:28:21.761Z",
+        "id": 476,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "activated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-21T15:28:22.336Z",
+        "id": 478,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "activated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-21T15:14:34.088Z",
+        "id": 471,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "deactivated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-21T15:28:18.442Z",
+        "id": 473,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "deactivated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-21T15:28:21.716Z",
+        "id": 475,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "deactivated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-21T15:28:22.281Z",
+        "id": 477,
+        "workflowId": "WtZIoSBy6mgUvQMe",
+        "versionId": "9e326c79-2ce7-49cd-a365-843f05e95eba",
+        "event": "deactivated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      }
+    ]
+  }
+}

@@ -8,3 +8,15 @@
 .DS_Store
 *.pyc
 __pycache__/
+
+# local backups and Windows metadata
+*.xlsx.bak
+*:Zone.Identifier
+
+# AI-signal updater generated artifacts (regenerated each run; curate, do not commit)
+engine/n8n-production/ai_signal_blocklist.proposed.json
+engine/n8n-production/ai_signal_update_report.md
+
+# content-pipeline python venv
+.venv-pipeline/
+content-pipeline/**/__pycache__/

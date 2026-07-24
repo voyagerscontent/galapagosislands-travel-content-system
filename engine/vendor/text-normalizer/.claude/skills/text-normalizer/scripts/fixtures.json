@@ -1,0 +1,35 @@
+{
+  "_comment": "Shared parity fixtures for the text normalization layer. BOTH the Python script (normalize.py) and the n8n JavaScript twin (automation/n8n_normalize_node.json) must produce exactly these outputs. test_normalize.py checks Python; sync_test.js extracts the n8n code and checks JS, then cross-checks JS==Python. The 'protect' list here MUST match the PROTECT constant hardcoded in the n8n node so the twins stay comparable.",
+  "protect": ["Galápagos", "José", "Ñandú", "Quito", "Cotopaxi"],
+  "content_safe": [
+    { "name": "zero-width space removed", "in": "Hello\u200bWorld", "out": "HelloWorld" },
+    { "name": "non-breaking space -> space", "in": "Hello\u00a0World", "out": "Hello World" },
+    { "name": "BOM removed", "in": "\ufeffHello", "out": "Hello" },
+    { "name": "soft hyphen removed", "in": "co\u00adoperate", "out": "cooperate" },
+    { "name": "word joiner + LRM removed", "in": "a\u2060b\u200ec", "out": "abc" },
+    { "name": "spanish accents preserved", "in": "Galápagos", "out": "Galápagos" },
+    { "name": "name accent preserved", "in": "José María", "out": "José María" },
+    { "name": "fullwidth folded", "in": "ＨＥＬＬＯ", "out": "HELLO" },
+    { "name": "collapse spaces", "in": "a     b", "out": "a b" },
+    { "name": "trim", "in": "   hi   ", "out": "hi" },
+    { "name": "tabs collapse", "in": "a\t\t b", "out": "a b" },
+    { "name": "smart quotes -> ascii", "in": "\u201cquote\u201d and \u2019s", "out": "\"quote\" and 's" },
+    { "name": "em dash -> hyphen", "in": "a \u2014 b", "out": "a - b" },
+    { "name": "ellipsis -> dots", "in": "wait\u2026", "out": "wait..." },
+    { "name": "triple newline -> one blank line", "in": "p1\n\n\n\np2", "out": "p1\n\np2" },
+    { "name": "CRLF -> LF", "in": "a\r\nb", "out": "a\nb" },
+    { "name": "mixed junk", "in": "José\u00a0visited Galápagos\u200b \u2014 in 2019\u2026", "out": "José visited Galápagos - in 2019..." },
+    { "name": "empty", "in": "", "out": "" },
+    { "name": "only invisibles", "in": "\u200b\ufeff\u00ad", "out": "" }
+  ],
+  "aggressive": [
+    { "name": "fold accents + lowercase (no protect match)", "in": "Héllo   Wörld!!!\u200b \n\n", "out": "hello world" },
+    { "name": "aggressive removes nbsp", "in": "Hello\u00a0World!", "out": "hello world" },
+    { "name": "aggressive removes zero-width", "in": "data\u200bpoint", "out": "datapoint" },
+    { "name": "protected name keeps accent, rest folded", "in": "Visit Galápagos with José café", "out": "visit galápagos with josé cafe" },
+    { "name": "protect matches unaccented source", "in": "tour of galapagos", "out": "tour of galápagos" },
+    { "name": "protect case-insensitive", "in": "GALAPAGOS islands", "out": "galápagos islands" },
+    { "name": "protect respects word boundaries", "in": "galapagosislands", "out": "galapagosislands" },
+    { "name": "multiple protected incl ñ", "in": "the Ñandú near Galápagos in Quito", "out": "the ñandú near galápagos in quito" }
+  ]
+}

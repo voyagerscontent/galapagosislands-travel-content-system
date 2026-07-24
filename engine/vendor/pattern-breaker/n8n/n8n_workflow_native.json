@@ -1,0 +1,185 @@
+{
+  "name": "Pattern Breaker (native, 2-phase deterministic)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pattern-breaker",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook_in",
+      "name": "Webhook In",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// Pattern Breaker \u2014 Phase 1 detector, JavaScript port for n8n Code node.\n// Faithful, deterministic port of detector/detector.py. No LLM. No randomness.\n// Thresholds are inlined (kept in sync with config/thresholds.json).\n// Input:  items[0].json.text\n// Output: one item with { text, flagged, metrics, flags, flagged_spans }\n// ============================================================================\n\nconst CFG = {\n  sentence_rhythm: { min_sentences: 4, cv_flag_below: 0.35, autocorr_lag1_flag_above: 0.55 },\n  burstiness: { min_sentences: 4, sentence_burstiness_flag_below: 0.45, word_burstiness_flag_below: 0.30 },\n  sentence_structure: { min_sentences: 4, opening_bigram_repeat_ratio_flag_above: 0.30, same_first_token_run_flag_at: 3 },\n  paragraph_pattern: { min_paragraphs: 3, length_cv_flag_below: 0.25, parallel_opening_ratio_flag_above: 0.50 },\n  ngram_formula: { ngram_sizes: [3, 4, 5], min_repeats_to_flag: 2, ignore_if_all_stopwords: true },\n  transition_formula: {\n    max_total_ratio_flag_above: 0.15, max_single_connective_count: 2,\n    connectives: [\"moreover\",\"furthermore\",\"additionally\",\"in addition\",\"in conclusion\",\"overall\",\"ultimately\",\"notably\",\"importantly\",\"consequently\",\"as a result\",\"in summary\",\"to summarize\",\"in essence\",\"essentially\",\"it is worth noting\",\"it's worth noting\",\"it is important to note\",\"when it comes to\",\"in today's world\",\"in the world of\",\"nestled\",\"whether you're\",\"whether you are\",\"look no further\",\"rest assured\"]\n  },\n  engine: { max_words: 5000, min_words_to_analyze: 40, verify_max_passes: 3 }\n};\n\nconst STOPWORDS = new Set([\"the\",\"a\",\"an\",\"and\",\"or\",\"but\",\"of\",\"to\",\"in\",\"on\",\"for\",\"with\",\"at\",\"by\",\"from\",\"as\",\"is\",\"are\",\"was\",\"were\",\"be\",\"been\",\"being\",\"it\",\"its\",\"this\",\"that\",\"these\",\"those\",\"you\",\"your\",\"we\",\"our\",\"they\",\"their\",\"he\",\"she\",\"his\",\"her\",\"i\",\"me\",\"my\"]);\nconst ABBREV = new Set([\"mr\",\"mrs\",\"ms\",\"dr\",\"st\",\"vs\",\"etc\",\"e.g\",\"i.e\",\"u.s\",\"u.k\"]);\n\nconst WORD_RE = /[A-Za-z0-9']+/g;\nfunction words(s) { return (s.match(WORD_RE) || []); }\n\n// --- sentence split with char offsets (mirror of Python _split_sentences) ---\nfunction splitSentences(text) {\n  const out = [];\n  const re = /([.!?]+)(\\s+|$)/g;\n  let start = 0, m;\n  const n = text.length;\n  while ((m = re.exec(text)) !== null) {\n    const end = m.index + m[1].length;\n    const chunk = text.slice(start, end);\n    const stripped = chunk.trim();\n    if (stripped) {\n      const tail = words(chunk.slice(-6).toLowerCase());\n      const last = tail.length ? tail[tail.length - 1] : \"\";\n      if (ABBREV.has(last) && end < n) { continue; }\n      const realStart = start + (chunk.length - chunk.replace(/^\\s+/, \"\").length);\n      out.push({ text: text.slice(realStart, end).trim(), start: realStart, end });\n    }\n    start = re.lastIndex;\n  }\n  if (start < n && text.slice(start).trim()) {\n    const rest = text.slice(start);\n    const realStart = start + (rest.length - rest.replace(/^\\s+/, \"\").length);\n    out.push({ text: text.slice(realStart).trim(), start: realStart, end: n });\n  }\n  return out;\n}\n\nfunction parse(text) {\n  // paragraph bounds\n  const paraBounds = [];\n  let pos = 0;\n  for (const part of text.split(/\\n\\s*\\n/)) {\n    const s = text.indexOf(part, pos);\n    const e = s + part.length;\n    paraBounds.push([s, e]);\n    pos = e;\n  }\n  const paraOf = (off) => {\n    for (let i = 0; i < paraBounds.length; i++) if (paraBounds[i][0] <= off && off < paraBounds[i][1]) return i;\n    return paraBounds.length - 1;\n  };\n  const sents = [];\n  for (const s of splitSentences(text)) {\n    const w = words(s.text.toLowerCase());\n    if (!w.length) continue;\n    const first = w[0];\n    const bigram = w.length >= 2 ? w.slice(0, 2).join(\" \") : first;\n    sents.push({ text: s.text, start: s.start, end: s.end, para: paraOf(s.start),\n      wc: w.length, first, bigram });\n  }\n  return sents;\n}\n\n// --- math helpers ---\nconst mean = xs => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;\nfunction variance(xs) { if (xs.length < 2) return 0; const m = mean(xs); return xs.reduce((a, x) => a + (x - m) ** 2, 0) / (xs.length - 1); }\nconst std = xs => Math.sqrt(variance(xs));\nfunction cv(xs) { const m = mean(xs); return m === 0 ? 0 : std(xs) / m; }\nfunction autocorr(xs) {\n  const n = xs.length; if (n < 3) return 0;\n  const m = mean(xs);\n  const denom = xs.reduce((a, x) => a + (x - m) ** 2, 0);\n  if (denom === 0) return 0;\n  let num = 0; for (let i = 0; i < n - 1; i++) num += (xs[i] - m) * (xs[i + 1] - m);\n  return num / denom;\n}\nfunction burstiness(xs) {\n  const mu = mean(xs), sigma = std(xs);\n  if (sigma + mu === 0) return 0;\n  const b = (sigma - mu) / (sigma + mu);\n  return Math.max(0, (b + 1) / 2);\n}\nconst round = (x, d = 4) => Number(x.toFixed(d));\n\n// --- detectors ---\nfunction detectRhythm(sents, flags) {\n  const c = CFG.sentence_rhythm;\n  if (sents.length < c.min_sentences) return;\n  const lengths = sents.map(s => s.wc);\n  const _cv = cv(lengths), ac = autocorr(lengths);\n  const span = [sents[0].start, sents[sents.length - 1].end];\n  if (_cv < c.cv_flag_below)\n    flags.push({ factor: \"sentence_rhythm\", scope: \"document\", reason: `Sentence-length CV ${round(_cv, 3)} below ${c.cv_flag_below} \u2014 sentences too uniform.`, metric: round(_cv), threshold: c.cv_flag_below, span_start: span[0], span_end: span[1], span_text: \"[document]\" });\n  if (ac > c.autocorr_lag1_flag_above)\n    flags.push({ factor: \"sentence_rhythm\", scope: \"document\", reason: `Sentence-length lag-1 autocorrelation ${round(ac, 3)} exceeds ${c.autocorr_lag1_flag_above} \u2014 repetitive rhythm.`, metric: round(ac), threshold: c.autocorr_lag1_flag_above, span_start: span[0], span_end: span[1], span_text: \"[document]\" });\n}\n\nfunction detectBurstiness(sents, text, flags) {\n  const c = CFG.burstiness;\n  if (sents.length < c.min_sentences) return;\n  const sb = burstiness(sents.map(s => s.wc));\n  const wb = burstiness(words(text).map(w => w.length));\n  const span = [sents[0].start, sents[sents.length - 1].end];\n  if (sb < c.sentence_burstiness_flag_below)\n    flags.push({ factor: \"burstiness\", scope: \"document\", reason: `Sentence burstiness ${round(sb, 3)} below ${c.sentence_burstiness_flag_below} \u2014 lacks short/long variation.`, metric: round(sb), threshold: c.sentence_burstiness_flag_below, span_start: span[0], span_end: span[1], span_text: \"[document]\" });\n  if (wb < c.word_burstiness_flag_below)\n    flags.push({ factor: \"burstiness\", scope: \"document\", reason: `Word-length burstiness ${round(wb, 3)} below ${c.word_burstiness_flag_below} \u2014 word lengths too even.`, metric: round(wb), threshold: c.word_burstiness_flag_below, span_start: span[0], span_end: span[1], span_text: \"[document]\" });\n}\n\nfunction detectStructure(sents, flags) {\n  const c = CFG.sentence_structure;\n  if (sents.length < c.min_sentences) return;\n  const counts = {};\n  for (const s of sents) counts[s.bigram] = (counts[s.bigram] || 0) + 1;\n  let best = null, freq = 0;\n  for (const [k, v] of Object.entries(counts)) if (v > freq) { best = k; freq = v; }\n  const ratio = freq / sents.length;\n  if (ratio > c.opening_bigram_repeat_ratio_flag_above && freq >= 2) {\n    for (const s of sents) if (s.bigram === best)\n      flags.push({ factor: \"sentence_structure\", scope: \"sentence\", reason: `Sentence opening '${best}' repeats in ${freq}/${sents.length} sentences (ratio ${round(ratio, 2)} > ${c.opening_bigram_repeat_ratio_flag_above}).`, metric: round(ratio), threshold: c.opening_bigram_repeat_ratio_flag_above, span_start: s.start, span_end: s.end, span_text: s.text });\n  }\n  // runs of same first token\n  let runStart = 0;\n  for (let i = 1; i <= sents.length; i++) {\n    const same = i < sents.length && sents[i].first === sents[runStart].first;\n    if (!same) {\n      const runLen = i - runStart;\n      if (runLen >= c.same_first_token_run_flag_at)\n        for (let j = runStart; j < i; j++)\n          flags.push({ factor: \"sentence_structure\", scope: \"sentence\", reason: `${runLen} consecutive sentences start with '${sents[runStart].first}'.`, metric: runLen, threshold: c.same_first_token_run_flag_at, span_start: sents[j].start, span_end: sents[j].end, span_text: sents[j].text });\n      runStart = i;\n    }\n  }\n}\n\nfunction detectParagraph(sents, text, flags) {\n  const c = CFG.paragraph_pattern;\n  const paras = {};\n  for (const s of sents) (paras[s.para] = paras[s.para] || []).push(s);\n  const ids = Object.keys(paras).map(Number).sort((a, b) => a - b);\n  if (ids.length < c.min_paragraphs) return;\n  const lengths = ids.map(p => paras[p].length);\n  const _cv = cv(lengths);\n  const openings = ids.map(p => paras[p][0].bigram);\n  const oc = {};\n  for (const o of openings) oc[o] = (oc[o] || 0) + 1;\n  let parallel = 0;\n  for (const v of Object.values(oc)) if (v >= 2) parallel += v;\n  const pr = parallel / ids.length;\n  if (_cv < c.length_cv_flag_below)\n    for (const p of ids) { const b = paras[p];\n      flags.push({ factor: \"paragraph_pattern\", scope: \"paragraph\", reason: `Paragraph lengths uniform (CV ${round(_cv, 3)} < ${c.length_cv_flag_below}) \u2014 mechanical paragraphing.`, metric: round(_cv), threshold: c.length_cv_flag_below, span_start: b[0].start, span_end: b[b.length - 1].end, span_text: text.slice(b[0].start, b[b.length - 1].end) }); }\n  if (pr > c.parallel_opening_ratio_flag_above)\n    for (const p of ids) { const b = paras[p]; if (oc[b[0].bigram] >= 2)\n      flags.push({ factor: \"paragraph_pattern\", scope: \"paragraph\", reason: `Paragraph opening '${b[0].bigram}' reused across paragraphs (parallel ratio ${round(pr, 2)} > ${c.parallel_opening_ratio_flag_above}).`, metric: round(pr), threshold: c.parallel_opening_ratio_flag_above, span_start: b[0].start, span_end: b[b.length - 1].end, span_text: text.slice(b[0].start, b[b.length - 1].end) }); }\n}\n\nfunction detectNgram(text, flags) {\n  const c = CFG.ngram_formula;\n  const toks = [];\n  let m;\n  const re = /[A-Za-z0-9']+/g;\n  while ((m = re.exec(text)) !== null) toks.push({ w: m[0].toLowerCase(), s: m.index, e: m.index + m[0].length });\n  const N = toks.length;\n  for (const size of c.ngram_sizes) {\n    if (N < size) continue;\n    const grams = {};\n    for (let i = 0; i <= N - size; i++) {\n      const slice = toks.slice(i, i + size);\n      if (c.ignore_if_all_stopwords && slice.every(t => STOPWORDS.has(t.w))) continue;\n      const key = slice.map(t => t.w).join(\" \");\n      (grams[key] = grams[key] || []).push(i);\n    }\n    for (const [g, idxs] of Object.entries(grams)) {\n      if (idxs.length >= c.min_repeats_to_flag)\n        for (const i of idxs)\n          flags.push({ factor: \"ngram_formula\", scope: \"span\", reason: `${size}-word formula \"${g}\" repeats ${idxs.length} times.`, metric: idxs.length, threshold: c.min_repeats_to_flag, span_start: toks[i].s, span_end: toks[i + size - 1].e, span_text: text.slice(toks[i].s, toks[i + size - 1].e) });\n    }\n  }\n}\n\nfunction detectTransition(sents, flags) {\n  const c = CFG.transition_formula;\n  const conns = c.connectives.map(x => x.toLowerCase());\n  const total = sents.length;\n  if (!total) return;\n  const perConn = {};\n  const hits = [];\n  for (const s of sents) {\n    const low = s.text.toLowerCase().replace(/^\\s+/, \"\");\n    for (const conn of conns) {\n      if (low.startsWith(conn)) { perConn[conn] = (perConn[conn] || 0) + 1; hits.push([conn, s]); break; }\n    }\n  }\n  const tr = hits.length / total;\n  if (tr > c.max_total_ratio_flag_above)\n    for (const [conn, s] of hits)\n      flags.push({ factor: \"transition_formula\", scope: \"sentence\", reason: `Formulaic connective opener '${conn}' \u2014 connectives open ${hits.length}/${total} sentences (ratio ${round(tr, 2)} > ${c.max_total_ratio_flag_above}).`, metric: round(tr), threshold: c.max_total_ratio_flag_above, span_start: s.start, span_end: s.end, span_text: s.text });\n  for (const [conn, cnt] of Object.entries(perConn))\n    if (cnt > c.max_single_connective_count)\n      for (const [hc, s] of hits) if (hc === conn)\n        flags.push({ factor: \"transition_formula\", scope: \"sentence\", reason: `Connective '${conn}' opens ${cnt} sentences (> ${c.max_single_connective_count}).`, metric: cnt, threshold: c.max_single_connective_count, span_start: s.start, span_end: s.end, span_text: s.text });\n}\n\n// --- dedup merged spans (mirror of Python _dedup_spans) ---\nfunction dedupSpans(flags) {\n  const concrete = flags.filter(f => [\"sentence\", \"paragraph\", \"span\"].includes(f.scope));\n  const set = {};\n  for (const f of concrete) set[`${f.span_start}:${f.span_end}`] = [f.span_start, f.span_end];\n  const ranges = Object.values(set).sort((a, b) => a[0] - b[0] || a[1] - b[1]);\n  const merged = [];\n  for (const [s, e] of ranges) {\n    if (merged.length && s <= merged[merged.length - 1][1]) merged[merged.length - 1][1] = Math.max(merged[merged.length - 1][1], e);\n    else merged.push([s, e]);\n  }\n  return merged.map(([s, e]) => {\n    const cover = concrete.filter(f => !(f.span_end <= s || f.span_start >= e));\n    return { start: s, end: e, factors: [...new Set(cover.map(f => f.factor))].sort(), reasons: cover.map(f => f.reason) };\n  });\n}\n\n// --- main ---\nfunction detect(text) {\n  const w = words(text);\n  const sents = parse(text);\n  const paras = new Set(sents.map(s => s.para)).size;\n  const report = { text, flagged: false, word_count: w.length, sentence_count: sents.length, paragraph_count: paras, metrics: {}, flags: [], flagged_spans: [], notes: [] };\n  if (w.length < CFG.engine.min_words_to_analyze) {\n    report.notes.push(`Input ${w.length} words below min_words_to_analyze ${CFG.engine.min_words_to_analyze}; detection skipped.`);\n    return report;\n  }\n  const flags = [];\n  detectNgram(text, flags);\n  detectRhythm(sents, flags);\n  detectBurstiness(sents, text, flags);\n  detectStructure(sents, flags);\n  detectParagraph(sents, text, flags);\n  detectTransition(sents, flags);\n\n  const slen = sents.map(s => s.wc);\n  const wlen = w.map(x => x.length);\n  report.metrics = {\n    sentence_length_cv: round(cv(slen)), sentence_length_autocorr_lag1: round(autocorr(slen)),\n    sentence_burstiness: round(burstiness(slen)), word_burstiness: round(burstiness(wlen)),\n    mean_sentence_length: round(mean(slen), 2)\n  };\n  report.flags = flags;\n  report.flagged = flags.length > 0;\n  report.flagged_spans = dedupSpans(flags);\n  if (report.flagged && !report.flagged_spans.length)\n    report.flagged_spans = sents.map(s => ({ start: s.start, end: s.end, factors: [...new Set(flags.map(f => f.factor))].sort(), reasons: flags.filter(f => f.scope === \"document\").map(f => f.reason) }));\n  return report;\n}\n\n// n8n entry point\nconst input = $input.first().json;\nconst text = (input.body && input.body.text) || input.text || \"\";\nreturn [{ json: detect(text) }];\n"
+      },
+      "id": "phase_1_detect",
+      "name": "Phase 1 Detect",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// Pattern Breaker \u2014 Phase 2 prep (n8n Code node, run once, output multiple items)\n// Consumes the Phase-1 DetectionReport, and for EACH flagged span emits one item\n// carrying the exact Anthropic payload (hardcoded system prompt + user template,\n// deterministic Markov cadence seeds + paragraph shape). Non-flagged input yields\n// zero span items but preserves the original text on a passthrough field.\n// ============================================================================\n\n// ---- HARDCODED system prompt (verbatim copy of restructurer/restructure.py) --\nconst SYSTEM_PROMPT = `You are a constrained text-restructuring tool, NOT a writer with creative freedom.\n\nYou will receive ONE short flagged text span at a time, plus the exact mechanical\npattern(s) a deterministic detector found in it. Your ONLY job is to break those\npatterns while preserving 100% of the meaning.\n\nNON-DEVIATION RULES (violating any is a failure):\n1. DO NOT add any fact, name, place, number, date, price, or claim that is not\n   already present in the span. Zero new information.\n2. DO NOT remove any fact, name, place, number, date, or price that IS present.\n   Preserve every entity and every quantity exactly (you may spell a number in\n   words, e.g. \"3\" -> \"three\", but never change its value).\n3. DO NOT add filler, fluff, marketing adjectives, or padding to hit a length.\n4. Preserve the original language and tense. If the span is Spanish, answer in\n   Spanish. If English, English.\n\nWHAT YOU MUST DO (this is why you exist):\n- Break the detected pattern. If sentences were uniform in length, make them\n  deliberately UNEVEN. This is mandatory: include at least one VERY SHORT\n  sentence (2-5 words) AND at least one LONG sentence (18+ words) in your\n  rewrite, so the length variation (burstiness) is high. Do NOT make every\n  sentence a similar length. A one- or two-word sentence fragment is allowed if\n  it preserves meaning.\n- If sentence openings repeated, start each sentence differently.\n- If paragraph structure was uniform, VARY it: use the suggested paragraph shape\n  (number of paragraphs and sentences each) as a target, without adding content.\n- If formulaic connectives (Moreover, Furthermore, Additionally, In conclusion)\n  were used, remove or replace them with natural phrasing.\n- You are given MARKOV CADENCE SEEDS drawn from the text's own words and a human\n  travel corpus. Use them ONLY as inspiration for rhythm and natural connective\n  variety. They are NOT facts to insert. Never state anything from a seed as a\n  claim about the subject.\n\nOUTPUT FORMAT:\nReturn ONLY the rewritten span as plain text. No preamble, no explanation, no\nquotes around it, no markdown fences.`;\n\nconst USER_TEMPLATE = (span, reasons, shape, seeds) =>\n`FLAGGED SPAN (rewrite this, break the pattern, keep every fact):\n---\n${span}\n---\n\nDETECTED PATTERNS TO BREAK:\n${reasons}\n\nTARGET PARAGRAPH SHAPE (approximate, do NOT pad to reach it):\n${shape}\n\nMARKOV CADENCE SEEDS (rhythm/connective inspiration only \u2014 NOT facts):\n${seeds}\n\nRewrite the span now. Output only the rewritten text.`;\n\nconst MODEL = $vars && $vars.PB_CLAUDE_MODEL ? $vars.PB_CLAUDE_MODEL : \"claude-sonnet-4-6\";\nconst TEMPERATURE = 0.4;\n\n// ---- deterministic seeded PRNG (sha256 -> mulberry32) ----------------------\nconst crypto = require(\"crypto\");\nfunction seedFrom(text, salt) {\n  const h = crypto.createHash(\"sha256\").update((salt || \"\") + \"::\" + text).digest(\"hex\");\n  return parseInt(h.slice(0, 8), 16) >>> 0;\n}\nfunction mulberry32(a) {\n  return function () {\n    a |= 0; a = (a + 0x6D2B79F5) | 0;\n    let t = Math.imul(a ^ (a >>> 15), 1 | a);\n    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;\n    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;\n  };\n}\nconst WORD_RE = /[A-Za-z0-9']+/g;\n\n// ---- compact Markov (span + optional corpus subset) ------------------------\nfunction buildChain(text, corpusPhrases) {\n  const order = 2;\n  const chain = {};\n  const starts = [];\n  const train = (t) => {\n    for (const sent of t.trim().split(/(?<=[.!?])\\s+/)) {\n      const toks = sent.match(WORD_RE) || [];\n      if (toks.length < order + 1) continue;\n      starts.push(toks.slice(0, order));\n      for (let i = 0; i < toks.length - order; i++) {\n        const key = toks.slice(i, i + order).join(\" \");\n        (chain[key] = chain[key] || []).push(toks[i + order]);\n      }\n    }\n  };\n  train(text); train(text); // weight span twice\n  if (corpusPhrases) for (const p of corpusPhrases) train(p);\n  return { chain, starts, order };\n}\nfunction cadenceSeeds(spanText, mk, n = 5, minLen = 2, maxLen = 6) {\n  if (!mk.starts.length) return [];\n  const rnd = mulberry32(seedFrom(spanText, \"\"));\n  const ri = (lo, hi) => lo + Math.floor(rnd() * (hi - lo + 1));\n  const out = [], seen = new Set();\n  let attempts = 0;\n  while (out.length < n && attempts < n * 8) {\n    attempts++;\n    const target = ri(minLen, maxLen);\n    const key = mk.starts[Math.floor(rnd() * mk.starts.length)];\n    const words = key.slice();\n    let cur = key.join(\" \");\n    while (words.length < target) {\n      const ch = mk.chain[cur];\n      if (!ch || !ch.length) break;\n      const nxt = ch[Math.floor(rnd() * ch.length)];\n      words.push(nxt);\n      cur = words.slice(-mk.order).join(\" \");\n    }\n    const frag = words.join(\" \").trim(), low = frag.toLowerCase();\n    if (words.length >= minLen && frag && !seen.has(low)) { seen.add(low); out.push(frag); }\n  }\n  return out;\n}\nfunction paragraphShape(spanText) {\n  const rnd = mulberry32(seedFrom(spanText, \"shape:\"));\n  const ri = (lo, hi) => lo + Math.floor(rnd() * (hi - lo + 1));\n  const nPara = ri(1, 3);\n  const shape = [];\n  for (let i = 0; i < nPara; i++) shape.push(ri(1, 5));\n  return { paragraphs: nPara, sentences_per_paragraph: shape };\n}\n\n// ---- main ------------------------------------------------------------------\nconst report = $input.first().json;\nconst fullText = report.text || \"\";\n\n// NOTE ON MARKOV SOURCE (intentional difference from the Python reference):\n// The Python engine also trains on dictionary/human_corpus.json (2,307 human\n// travel sentences). Inlining 100KB+ into a Code node is impractical, and the\n// cadence seeds are \"rhythm inspiration only\" \u2014 never facts (the deterministic\n// fact-guard downstream rejects any new number/entity regardless of seed source).\n// So the native node trains the Markov on the SPAN'S OWN TEXT only. Seeds stay\n// deterministic (seeded PRNG) and on-topic; safety is unchanged.\nconst corpus = null;\n\nif (!report.flagged || !report.flagged_spans || !report.flagged_spans.length) {\n  return [{ json: { __passthrough: true, original_text: fullText, flagged: false,\n    phase1: report } }];\n}\n\nconst items = [];\nreport.flagged_spans.forEach((sp, idx) => {\n  const spanText = fullText.slice(sp.start, sp.end);\n  const mk = buildChain(spanText, corpus);\n  const seeds = cadenceSeeds(spanText, mk);\n  const shape = paragraphShape(spanText);\n  const reasons = (sp.reasons && sp.reasons.length ? sp.reasons : [\"Mechanical pattern detected.\"])\n    .map(r => \"- \" + r).join(\"\\n\");\n  const shapeStr = `${shape.paragraphs} paragraph(s); sentences each: [${shape.sentences_per_paragraph.join(\", \")}]`;\n  const seedStr = seeds.length ? seeds.map(s => \"\u2022 \" + s).join(\"\\n\") : \"(none available)\";\n  const userMsg = USER_TEMPLATE(spanText, reasons, shapeStr, seedStr);\n\n  items.push({ json: {\n    __passthrough: false,\n    span_index: idx,\n    span_start: sp.start,\n    span_end: sp.end,\n    factors: sp.factors || [],\n    original_span: spanText,\n    original_text: fullText,\n    anthropicPayload: {\n      model: MODEL,\n      max_tokens: 1024,\n      temperature: TEMPERATURE,\n      system: SYSTEM_PROMPT,\n      messages: [{ role: \"user\", content: userMsg }]\n    }\n  }});\n});\nreturn items;\n"
+      },
+      "id": "prepare_spans",
+      "name": "Prepare Spans",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.anthropicPayload ? JSON.stringify($json.anthropicPayload) : '{}' }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          },
+          "timeout": 120000,
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "id": "claude_sonnet",
+      "name": "Claude Sonnet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "yiT1TUHmUx7Eklbv",
+          "name": "Anthropic API (x-api-key)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "// ============================================================================\n// Pattern Breaker \u2014 Phase 2 finalize (n8n Code node, run once for all items)\n// Input: all span items, each with .original_span, .span_start/.end, and the\n//        Claude HTTP response merged in (json.content[].text).\n// Does: deterministic fact-guard (port of restructurer/factguard.py) per span,\n//       applies light-blue highlight to major-change spans, stitches spans back\n//       into the full document (HTML + plaintext-marker variants), and reports.\n// If the upstream was a passthrough (nothing flagged), returns original unchanged.\n// ============================================================================\n\nconst HL_OPEN_HTML = '<span class=\"pb-review\" style=\"background-color:#cfe8ff\">';\nconst HL_CLOSE_HTML = \"</span>\";\nconst HL_OPEN_MD = \"[[PB-REVIEW]]\";\nconst HL_CLOSE_MD = \"[[/PB-REVIEW]]\";\n\n// ---- factguard port --------------------------------------------------------\nconst WORD = /[A-Za-z][A-Za-z'\\-]*/g;\nconst NUMBER_CTX = /\\b(\\d[\\d,\\.]*)\\s*([A-Za-z%$\u20ac\u00a3]+)?/g;\nconst NUM_WORDS = { zero:\"0\",one:\"1\",two:\"2\",three:\"3\",four:\"4\",five:\"5\",six:\"6\",seven:\"7\",eight:\"8\",nine:\"9\",ten:\"10\",eleven:\"11\",twelve:\"12\",thirteen:\"13\",fourteen:\"14\",fifteen:\"15\",sixteen:\"16\",seventeen:\"17\",eighteen:\"18\",nineteen:\"19\",twenty:\"20\",thirty:\"30\",forty:\"40\",fifty:\"50\",sixty:\"60\",seventy:\"70\",eighty:\"80\",ninety:\"90\",hundred:\"100\",thousand:\"1000\" };\nconst AMBIGUOUS = new Set([\"one\"]);\nconst COMMON = new Set([\"The\",\"A\",\"An\",\"This\",\"That\",\"These\",\"Those\",\"It\",\"We\",\"You\",\"They\",\"He\",\"She\",\"I\",\"Our\",\"Your\",\"Their\",\"His\",\"Her\",\"But\",\"And\",\"Or\",\"So\",\"Then\",\"When\",\"While\",\"If\",\"As\",\"For\",\"In\",\"On\",\"At\",\"To\",\"Of\",\"With\",\"From\",\"By\",\"Also\",\"Here\",\"There\",\"Now\",\"One\",\"Two\",\"Three\",\"Bring\",\"Get\",\"Go\",\"Come\",\"Every\",\"Each\",\"Moreover\",\"Furthermore\",\"Additionally\",\"Overall\",\"Ultimately\"]);\n\nfunction numbers(text) {\n  const out = new Set(); let m;\n  NUMBER_CTX.lastIndex = 0;\n  while ((m = NUMBER_CTX.exec(text)) !== null) out.add(m[1].replace(/,/g, \"\"));\n  const ws = (text.toLowerCase().match(WORD) || []);\n  for (const w of ws) if (NUM_WORDS[w] && !AMBIGUOUS.has(w)) out.add(NUM_WORDS[w]);\n  return out;\n}\nfunction entities(text) {\n  const ents = new Set();\n  for (const sent of text.trim().split(/(?<=[.!?])\\s+/)) {\n    const toks = sent.match(WORD) || [];\n    toks.forEach((w, i) => {\n      if (!/[A-Z]/.test(w[0])) return;\n      if (i === 0) return;\n      if (COMMON.has(w)) return;\n      if (w === w.toUpperCase() && w.length <= 3) return;\n      ents.add(w);\n    });\n  }\n  return ents;\n}\nconst diff = (a, b) => [...a].filter(x => !b.has(x)).sort();\nfunction guard(original, rewrite) {\n  const on = numbers(original), rn = numbers(rewrite);\n  const oe = entities(original), re_ = entities(rewrite);\n  const newNums = diff(rn, on), newEnts = diff(re_, oe);\n  const dropNums = diff(on, rn), dropEnts = diff(oe, re_);\n  const hardFail = newNums.length || newEnts.length;\n  const major = dropNums.length || dropEnts.length;\n  const parts = [];\n  if (newNums.length) parts.push(`introduced numbers ${JSON.stringify(newNums)}`);\n  if (newEnts.length) parts.push(`introduced entities ${JSON.stringify(newEnts)}`);\n  if (dropNums.length) parts.push(`dropped numbers ${JSON.stringify(dropNums)}`);\n  if (dropEnts.length) parts.push(`dropped entities ${JSON.stringify(dropEnts)}`);\n  return { ok: !hardFail, major_change: !!major,\n    new_numbers: newNums, new_entities: newEnts,\n    dropped_numbers: dropNums, dropped_entities: dropEnts,\n    reason: parts.length ? parts.join(\"; \") : \"clean\" };\n}\nfunction extractText(json) {\n  if (!json) return \"\";\n  if (Array.isArray(json.content))\n    return json.content.filter(b => b.type === \"text\").map(b => b.text).join(\"\").trim();\n  if (typeof json.text === \"string\") return json.text.trim();\n  return \"\";\n}\n\n// ---- gather items ----------------------------------------------------------\n// The HTTP node returns ONLY Claude's response body per item and drops the input\n// fields, so we re-read each span's metadata from the \"Prepare Spans\" node by the\n// SAME item index (n8n keeps item order 1:1 through the HTTP node). This makes the\n// stitch robust regardless of the HTTP node's field-passing behaviour.\nconst httpItems = $input.all().map(i => i.json);\nconst prep = $(\"Prepare Spans\").all().map(i => i.json);\n\n// passthrough (nothing was flagged) \u2014 detected on the Prepare Spans output\nconst pass = prep.find(j => j.__passthrough);\nif (pass) {\n  const text = pass.original_text || \"\";\n  return [{ json: {\n    changed: false, needs_human_review: false, flags_cleared: true,\n    output_text: text, output_html: text.replace(/\\n/g, \"<br>\\n\"),\n    span_results: [], phase1: pass.phase1 || null,\n    note: \"No mechanical pattern detected; text returned unchanged.\"\n  }}];\n}\n\n// pair each prepared span with its Claude response by index\nconst paired = prep\n  .map((p, idx) => ({ p, http: httpItems[idx] }))\n  .filter(x => x.p && x.p.span_start !== undefined)\n  .sort((a, b) => a.p.span_start - b.p.span_start);\nconst originalText = (paired[0] && paired[0].p.original_text) || \"\";\n\nconst results = [];\nfor (const { p, http } of paired) {\n  const s = p;\n  const rewrite = extractText(http);           // Claude output for this span\n  const original = s.original_span;\n  let accepted = false, needsReview = false, majorChange = false, reason = \"no output\";\n  let finalText = original;\n  if (rewrite) {\n    const g = guard(original, rewrite);\n    reason = g.reason;\n    if (g.ok) { accepted = true; finalText = rewrite; majorChange = g.major_change; needsReview = g.major_change; }\n    else { accepted = false; finalText = original; needsReview = true; }  // hard fail -> keep original, flag\n  } else { needsReview = true; }\n  results.push({ start: s.span_start, end: s.span_end, factors: s.factors,\n    original, rewrite, accepted, major_change: majorChange,\n    needs_human_review: needsReview, guard_reason: reason });\n}\n\n// ---- stitch (walk original, replace accepted spans, highlight majors) -------\nfunction stitch(highlight) {\n  const open = highlight === \"html\" ? HL_OPEN_HTML : HL_OPEN_MD;\n  const close = highlight === \"html\" ? HL_CLOSE_HTML : HL_CLOSE_MD;\n  let out = \"\", cursor = 0;\n  for (const r of results) {\n    out += originalText.slice(cursor, r.start);\n    let piece = r.accepted ? r.rewrite : r.original;\n    if (r.needs_human_review) piece = open + piece + close;\n    out += piece;\n    cursor = r.end;\n  }\n  out += originalText.slice(cursor);\n  return out;\n}\nconst outputPlain = stitch(\"md\");\nconst outputHtml = stitch(\"html\").replace(/\\n/g, \"<br>\\n\");\n\nconst needsHuman = results.some(r => r.needs_human_review);\nreturn [{ json: {\n  changed: results.some(r => r.accepted),\n  needs_human_review: needsHuman,\n  output_text: outputPlain,\n  output_html: outputHtml,\n  span_results: results,\n  summary: {\n    spans_total: results.length,\n    spans_accepted: results.filter(r => r.accepted).length,\n    spans_flagged_for_review: results.filter(r => r.needs_human_review).length\n  }\n}}];\n"
+      },
+      "id": "guard_&_stitch",
+      "name": "Guard & Stitch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook In": {
+      "main": [
+        [
+          {
+            "node": "Phase 1 Detect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Phase 1 Detect": {
+      "main": [
+        [
+          {
+            "node": "Prepare Spans",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Spans": {
+      "main": [
+        [
+          {
+            "node": "Claude Sonnet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet": {
+      "main": [
+        [
+          {
+            "node": "Guard & Stitch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard & Stitch": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

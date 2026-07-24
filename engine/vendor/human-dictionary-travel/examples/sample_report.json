@@ -1,0 +1,385 @@
+{
+  "word_count": 168,
+  "replacement_count": 42,
+  "truncated": false,
+  "replacements": [
+    {
+      "original": "Embark on a journey of a lifetime",
+      "replacement": "Set off on a top trip",
+      "start": 0,
+      "end": 33,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 3
+    },
+    {
+      "original": "the enchanted islands",
+      "replacement": "the islands",
+      "start": 52,
+      "end": 73,
+      "source": "travel_variants.json",
+      "variant_index": 2,
+      "variant_count": 4
+    },
+    {
+      "original": "expertly crafted itinerary",
+      "replacement": "itinerary we've worked out with you",
+      "start": 96,
+      "end": 122,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "immerse themselves in nature's most",
+      "replacement": "get right into nature's most",
+      "start": 158,
+      "end": 193,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 2
+    },
+    {
+      "original": "unforgettable experience",
+      "replacement": "an experience that sticks with you",
+      "start": 278,
+      "end": 302,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "in the heart of Patagonia",
+      "replacement": "well inside Patagonia",
+      "start": 313,
+      "end": 338,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "world-class hospitality",
+      "replacement": "top hospitality",
+      "start": 378,
+      "end": 401,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 2
+    },
+    {
+      "original": "meticulously planned",
+      "replacement": "planned in detail",
+      "start": 412,
+      "end": 432,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "Cruise the Antarctic Peninsula",
+      "replacement": "Cruise the Antarctic Peninsula",
+      "start": 451,
+      "end": 481,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 2
+    },
+    {
+      "original": "in search of the elusive",
+      "replacement": "to see the rarely-seen",
+      "start": 482,
+      "end": 506,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 2
+    },
+    {
+      "original": "the mighty Amazon",
+      "replacement": "the Amazon basin",
+      "start": 540,
+      "end": 557,
+      "source": "travel_variants.json",
+      "variant_index": 2,
+      "variant_count": 3
+    },
+    {
+      "original": "the lungs of the planet",
+      "replacement": "the Amazon",
+      "start": 571,
+      "end": 594,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 3
+    },
+    {
+      "original": "At Voyagers, we believe",
+      "replacement": "At Voyagers, we think",
+      "start": 641,
+      "end": 664,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 3
+    },
+    {
+      "original": "more than just a vacation",
+      "replacement": "not only a vacation",
+      "start": 675,
+      "end": 700,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "leave you spellbound",
+      "replacement": "stick with you",
+      "start": 742,
+      "end": 762,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "off-the-beaten-path adventure",
+      "replacement": "quiet adventure",
+      "start": 898,
+      "end": 927,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 2
+    },
+    {
+      "original": "the land of the Incas",
+      "replacement": "the old Inca heartland",
+      "start": 936,
+      "end": 957,
+      "source": "travel_variants.json",
+      "variant_index": 2,
+      "variant_count": 3
+    },
+    {
+      "original": "certified naturalist guides",
+      "replacement": "certified naturalist guides",
+      "start": 971,
+      "end": 998,
+      "source": "travel_variants.json",
+      "variant_index": 0,
+      "variant_count": 2
+    },
+    {
+      "original": "tailor-made itinerary",
+      "replacement": "itinerary built around you",
+      "start": 1013,
+      "end": 1034,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "designed with you in mind",
+      "replacement": "put together with you in mind",
+      "start": 1035,
+      "end": 1060,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "Your adventure awaits",
+      "replacement": "Your trip is set",
+      "start": 1102,
+      "end": 1123,
+      "source": "travel_variants.json",
+      "variant_index": 1,
+      "variant_count": 2
+    },
+    {
+      "original": "Cruise the Antarctic Peninsula",
+      "replacement": "Cruise the Antarctic Peninsula",
+      "start": 426,
+      "end": 456,
+      "source": "travel_phrases.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "At Voyagers",
+      "replacement": "At Voyagers",
+      "start": 600,
+      "end": 611,
+      "source": "travel_phrases.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "certified naturalist guides",
+      "replacement": "certified naturalist guides",
+      "start": 903,
+      "end": 930,
+      "source": "travel_phrases.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "delve into",
+      "replacement": "look at",
+      "start": 29,
+      "end": 39,
+      "source": "core_phrases.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "not only",
+      "replacement": "not just",
+      "start": 632,
+      "end": 640,
+      "source": "core_phrases.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "iconic wildlife",
+      "replacement": "well-known animals",
+      "start": 195,
+      "end": 210,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "pristine",
+      "replacement": "clean",
+      "start": 215,
+      "end": 223,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "boutique",
+      "replacement": "small",
+      "start": 327,
+      "end": 335,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "expedition vessel",
+      "replacement": "expedition ship",
+      "start": 336,
+      "end": 353,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "shore excursions",
+      "replacement": "shore trips",
+      "start": 405,
+      "end": 421,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "iconic wildlife",
+      "replacement": "well-known animals",
+      "start": 579,
+      "end": 594,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "transformative journey",
+      "replacement": "big trip",
+      "start": 657,
+      "end": 679,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "authentic",
+      "replacement": "real",
+      "start": 723,
+      "end": 732,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "memories that last a lifetime",
+      "replacement": "lasting memories",
+      "start": 757,
+      "end": 786,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "crave",
+      "replacement": "want",
+      "start": 800,
+      "end": 805,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "expedition",
+      "replacement": "trip",
+      "start": 823,
+      "end": 833,
+      "source": "travel_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "vibrant",
+      "replacement": "lively",
+      "start": 171,
+      "end": 178,
+      "source": "core_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "tapestry",
+      "replacement": "mix",
+      "start": 179,
+      "end": 187,
+      "source": "core_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "Nestled",
+      "replacement": "Set",
+      "start": 292,
+      "end": 299,
+      "source": "core_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "fosters",
+      "replacement": "builds",
+      "start": 694,
+      "end": 701,
+      "source": "core_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    },
+    {
+      "original": "bespoke",
+      "replacement": "custom",
+      "start": 768,
+      "end": 775,
+      "source": "core_words.json",
+      "variant_index": 0,
+      "variant_count": 1
+    }
+  ]
+}

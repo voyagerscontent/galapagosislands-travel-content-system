@@ -1,5 +1,7 @@
 {
   "name": "WFP1 Scoring - GalapagosIslands.travel",
+  "description": null,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -15,7 +17,7 @@
         220,
         300
       ],
-      "webhookId": "gal-prod-scoring"
+      "id": "40cfe3a2-460a-452c-a90e-85dfd3f32f86"
     },
     {
       "parameters": {
@@ -47,7 +49,8 @@
           "id": "mITfEGdTPqCCNrsT",
           "name": "Airtable API - Weboptimizer"
         }
-      }
+      },
+      "id": "f2699ba4-d2c2-4c5c-bc2b-7b792beae494"
     },
     {
       "parameters": {
@@ -80,7 +83,8 @@
           "name": "Airtable API - Weboptimizer"
         }
       },
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "id": "c0711efb-0778-4899-ad6a-0be960e403fb"
     },
     {
       "parameters": {
@@ -92,7 +96,7 @@
         "messages": {
           "values": [
             {
-              "content": "=CONTEXT \u2014 obey verbatim.\nBRAND: Galapagos Islands.Travel (galapagosislands.travel), an INDEPENDENT editorial guide. Never 'Galapagos Travel Center'; domain is never galapagosislands.com. Author: Juan Magallanes; contributors only from the approved pool (e.g. Andre Robles / Voyagers Travel Company, Luisa Cordova / Golden Galapagos).\nHARD TRUTHS (never violate): (HT-1) The Galapagos is great year-round; never call a time 'best/worst' without stating what species/event it is for; one species is not the whole destination. (HT-2) No island is 'better'; luxury = the yacht experience, not which islands a boat visits; every island is reachable on a 5-day-or-longer cruise; only Fernandina and west Isabela need more than 4 days; the shortest cruise is 4 days and can be luxury.\nVOICE: honest, plain-spoken, answer-first, one idea per sentence, no padding. BANNED words: #1, best, world-class, paradise, hidden gem, luxury-as-filler, unforgettable, must-see, dream vacation. No fabricated numbers \u2014 every figure must be sourced or marked [VERIFY]. One primary CTA: 'Talk to a Galapagos Specialist' (a lead, never 'Book Now'). No operator favoritism.\nOUTPUT: return ONLY the STRICT JSON object described \u2014 no prose, no code fences.\n\nTASK \u2014 Score this page topic for editorial ROI (1-5 each). roi_score = buyer_intent*conversion_value + search_demand*ranking_chance. Return STRICT JSON {\"buyer_intent\":n,\"search_demand\":n,\"ranking_chance\":n,\"conversion_value\":n,\"roi_score\":n,\"rationale\":\"...\"}.\n\nRECORD: {{ $json['Meta Title'] }} | brief: {{ $json['Topic / Brief'] }} | pillar: {{ $json['Pillar'] }} | page type: {{ $json['Page Type'] }}"
+              "content": "=CONTEXT — obey verbatim.\nBRAND: Galapagos Islands.Travel (galapagosislands.travel), an INDEPENDENT editorial guide. Never 'Galapagos Travel Center'; domain is never galapagosislands.com. Author: Juan Magallanes; contributors only from the approved pool (e.g. Andre Robles / Voyagers Travel Company, Luisa Cordova / Golden Galapagos).\nHARD TRUTHS (never violate): (HT-1) The Galapagos is great year-round; never call a time 'best/worst' without stating what species/event it is for; one species is not the whole destination. (HT-2) No island is 'better'; luxury = the yacht experience, not which islands a boat visits; every island is reachable on a 5-day-or-longer cruise; only Fernandina and west Isabela need more than 4 days; the shortest cruise is 4 days and can be luxury.\nVOICE: honest, plain-spoken, answer-first, one idea per sentence, no padding. BANNED words: #1, best, world-class, paradise, hidden gem, luxury-as-filler, unforgettable, must-see, dream vacation. No fabricated numbers — every figure must be sourced or marked [VERIFY]. One primary CTA: 'Talk to a Galapagos Specialist' (a lead, never 'Book Now'). No operator favoritism.\nOUTPUT: return ONLY the STRICT JSON object described — no prose, no code fences.\n\nTASK — Score this page topic for editorial ROI (1-5 each). roi_score = buyer_intent*conversion_value + search_demand*ranking_chance. Return STRICT JSON {\"buyer_intent\":n,\"search_demand\":n,\"ranking_chance\":n,\"conversion_value\":n,\"roi_score\":n,\"rationale\":\"...\"}.\n\nRECORD: {{ $json['Meta Title'] }} | brief: {{ $json['Topic / Brief'] }} | pillar: {{ $json['Pillar'] }} | page type: {{ $json['Page Type'] }}"
             }
           ]
         },
@@ -113,7 +117,8 @@
           "name": "Anthropic - Weboptimizer"
         }
       },
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "id": "2feaa79b-4617-435f-97de-e44d65598967"
     },
     {
       "parameters": {
@@ -125,7 +130,8 @@
       "position": [
         1020,
         300
-      ]
+      ],
+      "id": "80be26fb-a500-40ee-bf81-1cef4786b28a"
     },
     {
       "parameters": {
@@ -144,7 +150,8 @@
       "position": [
         1220,
         300
-      ]
+      ],
+      "id": "ba612cb8-127d-428a-9f1f-3e08dee50bbf"
     },
     {
       "parameters": {
@@ -190,7 +197,8 @@
           "id": "mITfEGdTPqCCNrsT",
           "name": "Airtable API - Weboptimizer"
         }
-      }
+      },
+      "id": "489a42bf-e146-4f77-bafe-eba1327f3a75"
     },
     {
       "parameters": {
@@ -232,7 +240,8 @@
           "id": "mITfEGdTPqCCNrsT",
           "name": "Airtable API - Weboptimizer"
         }
-      }
+      },
+      "id": "86945011-ecdf-4180-9aeb-2c4a811e3c23"
     },
     {
       "parameters": {
@@ -261,7 +270,8 @@
         1660,
         220
       ],
-      "onError": "continueRegularOutput"
+      "onError": "continueRegularOutput",
+      "id": "59d9464b-9347-4bd7-a27a-e3214ed0b56b"
     }
   ],
   "connections": {
@@ -352,5 +362,397 @@
   },
   "settings": {
     "executionOrder": "v1"
+  },
+  "nodeGroups": [],
+  "activeVersionId": "b484f1a6-6c9f-4a6f-8018-905317a454d5",
+  "versionCounter": 3,
+  "sourceWorkflowId": null,
+  "activeVersion": {
+    "updatedAt": "2026-07-15T22:50:43.434Z",
+    "createdAt": "2026-07-15T22:50:43.434Z",
+    "versionId": "b484f1a6-6c9f-4a6f-8018-905317a454d5",
+    "workflowId": "zJKqFEmA9FYDJYXh",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "galapagos-production/stage/scoring",
+          "httpMethod": "POST",
+          "responseMode": "onReceived",
+          "options": {}
+        },
+        "name": "Airtable Status Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          220,
+          300
+        ],
+        "webhookId": "gal-prod-scoring",
+        "id": "40cfe3a2-460a-452c-a90e-85dfd3f32f86"
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "appPlU9eC5GL6ncjZ"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "tblOkOXzm2GZUMkYs"
+          },
+          "filterByFormula": "=AND({Site ID} = '{{ $json.body.site_id }}', {Active} = 1)",
+          "returnAll": false,
+          "limit": 1,
+          "options": {}
+        },
+        "name": "Lookup Site (registry)",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          420,
+          300
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "f2699ba4-d2c2-4c5c-bc2b-7b792beae494"
+      },
+      {
+        "parameters": {
+          "operation": "search",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json['Base ID'] }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json['Table ID'] }}"
+          },
+          "filterByFormula": "=AND({Status} = 'Scoring', {ROI Score} = '', RECORD_ID() = '{{ $('Airtable Status Webhook').item.json.body.record_id }}')",
+          "returnAll": false,
+          "limit": 1,
+          "options": {}
+        },
+        "name": "Re-check and Claim (guarded)",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          620,
+          300
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "alwaysOutputData": true,
+        "id": "c0711efb-0778-4899-ad6a-0be960e403fb"
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "claude-haiku-4-5-20251001"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "=CONTEXT — obey verbatim.\nBRAND: Galapagos Islands.Travel (galapagosislands.travel), an INDEPENDENT editorial guide. Never 'Galapagos Travel Center'; domain is never galapagosislands.com. Author: Juan Magallanes; contributors only from the approved pool (e.g. Andre Robles / Voyagers Travel Company, Luisa Cordova / Golden Galapagos).\nHARD TRUTHS (never violate): (HT-1) The Galapagos is great year-round; never call a time 'best/worst' without stating what species/event it is for; one species is not the whole destination. (HT-2) No island is 'better'; luxury = the yacht experience, not which islands a boat visits; every island is reachable on a 5-day-or-longer cruise; only Fernandina and west Isabela need more than 4 days; the shortest cruise is 4 days and can be luxury.\nVOICE: honest, plain-spoken, answer-first, one idea per sentence, no padding. BANNED words: #1, best, world-class, paradise, hidden gem, luxury-as-filler, unforgettable, must-see, dream vacation. No fabricated numbers — every figure must be sourced or marked [VERIFY]. One primary CTA: 'Talk to a Galapagos Specialist' (a lead, never 'Book Now'). No operator favoritism.\nOUTPUT: return ONLY the STRICT JSON object described — no prose, no code fences.\n\nTASK — Score this page topic for editorial ROI (1-5 each). roi_score = buyer_intent*conversion_value + search_demand*ranking_chance. Return STRICT JSON {\"buyer_intent\":n,\"search_demand\":n,\"ranking_chance\":n,\"conversion_value\":n,\"roi_score\":n,\"rationale\":\"...\"}.\n\nRECORD: {{ $json['Meta Title'] }} | brief: {{ $json['Topic / Brief'] }} | pillar: {{ $json['Pillar'] }} | page type: {{ $json['Page Type'] }}"
+              }
+            ]
+          },
+          "options": {
+            "maxTokens": 16000
+          }
+        },
+        "name": "Run Stage Agent",
+        "type": "@n8n/n8n-nodes-langchain.anthropic",
+        "typeVersion": 1,
+        "position": [
+          820,
+          300
+        ],
+        "credentials": {
+          "anthropicApi": {
+            "id": "fQbptY6CtcIWVwYp",
+            "name": "Anthropic - Weboptimizer"
+          }
+        },
+        "onError": "continueRegularOutput",
+        "id": "2feaa79b-4617-435f-97de-e44d65598967"
+      },
+      {
+        "parameters": {
+          "jsCode": "const rec = $items('Re-check and Claim (guarded)')[0] ? $items('Re-check and Claim (guarded)')[0].json : {};\nconst site = $items('Lookup Site (registry)')[0] ? $items('Lookup Site (registry)')[0].json : {};\nlet raw = Array.isArray($json.content) ? $json.content.filter(b=>b.type==='text').map(b=>b.text).join('') : ($json.message && $json.message.content ? $json.message.content : ($json.text||''));\nraw=(raw||'').trim();\nif(raw.startsWith('```')){const f=raw.match(/^```(?:json)?\\s*([\\s\\S]*?)```\\s*$/);if(f)raw=f[1].trim();}\nconst _s0=raw.indexOf('{'),_e0=raw.lastIndexOf('}'); if(_s0!==-1&&_e0>_s0) raw=raw.slice(_s0,_e0+1);\nlet _o='',_in=false,_esc=false;\nfor(const c of raw){ if(_in){ if(_esc){_o+=c;_esc=false;continue;} if(c==='\\\\'){_o+=c;_esc=true;continue;} if(c==='\"'){_in=false;_o+=c;continue;} if(c==='\\n'){_o+='\\\\n';continue;} if(c==='\\r'){_o+='\\\\r';continue;} if(c==='\\t'){_o+='\\\\t';continue;} _o+=c;continue;} if(c==='\"')_in=true; _o+=c; }\nraw=_o;\nconst nodeErr = ($json && $json.error) ? (typeof $json.error==='string' ? $json.error : ($json.error.message || JSON.stringify($json.error))) : '';\nconst rid=rec.id||'', bid=site['Base ID']||'', tid=site['Table ID']||'';\nlet out={recordId:rid,baseId:bid,tableId:tid,ok:false,error:'',buyer_intent:0,search_demand:0,ranking_chance:0,conversion_value:0,roi_score:0};\ntry{ const p=JSON.parse(raw); out.buyer_intent=Number(p.buyer_intent)||0; out.search_demand=Number(p.search_demand)||0; out.ranking_chance=Number(p.ranking_chance)||0; out.conversion_value=Number(p.conversion_value)||0; out.roi_score=Number(p.roi_score)||(out.buyer_intent*out.conversion_value+out.search_demand*out.ranking_chance); out.ok=out.buyer_intent>0; if(!out.ok)out.error='Missing scores';}catch(e){out.error='Unparseable LLM output: '+e.message;}\nif(!out.ok && nodeErr) out.error='LLM node error: '+nodeErr;\nreturn [{json:out}];"
+        },
+        "name": "Validate Output",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1020,
+          300
+        ],
+        "id": "80be26fb-a500-40ee-bf81-1cef4786b28a"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.ok }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "name": "Output OK?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1220,
+          300
+        ],
+        "id": "ba612cb8-127d-428a-9f1f-3e08dee50bbf"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.baseId }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.tableId }}"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id": "={{ $json.recordId }}",
+              "Status": "Brief Ready",
+              "Attempt Count": "={{ 0 }}",
+              "Buyer Intent (1-5)": "={{ $json.buyer_intent }}",
+              "Search Demand (1-5)": "={{ $json.search_demand }}",
+              "Ranking Chance (1-5)": "={{ $json.ranking_chance }}",
+              "Conversion Value (1-5)": "={{ $json.conversion_value }}",
+              "ROI Score": "={{ $json.roi_score }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": []
+          },
+          "options": {}
+        },
+        "name": "Advance to Brief Ready",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1440,
+          220
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "489a42bf-e146-4f77-bafe-eba1327f3a75"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "base": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.baseId }}"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.tableId }}"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id": "={{ $json.recordId }}",
+              "Status": "Needs Attention",
+              "Last Error": "={{ $json.error }}",
+              "Return To": "Scoring"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": []
+          },
+          "options": {}
+        },
+        "name": "Route to Needs Attention",
+        "type": "n8n-nodes-base.airtable",
+        "typeVersion": 2.1,
+        "position": [
+          1440,
+          400
+        ],
+        "credentials": {
+          "airtableTokenApi": {
+            "id": "mITfEGdTPqCCNrsT",
+            "name": "Airtable API - Weboptimizer"
+          }
+        },
+        "id": "86945011-ecdf-4180-9aeb-2c4a811e3c23"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/brief",
+          "sendBody": true,
+          "specifyBody": "keypair",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "site_id",
+                "value": "={{ $('Airtable Status Webhook').item.json.body.site_id }}"
+              },
+              {
+                "name": "record_id",
+                "value": "={{ $('Re-check and Claim (guarded)').item.json.id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Trigger next stage",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          1660,
+          220
+        ],
+        "onError": "continueRegularOutput",
+        "id": "59d9464b-9347-4bd7-a27a-e3214ed0b56b"
+      }
+    ],
+    "connections": {
+      "Airtable Status Webhook": {
+        "main": [
+          [
+            {
+              "node": "Lookup Site (registry)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lookup Site (registry)": {
+        "main": [
+          [
+            {
+              "node": "Re-check and Claim (guarded)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Re-check and Claim (guarded)": {
+        "main": [
+          [
+            {
+              "node": "Run Stage Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Run Stage Agent": {
+        "main": [
+          [
+            {
+              "node": "Validate Output",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Output": {
+        "main": [
+          [
+            {
+              "node": "Output OK?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Output OK?": {
+        "main": [
+          [
+            {
+              "node": "Advance to Brief Ready",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Route to Needs Attention",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Advance to Brief Ready": {
+        "main": [
+          [
+            {
+              "node": "Trigger next stage",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Marcel Perkins",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-07-15T22:50:43.669Z",
+        "id": 173,
+        "workflowId": "zJKqFEmA9FYDJYXh",
+        "versionId": "b484f1a6-6c9f-4a6f-8018-905317a454d5",
+        "event": "activated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      },
+      {
+        "createdAt": "2026-07-15T22:50:43.595Z",
+        "id": 172,
+        "workflowId": "zJKqFEmA9FYDJYXh",
+        "versionId": "b484f1a6-6c9f-4a6f-8018-905317a454d5",
+        "event": "deactivated",
+        "userId": "0f9f8d22-b5e4-4e39-a0e8-4e60b3e49f12"
+      }
+    ]
   }
 }

@@ -30,5 +30,5 @@ Humanizing and Polishing stages are unchanged. The engine's Status contract is u
 1. **Guardian of Truth:** never assert a fact not present in MASTER_FACTS / source-of-truth. No rounded marketing numbers.
 2. **No operator favoritism:** name vessels/operators factually and comparatively; never push one.
 3. **Voice never deviates** from BRAND_STYLE_GUIDE (honest, plain-spoken, no hype, banned-words enforced).
-4. **One primary CTA** per page = a lead/enquiry ("Talk to a Galápagos Specialist"); never instant "Book Now".
+4. **One subtle CTA close** per page (see guardrails/CTA_BLOCK.md): travelers → Voyagers Travel Company, trade → Latin Trails. Never instant "Book Now".
 5. **Disclose** the {{BRAND}} relationship; keep editorial independence explicit.
