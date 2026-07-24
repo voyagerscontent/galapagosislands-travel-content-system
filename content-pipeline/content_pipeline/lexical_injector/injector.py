@@ -207,7 +207,12 @@ def inject(text: str, lexicon: Optional[dict] = None, salt: bool = True,
            replace_verbs: bool = False, max_salted: Optional[int] = None) -> InjectionResult:
     """Full final-stage injection: replace generics, then salt. Paragraph-preserving."""
     lex = lexicon or load_lexicon()
-    paras_in = len(tok.paragraphs(text))
+    paras = tok.paragraphs(text)
+    paras_in = len(paras)
     swapped, reps = replace_generic(text, lex, replace_verbs=replace_verbs)
+    if max_salted is None:
+        # salt sparingly: ~1 per 6 eligible paragraphs, capped 2..4
+        eligible = sum(1 for p in paras if len(tok.sentences(p)) >= 3)
+        max_salted = max(2, min(4, eligible // 6))
     salted_text, n_salt = (inject_salt(swapped, lex, max_salted) if salt else (swapped, 0))
     return InjectionResult(salted_text, reps, n_salt, paras_in, len(tok.paragraphs(salted_text)))

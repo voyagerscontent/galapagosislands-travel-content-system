@@ -66,6 +66,10 @@ const genRe = new RegExp('\\b(' + DATA.generic_adjectives.map(esc).join('|') + '
 const used = new Set();
 let swaps = 0, salted = 0;
 const paras = art.split(/\n{2,}/);
+// Salt sparingly: a few unpredictable human lines per article, not one per
+// paragraph. ~1 per 6 eligible paragraphs, capped 2..4.
+const eligible = paras.filter(function(p){ return p.split(/(?<=[.!?])\s+/).filter(function(s){return s.trim();}).length >= 3; }).length;
+const MAX_SALT = Math.max(2, Math.min(4, Math.floor(eligible / 6)));
 const out = paras.map(function(para){
   if(!para.trim()) return para;
   const low = para.toLowerCase();
@@ -80,7 +84,7 @@ const out = paras.map(function(para){
     return (m[0] === m[0].toUpperCase()) ? rep[0].toUpperCase()+rep.slice(1) : rep;
   });
   const sents = p.split(/(?<=[.!?])\s+/).filter(function(s){return s.trim();});
-  if(sents.length >= 3 && DATA.human_sentences.length){
+  if(sents.length >= 3 && DATA.human_sentences.length && salted < MAX_SALT){
     const ptags = new Set(['general']);
     for(const pair of DATA.tag_keywords){ if(low.indexOf(pair[0])>=0) ptags.add(pair[1]); }
     const cands = DATA.human_sentences.map(function(s,i){return [i,s];}).filter(function(x){return !used.has(x[0]);});
