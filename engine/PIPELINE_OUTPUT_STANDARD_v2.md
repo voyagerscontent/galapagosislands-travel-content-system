@@ -2,15 +2,19 @@
 # GalapagosIslands.travel content production system
 # Effective: July 2026
 
-## Per-page deliverables (ALL three required from WF6 Polish onward)
+## Per-page deliverable — the EDITOR DOC ONLY (updated 2026-07)
 
-Every page that passes Auditor Review produces three files:
+Every page that passes Auditor Review produces **one** file: the editor doc. The
+standalone HTML page and the JSON-LD schema file are **no longer produced** (owner
+decision — "you only need to produce the editor doc"). The polished markup is still
+generated internally so the WF7 QA gate and the editor-doc render can consume it; it
+is simply not exported as separate `.html` / `_schema.json` deliverables.
 
 | File | Format | Purpose |
 |------|--------|---------|
 | `CMS_Stage8_<Slug>.docx` | python-docx | Editorial review, Drive archive, human sign-off |
-| `<slug>.html` | Self-contained HTML | Direct CMS paste or WordPress block import |
-| `<slug>_schema.json` | JSON array | Paste into Yoast/RankMath structured data field |
+| ~~`<slug>.html`~~ | — | DROPPED |
+| ~~`<slug>_schema.json`~~ | — | DROPPED |
 
 ## Spanish transposition (es-EC)
 
@@ -19,8 +23,8 @@ Every English page also produces a Spanish counterpart:
 | File | Format | Notes |
 |------|--------|-------|
 | `CMS_Stage8_<Slug>_ES.docx` | python-docx | Same structure; Notas Webmaster block at top |
-| `<slug>-es.html` | Self-contained HTML | `<html lang="es">`, hreflang pair, es-EC idiom |
-| `<slug>-es_schema.json` | JSON array | Same schema, Spanish text values |
+| ~~`<slug>-es.html`~~ | — | DROPPED (editor-doc-only) |
+| ~~`<slug>-es_schema.json`~~ | — | DROPPED (editor-doc-only) |
 
 ### What "transposition" means (not translation)
 - Re-author for Spanish search intent and vocabulary (e.g. "isla Bartolomé", "Roca Pináculo")
@@ -51,7 +55,7 @@ Scoring → Brief Ready → Drafting → Truth Check → Humanizing → Polishin
 | WF3 Draft | Draft markdown (with [source:] tags) | Draft Content |
 | WF4 Truth Check | pass/fail + notes | (gate — no new artifact) |
 | WF5 Humanize | Humanized markdown (natural cadence) | Humanized Content |
-| WF6 Polish | .docx + .html + _schema.json + ES versions | Polished Content |
+| WF6 Polish | editor .docx (EN + ES) only | Polished Content |
 | WF7 Auditor | Parts A–G pass/fail report | Auditor Result |
 
 ### WF6 Polish outputs spec

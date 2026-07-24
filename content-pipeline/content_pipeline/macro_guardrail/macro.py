@@ -139,3 +139,11 @@ def enforce(section: str,
         section = rewrite(section, result)
         result = evaluate(section, ncd_min)
     return section, result, attempts
+
+
+# --- adapter for structure_guard (weboptimizer parity) ---
+from types import SimpleNamespace
+def check(section: str, ncd_min: float = DEFAULT_NCD_MIN):
+    """Non-mutating verdict: .passed / .reason / .metric (the structural NCD)."""
+    r = evaluate(section, ncd_min)
+    return SimpleNamespace(passed=r.passed, reason=r.reason, metric=r.ncd)

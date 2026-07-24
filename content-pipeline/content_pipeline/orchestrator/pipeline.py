@@ -6,8 +6,9 @@ Per the spec:
                              LLM rewrite loop (max_retries=3)
   Step 3  micro_guardrail    raise sentence-length CV (split/combine), paragraphs fixed
           ...assemble the article...
-  Step 4  humanization       run the existing humanize pass, then RE-RUN macro +
-                             micro sequentially to verify structural integrity
+  Step 4  humanization       humanize ONE PROSE BLOCK AT A TIME via structure_guard
+                             (skeleton locked: headings + paragraph count fixed), then
+                             micro re-tightens and a gate verifies the skeleton held
   Step 5  lexical_injector   ABSOLUTE END — inject high-BCP words + human salt so no
                              later pass can overwrite the low-probability tokens
 
@@ -24,6 +25,7 @@ from content_pipeline.voice_guard import voice_guard as vg
 from content_pipeline.macro_guardrail import macro as macro_mod
 from content_pipeline.micro_guardrail import micro as micro_mod
 from content_pipeline.lexical_injector import injector as lex_mod
+from content_pipeline.structure_guard import structure_guard
 
 # Injected callables
 LLM = Callable[[str, str], str]                 # (system_prompt, user_prompt) -> text
@@ -82,19 +84,20 @@ def run(outline: List[dict], llm: LLM, rewrite: Rewrite,
     vg.generate_article(outline, llm, cfg, on_section=on_section)
     article = "\n\n".join(s.text for s in result.sections)
 
-    # Step 4: humanization pass, then RE-RUN macro + micro to verify integrity.
+    # Step 4: humanization with the optimized SKELETON LOCKED (structure_guard).
+    # The humanizer rewrites ONE PROSE BLOCK AT A TIME; headings and the paragraph
+    # count are preserved by construction, so it can no longer collapse the macro /
+    # micro burstiness established in steps 2-3. micro re-tightens within the locked
+    # paragraphs and a deterministic gate confirms the skeleton is intact.
     if humanize is not None:
-        article = humanize(article) or article
-        # re-verify per section boundary is lost after humanize; verify per macro-paragraph-block
-        hm = macro_mod.evaluate(article)
-        result.humanize_macro.append(hm)
-        mic = micro_mod.enforce(article)
-        result.humanize_micro.append(mic)
-        article = mic.text
-        if not hm.passed:
-            result.flags.append(f"post-humanize macro NCD {hm.ncd} < {hm.threshold}")
-        if not mic.passed:
-            result.flags.append(f"post-humanize micro CV {mic.cv_after} < {mic.threshold}")
+        guarded = structure_guard.guarded_humanization(article, humanize)
+        article = guarded["text"]
+        report = guarded["structure"]
+        result.humanize_macro.append(macro_mod.evaluate(article))
+        result.humanize_micro.append(guarded["micro"])
+        if not report["passed"]:
+            result.flags.append("post-humanize structure/burstiness lost: "
+                                + "; ".join(report["reasons"]))
 
     # Step 5: lexical injection — ABSOLUTE END (nothing rewrites after this).
     inj = lex_mod.inject(article, lexicon)

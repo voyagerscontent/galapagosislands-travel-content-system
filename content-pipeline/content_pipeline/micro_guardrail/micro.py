@@ -155,3 +155,13 @@ def enforce(text: str, cv_min: float = DEFAULT_CV_MIN, max_passes: int = MAX_PAS
     return MicroResult(out_text, round(cv0, 4), round(cv1, 4), cv_min, passes,
                        len(paras_in), len(paras_out), cv1 >= cv_min,
                        "ok" if cv1 >= cv_min else f"CV {cv1:.2f} still under {cv_min} after {passes} passes")
+
+
+# --- adapter for structure_guard (weboptimizer parity) ---
+from types import SimpleNamespace
+def check(text: str, cv_min: float = DEFAULT_CV_MIN):
+    """Non-mutating verdict on sentence-length CV: .passed / .reason / .metric."""
+    cv_val = measure(text)
+    return SimpleNamespace(passed=(cv_val >= cv_min),
+                           reason=f"sentence-length CV {cv_val:.2f} (min {cv_min})",
+                           metric=round(cv_val, 4))

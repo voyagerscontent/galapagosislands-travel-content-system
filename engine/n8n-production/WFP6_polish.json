@@ -313,78 +313,6 @@
       "id": "3a0961d3-9cbc-4fad-8b5b-fd08b158edec"
     },
     {
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "onError": "continueRegularOutput",
-      "parameters": {
-        "resource": "file",
-        "operation": "createFromText",
-        "content": "={{ $('Render editor copy').item.json.pageHtml }}",
-        "name": "={{ $('Render editor copy').item.json.docName + '.html' }}",
-        "driveId": {
-          "__rl": true,
-          "mode": "list",
-          "value": "My Drive"
-        },
-        "folderId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "1jf8kwaFmFHpYTgmLYSVSMU4yq-YBM5bH"
-        },
-        "options": {
-          "convertToGoogleDocument": false
-        }
-      },
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "BXOLO4YcNnpHp3SD",
-          "name": "Google Drive account"
-        }
-      },
-      "name": "Export HTML",
-      "position": [
-        900,
-        20
-      ],
-      "id": "bc476472-611d-4628-b6a0-c0566550dcab"
-    },
-    {
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "onError": "continueRegularOutput",
-      "parameters": {
-        "resource": "file",
-        "operation": "createFromText",
-        "content": "={{ $('Render editor copy').item.json.jsonld }}",
-        "name": "={{ $('Render editor copy').item.json.docName + '.schema.json' }}",
-        "driveId": {
-          "__rl": true,
-          "mode": "list",
-          "value": "My Drive"
-        },
-        "folderId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "1jf8kwaFmFHpYTgmLYSVSMU4yq-YBM5bH"
-        },
-        "options": {
-          "convertToGoogleDocument": false
-        }
-      },
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "BXOLO4YcNnpHp3SD",
-          "name": "Google Drive account"
-        }
-      },
-      "name": "Export JSON-LD",
-      "position": [
-        1080,
-        20
-      ],
-      "id": "fd777617-72b4-43ee-8999-5b5dc1c351ea"
-    },
-    {
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "onError": "continueRegularOutput",
@@ -612,28 +540,6 @@
       ]
     },
     "Export editor Doc": {
-      "main": [
-        [
-          {
-            "node": "Export HTML",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Export HTML": {
-      "main": [
-        [
-          {
-            "node": "Export JSON-LD",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Export JSON-LD": {
       "main": [
         [
           {
