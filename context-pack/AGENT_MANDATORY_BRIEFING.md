@@ -26,6 +26,26 @@ These run INSIDE the engine's existing stages. They are the "added steps."
 
 Humanizing and Polishing stages are unchanged. The engine's Status contract is unchanged.
 
+## Generation contract (identical for EVERY trigger — n8n OR a repo-connected LLM)
+Whenever a stage WRITES prose, obey all of this so a page looks the same no matter how
+it was produced. The code embodiment is `content-pipeline/content_pipeline/voice_guard/`.
+
+1. **One section at a time — 300–600 words per section.** Never dump the whole article
+   at once; each section is gated before the next.
+2. **Burstiness, never mechanical.** Vary paragraph lengths (macro) AND sentence lengths
+   (micro): mix short punchy sentences with long complex ones, the odd fragment is fine.
+   A run of same-size paragraphs / uniform robotic blocks is the clearest AI tell and an
+   automatic rework — do NOT produce it.
+3. **Editor layout (`page-templates/GUIDE_PAGE_SPEC.md`):** one H1; question-form H2/H3;
+   a ≤60-word answer box first; ≥1 data table; a key-takeaways block; a 5-question FAQ
+   (answer-first, 40–60 words).
+4. **Voice:** the `{{CONTRIBUTORS}}` author voice (answer-first, candid "but"-caveats,
+   specifics over adjectives) — never generic marketing copy.
+5. **Humanizing preserves the skeleton:** never merge/split/drop/reorder paragraphs or
+   change headings — that is what flattens the burstiness the guardrails built.
+6. **Output = the editor doc ONLY.** No standalone HTML page, no JSON-LD schema file
+   (see `engine/PIPELINE_OUTPUT_STANDARD_v2.md`).
+
 ## Hard rules (non-negotiable)
 1. **Guardian of Truth:** never assert a fact not present in MASTER_FACTS / source-of-truth. No rounded marketing numbers.
 2. **No operator favoritism:** name vessels/operators factually and comparatively; never push one.

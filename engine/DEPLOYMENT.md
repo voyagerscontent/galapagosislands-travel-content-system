@@ -31,6 +31,15 @@ An LLM connected to this repo produces the next page by doing exactly this (no l
 3. **Advance exactly ONE stage** per the state machine in `01_PIPELINE_STATUS_MODEL.md`:
    read `Status` → do that stage's action (loading guardrails once) → write the next
    `Status`. Never re-evaluate "where am I" mid-run. One stage per turn.
+   **When the stage WRITES prose, obey the generation contract in
+   `02_ORCHESTRATOR_PERPLEXITY.md` (§ "The generation contract"), identical for every
+   trigger:** write SECTION BY SECTION (300–600 words); deliberately vary paragraph AND
+   sentence lengths (macro + micro burstiness — never uniform/robotic same-size blocks);
+   keep the GUIDE_PAGE_SPEC editor layout; and produce the **editor doc ONLY — no HTML
+   page, no JSON-LD schema file** (see `PIPELINE_OUTPUT_STANDARD_v2.md`). The code
+   embodiment of this same contract is `content-pipeline/content_pipeline/voice_guard/`;
+   if code and docs disagree, the code wins. This is what keeps an n8n-produced page and
+   a repo-triggered (Perplexity/Claude) page byte-comparable in structure.
 4. **Loop safety (already enforced):** each stage has an input filter + a "not yet
    produced" guard + an error route to `Needs Attention` with `Return To`; `Attempt Count`
    caps retries at 2. A failure always leaves the queue. Terminal state = `Published`.
