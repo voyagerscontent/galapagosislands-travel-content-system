@@ -43,7 +43,8 @@ NORM_NODE = os.path.join(VENDOR, "text-normalizer",
                          ".claude", "skills", "text-normalizer", "automation", "n8n_normalize_node.json")
 DICT_WF = os.path.join(VENDOR, "human-dictionary-travel", "n8n", "n8n_workflow_code_node.json")
 
-POST_NODES = ("Normalize (no-LLM)", "Pattern-Breaker (call)", "PB Merge (code)", "De-AI Dictionary (no-LLM)")
+POST_NODES = ("Normalize (no-LLM)", "Pattern-Breaker (call)", "PB Merge (code)",
+              "De-AI Dictionary (no-LLM)", "BCP Inject (no-LLM)")
 
 
 def normalize_js():

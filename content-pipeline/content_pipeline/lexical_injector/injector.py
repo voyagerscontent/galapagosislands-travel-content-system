@@ -168,39 +168,39 @@ def _paragraph_tags(paragraph: str, lexicon: dict) -> set:
     return tags
 
 
-def inject_salt(text: str, lexicon: dict, max_salted: Optional[int] = None) -> tuple:
-    """Splice a tag-matched verbatim human sentence into the MIDDLE of paragraphs.
-
-    One salt per eligible paragraph (>= 3 sentences so there is a real middle),
-    each human line used at most once. Returns (new_text, count). Paragraph count
-    is never changed — the sentence goes *inside* an existing paragraph."""
+def inject_salt(text: str, lexicon: dict, max_long: int = 2, max_phrase: int = 3) -> tuple:
+    """Splice tag-matched verbatim human sentences into paragraph MIDDLES, with
+    SEPARATE caps per kind: up to `max_long` long sentences + up to `max_phrase`
+    short phrases per article. Each line used once; paragraph count never changes.
+    Returns (new_text, {"long": n, "phrase": n})."""
     pool = lexicon.get("human_sentences", [])
     if not pool:
-        return text, 0
+        return text, {"long": 0, "phrase": 0}
+    caps = {"long": max_long, "phrase": max_phrase}
+    done = {"long": 0, "phrase": 0}
     paras = tok.paragraphs(text)
     used = set()
-    salted = 0
     out = []
-    for pi, para in enumerate(paras):
+    for para in paras:
         sents = tok.sentences(para)
-        if len(sents) < 3 or (max_salted is not None and salted >= max_salted):
+        if len(sents) < 3 or sum(done.values()) >= sum(caps.values()):
             out.append(para)
             continue
         ptags = _paragraph_tags(para, lexicon)
-        # best unused human sentence by tag overlap, deterministic tie-break
-        cands = [(i, s) for i, s in enumerate(pool) if i not in used]
-        cands.sort(key=lambda t: (-len(ptags & set(t[1].get("tags", []))),
-                                  _seed(para, str(t[0]))))
-        if not cands or not (ptags & set(cands[0][1].get("tags", []))):
+        # candidates whose kind still has budget, ranked by tag overlap
+        cands = [(i, s) for i, s in enumerate(pool)
+                 if i not in used and done[s.get("kind", "phrase")] < caps[s.get("kind", "phrase")]]
+        cands.sort(key=lambda t: (-len(ptags & set(t[1].get("tags", []))), _seed(para, str(t[0]))))
+        cands = [c for c in cands if ptags & set(c[1].get("tags", []))]
+        if not cands:
             out.append(para)
             continue
         idx, chosen = cands[0]
         used.add(idx)
-        mid = len(sents) // 2                      # insert into the middle
-        new_sents = sents[:mid] + [chosen["text"].strip()] + sents[mid:]
-        out.append(" ".join(s.strip() for s in new_sents))
-        salted += 1
-    return "\n\n".join(out), salted
+        done[chosen.get("kind", "phrase")] += 1
+        mid = len(sents) // 2
+        out.append(" ".join(s.strip() for s in (sents[:mid] + [chosen["text"].strip()] + sents[mid:])))
+    return "\n\n".join(out), done
 
 
 def inject(text: str, lexicon: Optional[dict] = None, salt: bool = True,
@@ -210,9 +210,11 @@ def inject(text: str, lexicon: Optional[dict] = None, salt: bool = True,
     paras = tok.paragraphs(text)
     paras_in = len(paras)
     swapped, reps = replace_generic(text, lex, replace_verbs=replace_verbs)
-    if max_salted is None:
-        # salt sparingly: ~1 per 6 eligible paragraphs, capped 2..4
-        eligible = sum(1 for p in paras if len(tok.sentences(p)) >= 3)
-        max_salted = max(2, min(4, eligible // 6))
-    salted_text, n_salt = (inject_salt(swapped, lex, max_salted) if salt else (swapped, 0))
-    return InjectionResult(salted_text, reps, n_salt, paras_in, len(tok.paragraphs(salted_text)))
+    if salt:
+        salted_text, counts = inject_salt(swapped, lex, max_long=2, max_phrase=3)
+    else:
+        salted_text, counts = swapped, {"long": 0, "phrase": 0}
+    res = InjectionResult(salted_text, reps, counts["long"] + counts["phrase"],
+                          paras_in, len(tok.paragraphs(salted_text)))
+    res.salt_long, res.salt_phrase = counts["long"], counts["phrase"]
+    return res

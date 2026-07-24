@@ -86,13 +86,42 @@ def load_salt(xlsx: str, cap: int = 1200) -> list:
             tags += ["galapagos", "wildlife", "destination"]
         if _re.search(r"cruise|ship|expedition|quasar|pikaia|lindblad", low):
             tags += ["cruise", "activity"]
-        out.append({"text": txt, "tags": sorted(set(tags))})
+        out.append({"text": txt, "kind": "phrase", "tags": sorted(set(tags))})
         if len(out) >= cap:
             break
     return out
 
 
-def main(xlsx: str, salt_xlsx: str = None):
+def load_long(xlsx: str, cap: int = 900) -> list:
+    """Load LONGER verbatim salt sentences (col 'sentence', col 'parameter'=topic),
+    filtered to Galapagos-relevant complete sentences (8-30 words)."""
+    import openpyxl
+    wb = openpyxl.load_workbook(xlsx, read_only=True, data_only=True)
+    ws = wb.worksheets[0]
+    seen, out = set(), []
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        txt = (str(row[0]).strip() if row[0] else "")
+        param = str(row[2] or "").lower()
+        if not txt or txt.lower() in seen:
+            continue
+        if "galapagos" not in param and "expedition cruise" not in param:
+            continue                                   # Galapagos-relevant topics only
+        wc = len(txt.split())
+        if not (8 <= wc <= 30):
+            continue
+        if not txt[0].isupper() or not txt.rstrip().endswith((".", "!", "?")):
+            continue
+        if "http" in txt or _SALT_DENY.search(txt):
+            continue
+        seen.add(txt.lower())
+        out.append({"text": txt, "kind": "long",
+                    "tags": ["galapagos", "wildlife", "destination", "cruise", "general"]})
+        if len(out) >= cap:
+            break
+    return out
+
+
+def main(xlsx: str, salt_xlsx: str = None, long_xlsx: str = None):
     import openpyxl
     wb = openpyxl.load_workbook(xlsx, read_only=True, data_only=True)
     ws = wb["All Words"]
@@ -128,12 +157,13 @@ def main(xlsx: str, salt_xlsx: str = None):
         "pools": pools,
         # verbatim human "salt" sentences from the master travel-phrases workbook
         # (Galapagos-appropriate, complete, tagged). Falls back to a small seed.
-        "human_sentences": (load_salt(salt_xlsx) if salt_xlsx else [
-            {"text": "You forget your phone exists out there, and it takes a day to notice.", "tags": ["feeling", "general"]},
-            {"text": "Bring a dry bag; the wet landings soak everything you love.", "tags": ["activity", "packing"]},
-        ]),
+        "human_sentences": ((load_salt(salt_xlsx) if salt_xlsx else []) +
+                            (load_long(long_xlsx) if long_xlsx else [])) or [
+            {"text": "You forget your phone exists out there, and it takes a day to notice.", "kind": "phrase", "tags": ["general"]},
+        ],
     }
-    out["_meta"]["salt_sentences"] = len(out["human_sentences"])
+    import collections as _c
+    out["_meta"]["salt_counts"] = dict(_c.Counter(s.get("kind","phrase") for s in out["human_sentences"]))
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(out, fh, ensure_ascii=False, indent=1)
     ncats = sum(len(v) for v in pools.values())
@@ -143,4 +173,4 @@ def main(xlsx: str, salt_xlsx: str = None):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit("usage: build_lexicon_from_xlsx.py <xlsx path>")
-    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None, sys.argv[3] if len(sys.argv) > 3 else None)
