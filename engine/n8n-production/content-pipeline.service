@@ -1,0 +1,16 @@
+[Unit]
+Description=Content Pipeline FastAPI Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/content-pipeline
+ExecStart=/opt/content-pipeline/.venv/bin/uvicorn content_pipeline.service.app:app \
+    --host 127.0.0.1 --port 8080 --workers 2 --log-level info
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
