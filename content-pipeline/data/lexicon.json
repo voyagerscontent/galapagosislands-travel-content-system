@@ -1,0 +1,47 @@
+{
+  "_meta": {
+    "name": "high_bcp_lexicon",
+    "description": "High-BCP (low-probability, high-entropy) travel vocabulary + verbatim human sentences used by lexical_injector to spike perplexity. Categorized by destination / activity / feeling. SAMPLE seed — expand this database over time; the loader reads whatever is here.",
+    "version": "0.1.0",
+    "domain": "galapagos"
+  },
+
+  "generic_replacements": {
+    "beautiful":   { "pos": "JJ", "category": "feeling",     "options": ["arresting", "singular", "otherworldly"] },
+    "stunning":    { "pos": "JJ", "category": "feeling",     "options": ["arresting", "startling", "unreal"] },
+    "amazing":     { "pos": "JJ", "category": "feeling",     "options": ["unreal", "ridiculous", "hard to place"] },
+    "incredible":  { "pos": "JJ", "category": "feeling",     "options": ["unreal", "improbable", "ridiculous"] },
+    "breathtaking":{ "pos": "JJ", "category": "feeling",     "options": ["vertiginous", "arresting", "unreal"] },
+    "pristine":    { "pos": "JJ", "category": "destination", "options": ["untouched", "scoured-clean", "raw"] },
+    "remote":      { "pos": "JJ", "category": "destination", "options": ["far-flung", "off-grid", "hard-to-reach"] },
+    "lush":        { "pos": "JJ", "category": "destination", "options": ["dripping", "overgrown", "green-choked"] },
+    "vast":        { "pos": "JJ", "category": "destination", "options": ["yawning", "endless-feeling", "map-defying"] },
+    "unique":      { "pos": "JJ", "category": "destination", "options": ["one-off", "unrepeatable", "found-nowhere-else"] },
+    "peaceful":    { "pos": "JJ", "category": "feeling",     "options": ["hushed", "unhurried", "quiet-as-church"] },
+    "memorable":   { "pos": "JJ", "category": "feeling",     "options": ["sticky", "hard-to-shake", "lodged-in-memory"] },
+
+    "see":         { "pos": "VB", "category": "activity",    "options": ["clock", "catch sight of", "pick out"] },
+    "explore":     { "pos": "VB", "category": "activity",    "options": ["poke around", "work your way through", "nose into"] },
+    "enjoy":       { "pos": "VB", "category": "feeling",     "options": ["settle into", "get lost in", "soak up"] },
+    "experience":  { "pos": "VB", "category": "feeling",     "options": ["get a taste of", "run into", "cop"] },
+    "discover":    { "pos": "VB", "category": "activity",    "options": ["stumble on", "turn up", "find out about"] },
+    "offer":       { "pos": "VB", "category": "destination", "options": ["throw at you", "hand you", "put in front of you"] },
+    "witness":     { "pos": "VB", "category": "activity",    "options": ["catch", "watch happen", "be there for"] }
+  },
+
+  "categories": {
+    "destination": ["the highlands", "the tuff cones", "a mangrove channel", "the arid zone", "a black-sand cove", "the caldera rim"],
+    "activity":    ["a wet landing", "a panga cruise", "a deep-water snorkel", "a pre-dawn hike", "a shore stroll"],
+    "feeling":     ["giddy", "wary", "spellbound", "wrung-out", "wide awake", "small"]
+  },
+
+  "human_sentences": [
+    { "text": "You forget your phone exists out there, and it takes a day to notice.", "tags": ["feeling", "general"] },
+    { "text": "Bring a dry bag; the wet landings soak everything you love.", "tags": ["activity", "packing"] },
+    { "text": "The sea lions do not care that you paid to be there.", "tags": ["wildlife", "feeling"] },
+    { "text": "Half the trip is the panga rides between the good stuff.", "tags": ["activity", "cruise"] },
+    { "text": "Nobody warns you how loud the frigatebirds get at dawn.", "tags": ["wildlife", "destination"] },
+    { "text": "The water is colder than the brochures let on, even in a wetsuit.", "tags": ["activity", "snorkel"] },
+    { "text": "You will run out of adjectives by day three; stop trying.", "tags": ["feeling", "general"] }
+  ]
+}

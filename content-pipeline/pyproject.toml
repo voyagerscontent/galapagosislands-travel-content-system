@@ -1,0 +1,25 @@
+[project]
+name = "content-pipeline"
+version = "0.1.0"
+description = "Strictly-separated modules for voice-guarded, burstiness-gated, entropy-injected content generation (Galápagos content system)."
+requires-python = ">=3.10"
+dependencies = [
+    "nltk>=3.9",          # tokenizer + POS backend (spaCy has no wheels on 3.14 yet)
+]
+
+[project.optional-dependencies]
+spacy = ["spacy>=3.7"]    # drop-in for common/tokenizer.py in production
+service = ["fastapi>=0.110", "uvicorn>=0.29"]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["content_pipeline*"]
+
+# ── module map (strictly separated; only common/ is shared) ──────────────────
+# voice_guard      Step 1 — system prompt (voice+guardrails+master+guardian) + section-by-section gen
+# macro_guardrail  Step 2 — gzip NCD on paragraph-shape byte string; reject robotic blocks
+# micro_guardrail  Step 3 — sentence-length CV via split/combine; paragraph count fixed
+# lexical_injector Step 5 — final-stage POS swaps + verbatim human "salt" (runs last)
+# orchestrator     wires the above in order; humanization re-runs macro+micro
+# common           tokenizer/POS interface (nltk now, spaCy-swappable)
