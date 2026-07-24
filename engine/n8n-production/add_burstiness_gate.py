@@ -57,9 +57,20 @@ const action = bok ? 'pass' : (retries < 3 ? 'retry' : 'advisory');
 const detail = 'macro paragraph-length CV ' + m.cv + ' (min 0.35), sentence CV ' + microCv.toFixed(2) + ' (min ' + CV_MIN + '), ' + m.paras + ' paragraphs';
 const note = action === 'advisory' ? ('ADVISORY — burstiness below threshold after 3 retries: ' + detail)
            : (bok ? '' : ('retry ' + (retries + 1) + '/3: ' + detail));
+// Instructional feedback fed BACK into the re-draft prompt (WFP3 reads the
+// "Burstiness Feedback" field). Empty on pass — the draft template renders nothing.
+const draftFeedback = bok ? '' : (
+  'Your previous draft was too UNIFORM in rhythm — an AI tell. Paragraph-length CV was ' + m.cv +
+  ' (target >= 0.35) across ' + m.paras + ' paragraphs; sentence-length CV was ' + microCv.toFixed(2) +
+  ' (target >= ' + CV_MIN + '). In THIS redraft, deliberately vary structure: intersperse short ' +
+  '1-2 sentence paragraphs among longer 5-6 sentence ones, and vary sentence length within paragraphs ' +
+  '(blend punchy 6-10 word sentences with occasional 25-35 word ones). Do NOT equalize paragraph or ' +
+  'sentence lengths — burstiness is graded by code and will loop again if flat.'
+);
 return [{ json: Object.assign({}, it, {
   action: action, burstinessRetries: retries,
-  macroCv: m.cv, microCv: Math.round(microCv * 100) / 100, burstinessNote: note
+  macroCv: m.cv, microCv: Math.round(microCv * 100) / 100,
+  burstinessNote: note, draftFeedback: draftFeedback
 }) }];
 """
 
@@ -98,6 +109,7 @@ def main():
             "Truth Check Notes": "",
             "Attempt Count": "={{ 0 }}",
             "Burstiness Retries": "={{ $json.burstinessRetries + 1 }}",
+            "Burstiness Feedback": "={{ $json.draftFeedback }}",
         }}, "options": {}},
         [ax + 320, ay + 160], "wfp5-burst-bump", ntype="n8n-nodes-base.airtable", tv=2.1)
     # copy the Airtable credential from an existing Airtable node
@@ -134,6 +146,7 @@ def main():
     adv = nodes["Advance to Polishing"]["parameters"]["columns"]["value"]
     adv["Burstiness Notes"] = "={{ $('Burstiness Gate (code)').item.json.burstinessNote }}"
     adv["Burstiness Retries"] = "={{ 0 }}"
+    adv["Burstiness Feedback"] = "={{ '' }}"   # consumed by the redraft; clear once the page passes
 
     json.dump(wf, open(WF, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
     print(f"WFP5: Burstiness & Structure gate added (hard, 3 retries -> advisory). {os.path.getsize(WF)//1024} KB")

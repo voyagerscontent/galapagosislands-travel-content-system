@@ -148,7 +148,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        6040,
+        6440,
         300
       ],
       "id": "665c2078-6d27-4d80-9cea-b299f93fb313"
@@ -176,7 +176,8 @@
             "Humanized Link": "={{ $json.id ? 'https://docs.google.com/document/d/' + $json.id + '/edit' : 'airtable://Humanized Content' }}",
             "De-AI Log": "={{ $('Burstiness Gate (code)').item.json.deaiLog }}",
             "Burstiness Notes": "={{ $('Burstiness Gate (code)').item.json.burstinessNote }}",
-            "Burstiness Retries": "={{ 0 }}"
+            "Burstiness Retries": "={{ 0 }}",
+            "Burstiness Feedback": "={{ '' }}"
           },
           "matchingColumns": [
             "id"
@@ -189,7 +190,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        6260,
+        6660,
         220
       ],
       "credentials": {
@@ -232,7 +233,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        6260,
+        6660,
         400
       ],
       "credentials": {
@@ -278,7 +279,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        6260,
+        6660,
         60
       ],
       "onError": "continueRegularOutput",
@@ -429,14 +430,14 @@
     },
     {
       "parameters": {
-        "jsCode": "\n// n8n sandboxes code nodes (no zlib/gzip). Macro burstiness = coefficient of\n// variation of PARAGRAPH lengths (uniform blocks -> low CV -> robotic); micro\n// burstiness = CV of SENTENCE lengths. Both pure JS, no external modules.\nfunction cv(arr){ if(arr.length<2) return 1; const m=arr.reduce((a,b)=>a+b,0)/arr.length; if(!m) return 0; const v=arr.reduce((a,b)=>a+(b-m)*(b-m),0)/arr.length; return Math.sqrt(v)/m; }\nfunction paragraphs(t){ return String(t||'').trim().split(/\\n\\s*\\n+/).map(p=>p.trim()).filter(Boolean); }\nfunction proseNoTables(t){ return String(t||'').replace(/<table[\\s\\S]*?<\\/table>/gi,' ').replace(/(^|\\n)\\s*\\|.*\\|.*(?=\\n|$)/g,' ').replace(/<[^>]+>/g,' ').replace(/\\[(?:source|VERIFY|human)[^\\]]*\\]/g,' '); }\nfunction paraLengths(sec){ const L=[]; for(const p of paragraphs(sec)){ if(/^#{1,6}\\s/.test(p)) continue; L.push(p.split(/\\s+/).filter(Boolean).length); } return L; }\nfunction macroEval(sec){ const L=paraLengths(sec); if(L.length<3) return {passed:true, cv:1, paras:L.length}; const c=cv(L); return {passed: c>=0.35, cv: Math.round(c*1000)/1000, paras: L.length}; }\nfunction microCV(sec){ const p=proseNoTables(sec); const s=p.split(/(?<=[.!?])\\s+/).map(x=>x.trim()).filter(x=>x.split(/\\s+/).filter(Boolean).length>=3); if(s.length<2) return 1; return cv(s.map(x=>x.split(/\\s+/).filter(Boolean).length)); }\n\nconst CV_MIN = 0.45;\nconst it = $json || {};\nconst rec = ($items('Re-check and Claim (guarded)')[0] || {json:{}}).json;\nif (!it.ok) {   // humanize/dictionary already failed upstream — don't gate; let Output OK? route it\n  return [{ json: Object.assign({}, it, { action: 'pass', burstinessNote: '' }) }];\n}\nconst art = String(it.artifact || '');\nconst retries = Number(rec['Burstiness Retries'] || 0);\nconst m = macroEval(art);\nconst microCv = microCV(art);\nconst bok = m.passed && microCv >= CV_MIN;\nconst action = bok ? 'pass' : (retries < 3 ? 'retry' : 'advisory');\nconst detail = 'macro paragraph-length CV ' + m.cv + ' (min 0.35), sentence CV ' + microCv.toFixed(2) + ' (min ' + CV_MIN + '), ' + m.paras + ' paragraphs';\nconst note = action === 'advisory' ? ('ADVISORY — burstiness below threshold after 3 retries: ' + detail)\n           : (bok ? '' : ('retry ' + (retries + 1) + '/3: ' + detail));\nreturn [{ json: Object.assign({}, it, {\n  action: action, burstinessRetries: retries,\n  macroCv: m.cv, microCv: Math.round(microCv * 100) / 100, burstinessNote: note\n}) }];\n"
+        "jsCode": "\n// n8n sandboxes code nodes (no zlib/gzip). Macro burstiness = coefficient of\n// variation of PARAGRAPH lengths (uniform blocks -> low CV -> robotic); micro\n// burstiness = CV of SENTENCE lengths. Both pure JS, no external modules.\nfunction cv(arr){ if(arr.length<2) return 1; const m=arr.reduce((a,b)=>a+b,0)/arr.length; if(!m) return 0; const v=arr.reduce((a,b)=>a+(b-m)*(b-m),0)/arr.length; return Math.sqrt(v)/m; }\nfunction paragraphs(t){ return String(t||'').trim().split(/\\n\\s*\\n+/).map(p=>p.trim()).filter(Boolean); }\nfunction proseNoTables(t){ return String(t||'').replace(/<table[\\s\\S]*?<\\/table>/gi,' ').replace(/(^|\\n)\\s*\\|.*\\|.*(?=\\n|$)/g,' ').replace(/<[^>]+>/g,' ').replace(/\\[(?:source|VERIFY|human)[^\\]]*\\]/g,' '); }\nfunction paraLengths(sec){ const L=[]; for(const p of paragraphs(sec)){ if(/^#{1,6}\\s/.test(p)) continue; L.push(p.split(/\\s+/).filter(Boolean).length); } return L; }\nfunction macroEval(sec){ const L=paraLengths(sec); if(L.length<3) return {passed:true, cv:1, paras:L.length}; const c=cv(L); return {passed: c>=0.35, cv: Math.round(c*1000)/1000, paras: L.length}; }\nfunction microCV(sec){ const p=proseNoTables(sec); const s=p.split(/(?<=[.!?])\\s+/).map(x=>x.trim()).filter(x=>x.split(/\\s+/).filter(Boolean).length>=3); if(s.length<2) return 1; return cv(s.map(x=>x.split(/\\s+/).filter(Boolean).length)); }\n\nconst CV_MIN = 0.45;\nconst it = $json || {};\nconst rec = ($items('Re-check and Claim (guarded)')[0] || {json:{}}).json;\nif (!it.ok) {   // humanize/dictionary already failed upstream — don't gate; let Output OK? route it\n  return [{ json: Object.assign({}, it, { action: 'pass', burstinessNote: '' }) }];\n}\nconst art = String(it.artifact || '');\nconst retries = Number(rec['Burstiness Retries'] || 0);\nconst m = macroEval(art);\nconst microCv = microCV(art);\nconst bok = m.passed && microCv >= CV_MIN;\nconst action = bok ? 'pass' : (retries < 3 ? 'retry' : 'advisory');\nconst detail = 'macro paragraph-length CV ' + m.cv + ' (min 0.35), sentence CV ' + microCv.toFixed(2) + ' (min ' + CV_MIN + '), ' + m.paras + ' paragraphs';\nconst note = action === 'advisory' ? ('ADVISORY — burstiness below threshold after 3 retries: ' + detail)\n           : (bok ? '' : ('retry ' + (retries + 1) + '/3: ' + detail));\n// Instructional feedback fed BACK into the re-draft prompt (WFP3 reads the\n// \"Burstiness Feedback\" field). Empty on pass — the draft template renders nothing.\nconst draftFeedback = bok ? '' : (\n  'Your previous draft was too UNIFORM in rhythm — an AI tell. Paragraph-length CV was ' + m.cv +\n  ' (target >= 0.35) across ' + m.paras + ' paragraphs; sentence-length CV was ' + microCv.toFixed(2) +\n  ' (target >= ' + CV_MIN + '). In THIS redraft, deliberately vary structure: intersperse short ' +\n  '1-2 sentence paragraphs among longer 5-6 sentence ones, and vary sentence length within paragraphs ' +\n  '(blend punchy 6-10 word sentences with occasional 25-35 word ones). Do NOT equalize paragraph or ' +\n  'sentence lengths — burstiness is graded by code and will loop again if flat.'\n);\nreturn [{ json: Object.assign({}, it, {\n  action: action, burstinessRetries: retries,\n  macroCv: m.cv, microCv: Math.round(microCv * 100) / 100,\n  burstinessNote: note, draftFeedback: draftFeedback\n}) }];\n"
       },
       "id": "wfp5-burst-gate",
       "name": "Burstiness Gate (code)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5600,
+        6000,
         300
       ]
     },
@@ -456,7 +457,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        5780,
+        6180,
         460
       ]
     },
@@ -485,7 +486,8 @@
             "Humanized Content": "",
             "Truth Check Notes": "",
             "Attempt Count": "={{ 0 }}",
-            "Burstiness Retries": "={{ $json.burstinessRetries + 1 }}"
+            "Burstiness Retries": "={{ $json.burstinessRetries + 1 }}",
+            "Burstiness Feedback": "={{ $json.draftFeedback }}"
           }
         },
         "options": {}
@@ -495,7 +497,7 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        5960,
+        6360,
         460
       ],
       "credentials": {
@@ -530,7 +532,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        6140,
+        6540,
         460
       ]
     }
