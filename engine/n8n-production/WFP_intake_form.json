@@ -3,22 +3,10 @@
   "nodes": [
     {
       "parameters": {
-        "formTitle": "New Page — GalapagosIslands.travel Production",
-        "formDescription": "Queue a new page for the content pipeline. Fill this in and submit; the page runs itself through scoring, brief, draft, truth-check, humanize, polish and audit, then lands in Airtable at <b>Editor Review</b>.",
+        "formTitle": "Produce a Page — GalapagosIslands.travel",
+        "formDescription": "Pick a content pillar (and optionally type a keyword to narrow the list), then choose a planned page to send into production.",
         "formFields": {
           "values": [
-            {
-              "fieldLabel": "Page Title",
-              "fieldType": "text",
-              "placeholder": "e.g. Best Time to See Whale Sharks in the Galápagos",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Primary Keyword",
-              "fieldType": "text",
-              "placeholder": "e.g. galapagos whale shark season",
-              "requiredField": true
-            },
             {
               "fieldLabel": "Pillar",
               "fieldType": "dropdown",
@@ -59,98 +47,22 @@
               "requiredField": true
             },
             {
-              "fieldLabel": "Page Type",
-              "fieldType": "dropdown",
-              "fieldOptions": {
-                "values": [
-                  {
-                    "option": "Guide"
-                  },
-                  {
-                    "option": "Hub Page"
-                  },
-                  {
-                    "option": "Pillar Page"
-                  },
-                  {
-                    "option": "Final Answer Page"
-                  },
-                  {
-                    "option": "Blog Post"
-                  },
-                  {
-                    "option": "FAQ Page"
-                  },
-                  {
-                    "option": "Island Page"
-                  }
-                ]
-              },
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Brief / Notes",
-              "fieldType": "textarea",
-              "placeholder": "What should this page cover? Angle, must-include facts, audience, anything the writer needs.",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Target Word Count",
-              "fieldType": "number",
-              "placeholder": "2500",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "CTA Brand",
-              "fieldType": "dropdown",
-              "fieldOptions": {
-                "values": [
-                  {
-                    "option": "Voyagers Travel"
-                  },
-                  {
-                    "option": "Latin Trails"
-                  }
-                ]
-              },
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "Secondary Keywords",
+              "fieldLabel": "Keyword filter",
               "fieldType": "text",
-              "placeholder": "optional — comma separated",
-              "requiredField": false
-            },
-            {
-              "fieldLabel": "Hub Page URL",
-              "fieldType": "text",
-              "placeholder": "optional — the pillar hub this belongs under",
-              "requiredField": false
-            },
-            {
-              "fieldLabel": "Named Author",
-              "fieldType": "text",
-              "placeholder": "optional — persona byline, e.g. Juan Magallanes",
+              "placeholder": "optional — narrow by words in the page title",
               "requiredField": false
             }
           ]
         },
-        "responseMode": "onReceived",
         "options": {
           "path": "new-page",
-          "buttonLabel": "Queue page for production",
+          "buttonLabel": "Find pages",
           "appendAttribution": false,
-          "ignoreBots": true,
-          "respondWithOptions": {
-            "values": {
-              "respondWith": "text",
-              "formSubmittedText": "✅ Your page is queued and now in production. It will appear in Airtable under “Editor Review” when ready (typically ~15–30 minutes). You can submit another page any time."
-            }
-          }
+          "ignoreBots": true
         }
       },
-      "id": "form-intake-trigger",
-      "name": "New Page Intake",
+      "id": "form-trigger",
+      "name": "Start — Pick Pillar",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.6,
       "position": [
@@ -161,7 +73,85 @@
     },
     {
       "parameters": {
-        "operation": "create",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appNkUL50eF601ejN"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblUgxSGGfeJIL5GD"
+        },
+        "filterByFormula": "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), {Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}', OR( '{{ $('Start — Pick Pillar').item.json[\"Keyword filter\"] }}' = '', FIND( LOWER('{{ $('Start — Pick Pillar').item.json[\"Keyword filter\"] }}'), LOWER({Meta Title}) ) > 0 ) )",
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "form-list-pages",
+      "name": "List Available Pages",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        220,
+        0
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Build the page-2 form definition dynamically from the Airtable backlog results.\n// Encode the record id at the end of each option so we can parse it back after submit.\nconst rows = $input.all();\nconst options = rows\n  .filter(r => r.json && r.json.id)\n  .map(r => `${(r.json['Meta Title'] || '(untitled)').replace(/\\s+/g,' ').trim()}  ·  ${r.json.id}`);\nconst pageField = options.length\n  ? { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true, fieldOptions: options }\n  : { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true,\n      fieldOptions: ['— no matches — go back and change the pillar or keyword —'] };\nconst def = [\n  pageField,\n  { fieldLabel: 'CTA Brand', fieldType: 'dropdown', requiredField: true,\n    fieldOptions: ['Voyagers Travel', 'Latin Trails'] },\n];\nreturn [{ json: { formDef: JSON.stringify(def), count: options.length } }];\n"
+      },
+      "id": "form-build-dd",
+      "name": "Build Page Dropdown",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "page",
+        "defineForm": "json",
+        "jsonOutput": "={{ $json.formDef }}",
+        "options": {
+          "formTitle": "Choose the page to produce",
+          "formDescription": "={{ $json.count }} planned pages in this pillar. Pick one and confirm the CTA brand.",
+          "buttonLabel": "Send to production"
+        }
+      },
+      "id": "form-pick-page",
+      "name": "Pick the Page",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst sel = String($json['Page to produce'] || '');\nconst m = sel.match(/(rec[0-9A-Za-z]{14})\\s*$/);\nif (!m) throw new Error('No planned page was selected (could not parse a record id from: ' + sel + ')');\nreturn [{ json: { recordId: m[1], ctaBrand: String($json['CTA Brand'] || ''), selection: sel } }];\n"
+      },
+      "id": "form-resolve",
+      "name": "Resolve Selection",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
         "base": {
           "__rl": true,
           "mode": "id",
@@ -174,31 +164,33 @@
         },
         "columns": {
           "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "id"
+          ],
           "value": {
-            "Name": "={{ $json['Page Title'] }}",
-            "Meta Title": "={{ $json['Page Title'] }}",
-            "Primary Keyword": "={{ $json['Primary Keyword'] }}",
-            "Pillar": "={{ $json['Pillar'] }}",
-            "Page Type": "={{ $json['Page Type'] }}",
-            "Topic / Brief": "={{ $json['Brief / Notes'] }}",
-            "Suggested Word Count": "={{ $json['Target Word Count'] }}",
-            "CTA Brand": "={{ $json['CTA Brand'] }}",
-            "Secondary Keywords": "={{ $json['Secondary Keywords'] }}",
-            "Hub Page URL": "={{ $json['Hub Page URL'] }}",
-            "Named Author": "={{ $json['Named Author'] }}",
-            "Status": "Backlog"
+            "id": "={{ $json.recordId }}",
+            "Status": "Backlog",
+            "CTA Brand": "={{ $json.ctaBrand }}",
+            "Draft Content": "",
+            "Humanized Content": "",
+            "Polished Content": "",
+            "Truth Check Notes": "",
+            "Audit Notes": "",
+            "Last Error": "",
+            "Burstiness Retries": "={{ 0 }}",
+            "Attempt Count": "={{ 0 }}"
           }
         },
         "options": {
           "typecast": true
         }
       },
-      "id": "form-create-row",
-      "name": "Create Page Row",
+      "id": "form-queue",
+      "name": "Queue for Production",
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        260,
+        1100,
         0
       ],
       "credentials": {
@@ -222,39 +214,110 @@
             },
             {
               "name": "record_id",
-              "value": "={{ $json.id }}"
+              "value": "={{ $('Resolve Selection').item.json.recordId }}"
             }
           ]
         },
         "options": {}
       },
-      "id": "form-fire-intake",
+      "id": "form-fire",
       "name": "Fire Intake",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        520,
+        1320,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "text",
+        "completionTitle": "✅ Page queued for production",
+        "completionMessage": "Your page is now in the pipeline and will appear in Airtable under “Editor Review” when ready (typically ~15–30 minutes). Open the form again to produce another page."
+      },
+      "id": "form-done",
+      "name": "Done",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1540,
         0
       ]
     }
   ],
   "connections": {
-    "New Page Intake": {
+    "Start — Pick Pillar": {
       "main": [
         [
           {
-            "node": "Create Page Row",
+            "node": "List Available Pages",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Create Page Row": {
+    "List Available Pages": {
+      "main": [
+        [
+          {
+            "node": "Build Page Dropdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Page Dropdown": {
+      "main": [
+        [
+          {
+            "node": "Pick the Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick the Page": {
+      "main": [
+        [
+          {
+            "node": "Resolve Selection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Selection": {
+      "main": [
+        [
+          {
+            "node": "Queue for Production",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Queue for Production": {
       "main": [
         [
           {
             "node": "Fire Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fire Intake": {
+      "main": [
+        [
+          {
+            "node": "Done",
             "type": "main",
             "index": 0
           }

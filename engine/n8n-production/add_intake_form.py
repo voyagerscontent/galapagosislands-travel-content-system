@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
-"""WFP-Intake-Form: a public n8n hosted form the marketing team uses to queue new pages.
+"""WFP-Intake-Form: a public n8n form the marketing team uses to PRODUCE a planned page.
 
-No shell, no Airtable seat needed. On submit it:
-  1. creates a "Pages Master" row at Status=Backlog with the page spec, then
-  2. fires the WFP0 intake webhook (site_id + the new record_id) so the page runs
-     start-to-finish instantly (scoring -> brief -> draft -> ... -> Editor Review).
+It does NOT create free-text pages. It lets the team pick from the pages already sitting
+in the Airtable backlog (Status blank or 'Backlog') and sends the chosen one into
+production start-to-finish.
 
-  New Page Intake (formTrigger) -> Create Page Row (Airtable create) -> Fire Intake (HTTP)
+Two-step dynamic form (n8n multi-page form; dynamic dropdown per best-practice = Code
+node builds the form JSON):
 
-The dispatcher would also pick a Backlog row up within 2h, so even if the instant fire
-fails the page is not lost. Idempotent: re-running replaces the workflow by name.
+  Start — Pick Pillar (formTrigger)         page 1: Pillar (+ optional keyword)
+    -> List Available Pages (Airtable search)  Status blank/Backlog, that Pillar, title~keyword
+    -> Build Page Dropdown (Code)              options = "Title  ·  recID"
+    -> Pick the Page (Form, json)             page 2: dynamic Page dropdown + CTA Brand
+    -> Resolve Selection (Code)                parse recID out of the chosen option
+    -> Queue for Production (Airtable update)  Status=Backlog, CTA Brand, clear stale content
+    -> Fire Intake (HTTP)                      WFP0 stage/intake -> full self-chaining run
+    -> Done (Form completion)                  confirmation page
 
 Run:  N8N_API_KEY=... python engine/n8n-production/add_intake_form.py
 """
@@ -26,105 +32,144 @@ FORM_PATH = "new-page"
 
 PILLARS = ["Cruises", "Wildlife", "Islands", "Itineraries", "Planning", "Activities",
            "Visitor Sites", "FAQ", "Conservation", "Blog"]
-PAGE_TYPES = ["Guide", "Hub Page", "Pillar Page", "Final Answer Page", "Blog Post",
-              "FAQ Page", "Island Page"]
-CTA_BRANDS = ["Voyagers Travel", "Latin Trails"]
 
+# available = not yet produced (Status blank or Backlog), in the chosen pillar, and — if a
+# keyword was given — the title contains it (case-insensitive).
+LIST_FORMULA = (
+    "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), "
+    "{Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}', "
+    "OR( '{{ $('Start — Pick Pillar').item.json[\"Keyword filter\"] }}' = '', "
+    "FIND( LOWER('{{ $('Start — Pick Pillar').item.json[\"Keyword filter\"] }}'), LOWER({Meta Title}) ) > 0 ) )"
+)
 
-def opts(values):
-    return {"values": [{"option": v} for v in values]}
+BUILD_DROPDOWN_JS = r"""
+// Build the page-2 form definition dynamically from the Airtable backlog results.
+// Encode the record id at the end of each option so we can parse it back after submit.
+const rows = $input.all();
+const options = rows
+  .filter(r => r.json && r.json.id)
+  .map(r => `${(r.json['Meta Title'] || '(untitled)').replace(/\s+/g,' ').trim()}  ·  ${r.json.id}`);
+const pageField = options.length
+  ? { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true, fieldOptions: options }
+  : { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true,
+      fieldOptions: ['— no matches — go back and change the pillar or keyword —'] };
+const def = [
+  pageField,
+  { fieldLabel: 'CTA Brand', fieldType: 'dropdown', requiredField: true,
+    fieldOptions: ['Voyagers Travel', 'Latin Trails'] },
+];
+return [{ json: { formDef: JSON.stringify(def), count: options.length } }];
+"""
+
+RESOLVE_JS = r"""
+const sel = String($json['Page to produce'] || '');
+const m = sel.match(/(rec[0-9A-Za-z]{14})\s*$/);
+if (!m) throw new Error('No planned page was selected (could not parse a record id from: ' + sel + ')');
+return [{ json: { recordId: m[1], ctaBrand: String($json['CTA Brand'] || ''), selection: sel } }];
+"""
 
 
 def build():
-    form = {
+    trigger = {
         "parameters": {
-            "formTitle": "New Page — GalapagosIslands.travel Production",
-            "formDescription": "Queue a new page for the content pipeline. Fill this in and submit; "
-                               "the page runs itself through scoring, brief, draft, truth-check, humanize, "
-                               "polish and audit, then lands in Airtable at <b>Editor Review</b>.",
+            "formTitle": "Produce a Page — GalapagosIslands.travel",
+            "formDescription": "Pick a content pillar (and optionally type a keyword to narrow the list), "
+                               "then choose a planned page to send into production.",
             "formFields": {"values": [
-                {"fieldLabel": "Page Title", "fieldType": "text",
-                 "placeholder": "e.g. Best Time to See Whale Sharks in the Galápagos", "requiredField": True},
-                {"fieldLabel": "Primary Keyword", "fieldType": "text",
-                 "placeholder": "e.g. galapagos whale shark season", "requiredField": True},
-                {"fieldLabel": "Pillar", "fieldType": "dropdown", "fieldOptions": opts(PILLARS), "requiredField": True},
-                {"fieldLabel": "Page Type", "fieldType": "dropdown", "fieldOptions": opts(PAGE_TYPES), "requiredField": True},
-                {"fieldLabel": "Brief / Notes", "fieldType": "textarea",
-                 "placeholder": "What should this page cover? Angle, must-include facts, audience, anything the writer needs.",
-                 "requiredField": True},
-                {"fieldLabel": "Target Word Count", "fieldType": "number",
-                 "placeholder": "2500", "requiredField": True},
-                {"fieldLabel": "CTA Brand", "fieldType": "dropdown", "fieldOptions": opts(CTA_BRANDS), "requiredField": True},
-                {"fieldLabel": "Secondary Keywords", "fieldType": "text",
-                 "placeholder": "optional — comma separated", "requiredField": False},
-                {"fieldLabel": "Hub Page URL", "fieldType": "text",
-                 "placeholder": "optional — the pillar hub this belongs under", "requiredField": False},
-                {"fieldLabel": "Named Author", "fieldType": "text",
-                 "placeholder": "optional — persona byline, e.g. Juan Magallanes", "requiredField": False},
+                {"fieldLabel": "Pillar", "fieldType": "dropdown",
+                 "fieldOptions": {"values": [{"option": p} for p in PILLARS]}, "requiredField": True},
+                {"fieldLabel": "Keyword filter", "fieldType": "text",
+                 "placeholder": "optional — narrow by words in the page title", "requiredField": False},
             ]},
-            "responseMode": "onReceived",
-            "options": {
-                "path": FORM_PATH,
-                "buttonLabel": "Queue page for production",
-                "appendAttribution": False,
-                "ignoreBots": True,
-                "respondWithOptions": {"values": {
-                    "respondWith": "text",
-                    "formSubmittedText": "✅ Your page is queued and now in production. "
-                                         "It will appear in Airtable under “Editor Review” when ready "
-                                         "(typically ~15–30 minutes). You can submit another page any time.",
-                }},
-            },
+            "options": {"path": FORM_PATH, "buttonLabel": "Find pages", "appendAttribution": False, "ignoreBots": True},
         },
-        "id": "form-intake-trigger", "name": "New Page Intake",
+        "id": "form-trigger", "name": "Start — Pick Pillar",
         "type": "n8n-nodes-base.formTrigger", "typeVersion": 2.6, "position": [0, 0],
         "webhookId": "galapagos-new-page-form",
     }
-
-    create = {
+    list_pages = {
         "parameters": {
-            "operation": "create",
+            "operation": "search",
             "base": {"__rl": True, "mode": "id", "value": BASE_ID},
             "table": {"__rl": True, "mode": "id", "value": TABLE_ID},
-            "columns": {"mappingMode": "defineBelow", "value": {
-                "Name": "={{ $json['Page Title'] }}",
-                "Meta Title": "={{ $json['Page Title'] }}",
-                "Primary Keyword": "={{ $json['Primary Keyword'] }}",
-                "Pillar": "={{ $json['Pillar'] }}",
-                "Page Type": "={{ $json['Page Type'] }}",
-                "Topic / Brief": "={{ $json['Brief / Notes'] }}",
-                "Suggested Word Count": "={{ $json['Target Word Count'] }}",
-                "CTA Brand": "={{ $json['CTA Brand'] }}",
-                "Secondary Keywords": "={{ $json['Secondary Keywords'] }}",
-                "Hub Page URL": "={{ $json['Hub Page URL'] }}",
-                "Named Author": "={{ $json['Named Author'] }}",
+            "filterByFormula": LIST_FORMULA,
+            "returnAll": True,
+            "options": {},
+        },
+        "id": "form-list-pages", "name": "List Available Pages",
+        "type": "n8n-nodes-base.airtable", "typeVersion": 2.1, "position": [220, 0],
+        "credentials": AIRTABLE_CRED,
+    }
+    build_dd = {
+        "parameters": {"jsCode": BUILD_DROPDOWN_JS},
+        "id": "form-build-dd", "name": "Build Page Dropdown",
+        "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [440, 0],
+    }
+    pick_page = {
+        "parameters": {
+            "operation": "page", "defineForm": "json", "jsonOutput": "={{ $json.formDef }}",
+            "options": {
+                "formTitle": "Choose the page to produce",
+                "formDescription": "={{ $json.count }} planned pages in this pillar. Pick one and confirm the CTA brand.",
+                "buttonLabel": "Send to production",
+            },
+        },
+        "id": "form-pick-page", "name": "Pick the Page",
+        "type": "n8n-nodes-base.form", "typeVersion": 2.5, "position": [660, 0],
+    }
+    resolve = {
+        "parameters": {"jsCode": RESOLVE_JS},
+        "id": "form-resolve", "name": "Resolve Selection",
+        "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [880, 0],
+    }
+    queue = {
+        "parameters": {
+            "operation": "update",
+            "base": {"__rl": True, "mode": "id", "value": BASE_ID},
+            "table": {"__rl": True, "mode": "id", "value": TABLE_ID},
+            "columns": {"mappingMode": "defineBelow", "matchingColumns": ["id"], "value": {
+                "id": "={{ $json.recordId }}",
                 "Status": "Backlog",
+                "CTA Brand": "={{ $json.ctaBrand }}",
+                "Draft Content": "", "Humanized Content": "", "Polished Content": "",
+                "Truth Check Notes": "", "Audit Notes": "", "Last Error": "",
+                "Burstiness Retries": "={{ 0 }}", "Attempt Count": "={{ 0 }}",
             }},
             "options": {"typecast": True},
         },
-        "id": "form-create-row", "name": "Create Page Row",
-        "type": "n8n-nodes-base.airtable", "typeVersion": 2.1, "position": [260, 0],
+        "id": "form-queue", "name": "Queue for Production",
+        "type": "n8n-nodes-base.airtable", "typeVersion": 2.1, "position": [1100, 0],
         "credentials": AIRTABLE_CRED,
     }
-
     fire = {
         "parameters": {
             "method": "POST", "url": INTAKE_WEBHOOK, "sendBody": True, "specifyBody": "keypair",
             "bodyParameters": {"parameters": [
                 {"name": "site_id", "value": SITE_ID},
-                {"name": "record_id", "value": "={{ $json.id }}"},
+                {"name": "record_id", "value": "={{ $('Resolve Selection').item.json.recordId }}"},
             ]},
             "options": {},
         },
-        "id": "form-fire-intake", "name": "Fire Intake",
-        "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [520, 0],
+        "id": "form-fire", "name": "Fire Intake",
+        "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [1320, 0],
+    }
+    done = {
+        "parameters": {
+            "operation": "completion", "respondWith": "text",
+            "completionTitle": "✅ Page queued for production",
+            "completionMessage": "Your page is now in the pipeline and will appear in Airtable under "
+                                 "“Editor Review” when ready (typically ~15–30 minutes). "
+                                 "Open the form again to produce another page.",
+        },
+        "id": "form-done", "name": "Done",
+        "type": "n8n-nodes-base.form", "typeVersion": 2.5, "position": [1540, 0],
     }
 
-    connections = {
-        "New Page Intake": {"main": [[{"node": "Create Page Row", "type": "main", "index": 0}]]},
-        "Create Page Row": {"main": [[{"node": "Fire Intake", "type": "main", "index": 0}]]},
-    }
-    return {"name": WF_NAME, "nodes": [form, create, fire], "connections": connections,
+    order = [trigger, list_pages, build_dd, pick_page, resolve, queue, fire, done]
+    connections = {}
+    for a, b in zip(order, order[1:]):
+        connections[a["name"]] = {"main": [[{"node": b["name"], "type": "main", "index": 0}]]}
+    return {"name": WF_NAME, "nodes": order, "connections": connections,
             "settings": {"executionOrder": "v1"}}
 
 
@@ -136,29 +181,26 @@ def api(path, method="GET", body=None, key=None):
 
 def main():
     wf = build()
-    key = os.environ.get("N8N_PUB") or os.environ.get("N8N_API_KEY")
-    # save a local copy for the repo
     here = os.path.dirname(__file__)
     json.dump(wf, open(os.path.join(here, "WFP_intake_form.json"), "w", encoding="utf-8"), indent=2, ensure_ascii=False)
-    print("built WFP-Intake Form workflow.")
+    print("built WFP-Intake Form (page picker).")
+    key = os.environ.get("N8N_PUB") or os.environ.get("N8N_API_KEY")
     if not key:
         print("no key — local only."); return
-    # find existing by name -> update, else create
     existing = [w for w in api("/api/v1/workflows?limit=100", key=key)["data"] if w["name"] == WF_NAME]
     if existing:
         wid = existing[0]["id"]
         api(f"/api/v1/workflows/{wid}", "PUT", wf, key)
-        print("updated existing workflow", wid)
+        print("updated workflow", wid)
     else:
-        d = api("/api/v1/workflows", "POST", wf, key)
-        wid = d["id"]
+        wid = api("/api/v1/workflows", "POST", wf, key)["id"]
         print("created workflow", wid)
     try:
         api(f"/api/v1/workflows/{wid}/activate", "POST", {}, key)
         print("activated.")
     except urllib.error.HTTPError as e:
         print("activate ERR", e.code, e.read().decode()[:200])
-    print("FORM URL (production):", f"{N8N}/form/{FORM_PATH}")
+    print("FORM URL:", f"{N8N}/form/{FORM_PATH}")
 
 
 if __name__ == "__main__":
