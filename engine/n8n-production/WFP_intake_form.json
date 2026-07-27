@@ -4,14 +4,24 @@
     {
       "parameters": {
         "formTitle": "Produce a Page — GalapagosIslands.travel",
-        "formDescription": "Pick a content pillar (and optionally type a keyword to narrow the list), then choose a planned page to send into production.",
+        "formDescription": "Type part of the page title to find it. Leave the pillar on “Any pillar” to search everything, or pick a pillar to narrow. Next you'll choose the exact page from a list.",
         "formFields": {
           "values": [
             {
+              "fieldLabel": "Search by page title",
+              "fieldType": "text",
+              "placeholder": "e.g. honeymoon, 3-day itinerary, Bartolomé",
+              "requiredField": false
+            },
+            {
               "fieldLabel": "Pillar",
               "fieldType": "dropdown",
+              "defaultValue": "Any pillar (search all)",
               "fieldOptions": {
                 "values": [
+                  {
+                    "option": "Any pillar (search all)"
+                  },
                   {
                     "option": "Cruises"
                   },
@@ -45,12 +55,6 @@
                 ]
               },
               "requiredField": true
-            },
-            {
-              "fieldLabel": "Keyword filter",
-              "fieldType": "text",
-              "placeholder": "optional — narrow by words in the page title",
-              "requiredField": false
             }
           ]
         },
@@ -84,7 +88,7 @@
           "mode": "id",
           "value": "tblUgxSGGfeJIL5GD"
         },
-        "filterByFormula": "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), {Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}', {Draft Content} = BLANK(), {Polished Content} = BLANK(), {Published URL} = BLANK(), {Publish Status} = BLANK() )",
+        "filterByFormula": "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), {Draft Content} = BLANK(), {Polished Content} = BLANK(), {Published URL} = BLANK(), {Publish Status} = BLANK(), OR( '{{ $('Start — Pick Pillar').item.json.Pillar }}' = 'Any pillar (search all)', {Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}' ) )",
         "returnAll": true,
         "options": {}
       },
@@ -106,7 +110,7 @@
     },
     {
       "parameters": {
-        "jsCode": "\n// Build page-2 dynamically. Keyword filtering happens HERE (not in the Airtable query) so a\n// too-narrow keyword can never dead-end the form: if it matches nothing we show all pillar\n// pages. Normalize hyphens/spaces so \"3 night\" matches \"3-Night\". Encode the record id at the\n// end of each option so we can parse it back after submit.\nconst norm = s => String(s || '').toLowerCase().replace(/[-–—_/]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst rows = $input.all().filter(r => r.json && r.json.id);\nconst kwRaw = String(($('Start — Pick Pillar').first().json['Keyword filter']) || '').trim();\nconst kw = norm(kwRaw);\nlet matched = rows, note = '';\nif (kw) {\n  const f = rows.filter(r => norm(r.json['Meta Title']).includes(kw));\n  if (f.length) { matched = f; note = ` matching “${kwRaw}”`; }\n  else { note = ` — nothing matched “${kwRaw}”, so showing all ${rows.length} pages in this pillar`; }\n}\nconst options = matched.map(r => `${String(r.json['Meta Title'] || '(untitled)').replace(/\\s+/g, ' ').trim()}  ·  ${r.json.id}`);\nconst pageField = options.length\n  ? { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true, fieldOptions: options }\n  : { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true,\n      fieldOptions: ['— no planned pages left in this pillar —'] };\nconst def = [\n  pageField,\n  { fieldLabel: 'CTA Brand', fieldType: 'dropdown', requiredField: true,\n    fieldOptions: ['Voyagers Travel', 'Latin Trails'] },\n];\nreturn [{ json: { formDef: JSON.stringify(def), count: options.length, note } }];\n"
+        "jsCode": "\n// Build page-2 dynamically. Keyword filtering happens HERE (not in the Airtable query) so a\n// too-narrow keyword can never dead-end the form: if it matches nothing we show all pillar\n// pages. Normalize hyphens/spaces so \"3 night\" matches \"3-Night\". Encode the record id at the\n// end of each option so we can parse it back after submit.\n// accent- and punctuation-insensitive: \"bartolome\" matches \"Bartolomé\", \"3 day\" matches \"3-Day\"\nconst norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')\n  .toLowerCase().replace(/[-–—_/]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst rows = $input.all().filter(r => r.json && r.json.id);\nconst kwRaw = String(($('Start — Pick Pillar').first().json['Search by page title']) || '').trim();\nconst kw = norm(kwRaw);\nlet matched = rows, note = '';\nif (kw) {\n  const f = rows.filter(r => norm(r.json['Meta Title']).includes(kw));\n  if (f.length) { matched = f; note = ` matching “${kwRaw}”`; }\n  else { note = ` — nothing matched “${kwRaw}”, so showing all ${rows.length}`; }\n}\nconst CAP = 100;\nlet truncated = false;\nif (matched.length > CAP) { matched = matched.slice(0, CAP); truncated = true; }\nif (truncated) note += ` — showing the first ${CAP}; type part of the title to narrow`;\nconst options = matched.map(r => `${String(r.json['Meta Title'] || '(untitled)').replace(/\\s+/g, ' ').trim()}  ·  ${r.json.id}`);\nconst pageField = options.length\n  ? { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true, fieldOptions: options }\n  : { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true,\n      fieldOptions: ['— no planned pages left in this pillar —'] };\nconst def = [\n  pageField,\n  { fieldLabel: 'CTA Brand', fieldType: 'dropdown', requiredField: true,\n    fieldOptions: ['Voyagers Travel', 'Latin Trails'] },\n];\nreturn [{ json: { formDef: JSON.stringify(def), count: options.length, note } }];\n"
       },
       "id": "form-build-dd",
       "name": "Build Page Dropdown",
@@ -121,10 +125,10 @@
       "parameters": {
         "operation": "page",
         "defineForm": "json",
-        "jsonOutput": "={{ $json.formDef }}",
+        "jsonOutput": "={{ $('Build Page Dropdown').first().json.formDef }}",
         "options": {
           "formTitle": "Choose the page to produce",
-          "formDescription": "={{ $json.count }} planned pages{{ $json.note }}. Pick one and confirm the CTA brand.",
+          "formDescription": "={{ $('Build Page Dropdown').first().json.count }} planned pages{{ $('Build Page Dropdown').first().json.note }}. Pick one and confirm the CTA brand.",
           "buttonLabel": "Send to production"
         }
       },

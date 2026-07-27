@@ -30,19 +30,22 @@ AIRTABLE_CRED = {"airtableTokenApi": {"id": "mITfEGdTPqCCNrsT", "name": "Airtabl
 WF_NAME = "WFP-Intake Form - GalapagosIslands.travel"
 FORM_PATH = "new-page"
 
-PILLARS = ["Cruises", "Wildlife", "Islands", "Itineraries", "Planning", "Activities",
+ANY_PILLAR = "Any pillar (search all)"
+PILLARS = [ANY_PILLAR, "Cruises", "Wildlife", "Islands", "Itineraries", "Planning", "Activities",
            "Visitor Sites", "FAQ", "Conservation", "Blog"]
+OPTION_CAP = 100  # max pages shown in the page-2 dropdown; keyword narrows below this
 
-# Query by PILLAR, and ONLY pages that have NOT been created yet. "Not created" =
-# Status blank/Backlog AND no produced artifacts (no Draft/Polished content, not published).
-# This guarantees the form can never re-trigger production of an already-made page — those
-# are handled by the separate optimize/rewrite pipeline. Keyword filter is applied in code
-# below (with fallback to the full list) so it can never dead-end the form.
+# ONLY pages that have NOT been created yet — Status blank/Backlog AND no produced artifacts
+# (no Draft/Polished content, not published) — so the form can never re-trigger an already-made
+# page (rewrite/optimize is a separate pipeline). Pillar is OPTIONAL: "Any pillar (search all)"
+# searches every pillar so the user can just type a title. Keyword is filtered in code (with a
+# fallback + cap) so it can never dead-end the form.
 LIST_FORMULA = (
     "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), "
-    "{Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}', "
     "{Draft Content} = BLANK(), {Polished Content} = BLANK(), "
-    "{Published URL} = BLANK(), {Publish Status} = BLANK() )"
+    "{Published URL} = BLANK(), {Publish Status} = BLANK(), "
+    "OR( '{{ $('Start — Pick Pillar').item.json.Pillar }}' = '" + ANY_PILLAR + "', "
+    "{Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}' ) )"
 )
 
 BUILD_DROPDOWN_JS = r"""
@@ -50,16 +53,22 @@ BUILD_DROPDOWN_JS = r"""
 // too-narrow keyword can never dead-end the form: if it matches nothing we show all pillar
 // pages. Normalize hyphens/spaces so "3 night" matches "3-Night". Encode the record id at the
 // end of each option so we can parse it back after submit.
-const norm = s => String(s || '').toLowerCase().replace(/[-–—_/]/g, ' ').replace(/\s+/g, ' ').trim();
+// accent- and punctuation-insensitive: "bartolome" matches "Bartolomé", "3 day" matches "3-Day"
+const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .toLowerCase().replace(/[-–—_/]/g, ' ').replace(/\s+/g, ' ').trim();
 const rows = $input.all().filter(r => r.json && r.json.id);
-const kwRaw = String(($('Start — Pick Pillar').first().json['Keyword filter']) || '').trim();
+const kwRaw = String(($('Start — Pick Pillar').first().json['Search by page title']) || '').trim();
 const kw = norm(kwRaw);
 let matched = rows, note = '';
 if (kw) {
   const f = rows.filter(r => norm(r.json['Meta Title']).includes(kw));
   if (f.length) { matched = f; note = ` matching “${kwRaw}”`; }
-  else { note = ` — nothing matched “${kwRaw}”, so showing all ${rows.length} pages in this pillar`; }
+  else { note = ` — nothing matched “${kwRaw}”, so showing all ${rows.length}`; }
 }
+const CAP = 100;
+let truncated = false;
+if (matched.length > CAP) { matched = matched.slice(0, CAP); truncated = true; }
+if (truncated) note += ` — showing the first ${CAP}; type part of the title to narrow`;
 const options = matched.map(r => `${String(r.json['Meta Title'] || '(untitled)').replace(/\s+/g, ' ').trim()}  ·  ${r.json.id}`);
 const pageField = options.length
   ? { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true, fieldOptions: options }
@@ -86,13 +95,14 @@ def build():
     trigger = {
         "parameters": {
             "formTitle": "Produce a Page — GalapagosIslands.travel",
-            "formDescription": "Pick a content pillar (and optionally type a keyword to narrow the list), "
-                               "then choose a planned page to send into production.",
+            "formDescription": "Type part of the page title to find it. Leave the pillar on "
+                               "“Any pillar” to search everything, or pick a pillar to narrow. "
+                               "Next you'll choose the exact page from a list.",
             "formFields": {"values": [
-                {"fieldLabel": "Pillar", "fieldType": "dropdown",
+                {"fieldLabel": "Search by page title", "fieldType": "text",
+                 "placeholder": "e.g. honeymoon, 3-day itinerary, Bartolomé", "requiredField": False},
+                {"fieldLabel": "Pillar", "fieldType": "dropdown", "defaultValue": ANY_PILLAR,
                  "fieldOptions": {"values": [{"option": p} for p in PILLARS]}, "requiredField": True},
-                {"fieldLabel": "Keyword filter", "fieldType": "text",
-                 "placeholder": "optional — narrow by words in the page title", "requiredField": False},
             ]},
             "options": {"path": FORM_PATH, "buttonLabel": "Find pages", "appendAttribution": False, "ignoreBots": True},
         },
@@ -120,10 +130,16 @@ def build():
     }
     pick_page = {
         "parameters": {
-            "operation": "page", "defineForm": "json", "jsonOutput": "={{ $json.formDef }}",
+            # Reference the Build node BY NAME (not $json): the Form node re-evaluates these
+            # expressions when it processes the page-2 submission (resume pass), and on that
+            # pass $json is the submission, not the Build output — $json.formDef would be empty
+            # ("invalid option 0"). $('Build Page Dropdown').first() resolves on both passes.
+            "operation": "page", "defineForm": "json",
+            "jsonOutput": "={{ $('Build Page Dropdown').first().json.formDef }}",
             "options": {
                 "formTitle": "Choose the page to produce",
-                "formDescription": "={{ $json.count }} planned pages{{ $json.note }}. Pick one and confirm the CTA brand.",
+                "formDescription": "={{ $('Build Page Dropdown').first().json.count }} planned pages"
+                                   "{{ $('Build Page Dropdown').first().json.note }}. Pick one and confirm the CTA brand.",
                 "buttonLabel": "Send to production",
             },
         },
