@@ -33,38 +33,51 @@ FORM_PATH = "new-page"
 PILLARS = ["Cruises", "Wildlife", "Islands", "Itineraries", "Planning", "Activities",
            "Visitor Sites", "FAQ", "Conservation", "Blog"]
 
-# available = not yet produced (Status blank or Backlog), in the chosen pillar, and — if a
-# keyword was given — the title contains it (case-insensitive).
+# Query by PILLAR, and ONLY pages that have NOT been created yet. "Not created" =
+# Status blank/Backlog AND no produced artifacts (no Draft/Polished content, not published).
+# This guarantees the form can never re-trigger production of an already-made page — those
+# are handled by the separate optimize/rewrite pipeline. Keyword filter is applied in code
+# below (with fallback to the full list) so it can never dead-end the form.
 LIST_FORMULA = (
     "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), "
     "{Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}', "
-    "OR( '{{ $('Start — Pick Pillar').item.json[\"Keyword filter\"] }}' = '', "
-    "FIND( LOWER('{{ $('Start — Pick Pillar').item.json[\"Keyword filter\"] }}'), LOWER({Meta Title}) ) > 0 ) )"
+    "{Draft Content} = BLANK(), {Polished Content} = BLANK(), "
+    "{Published URL} = BLANK(), {Publish Status} = BLANK() )"
 )
 
 BUILD_DROPDOWN_JS = r"""
-// Build the page-2 form definition dynamically from the Airtable backlog results.
-// Encode the record id at the end of each option so we can parse it back after submit.
-const rows = $input.all();
-const options = rows
-  .filter(r => r.json && r.json.id)
-  .map(r => `${(r.json['Meta Title'] || '(untitled)').replace(/\s+/g,' ').trim()}  ·  ${r.json.id}`);
+// Build page-2 dynamically. Keyword filtering happens HERE (not in the Airtable query) so a
+// too-narrow keyword can never dead-end the form: if it matches nothing we show all pillar
+// pages. Normalize hyphens/spaces so "3 night" matches "3-Night". Encode the record id at the
+// end of each option so we can parse it back after submit.
+const norm = s => String(s || '').toLowerCase().replace(/[-–—_/]/g, ' ').replace(/\s+/g, ' ').trim();
+const rows = $input.all().filter(r => r.json && r.json.id);
+const kwRaw = String(($('Start — Pick Pillar').first().json['Keyword filter']) || '').trim();
+const kw = norm(kwRaw);
+let matched = rows, note = '';
+if (kw) {
+  const f = rows.filter(r => norm(r.json['Meta Title']).includes(kw));
+  if (f.length) { matched = f; note = ` matching “${kwRaw}”`; }
+  else { note = ` — nothing matched “${kwRaw}”, so showing all ${rows.length} pages in this pillar`; }
+}
+const options = matched.map(r => `${String(r.json['Meta Title'] || '(untitled)').replace(/\s+/g, ' ').trim()}  ·  ${r.json.id}`);
 const pageField = options.length
   ? { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true, fieldOptions: options }
   : { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true,
-      fieldOptions: ['— no matches — go back and change the pillar or keyword —'] };
+      fieldOptions: ['— no planned pages left in this pillar —'] };
 const def = [
   pageField,
   { fieldLabel: 'CTA Brand', fieldType: 'dropdown', requiredField: true,
     fieldOptions: ['Voyagers Travel', 'Latin Trails'] },
 ];
-return [{ json: { formDef: JSON.stringify(def), count: options.length } }];
+return [{ json: { formDef: JSON.stringify(def), count: options.length, note } }];
 """
 
 RESOLVE_JS = r"""
 const sel = String($json['Page to produce'] || '');
 const m = sel.match(/(rec[0-9A-Za-z]{14})\s*$/);
-if (!m) throw new Error('No planned page was selected (could not parse a record id from: ' + sel + ')');
+// Guard: the empty-pillar placeholder has no record id — never fire intake on it.
+if (!m) throw new Error('No real page was selected. Please reopen the form and choose a page from the list.');
 return [{ json: { recordId: m[1], ctaBrand: String($json['CTA Brand'] || ''), selection: sel } }];
 """
 
@@ -98,7 +111,7 @@ def build():
         },
         "id": "form-list-pages", "name": "List Available Pages",
         "type": "n8n-nodes-base.airtable", "typeVersion": 2.1, "position": [220, 0],
-        "credentials": AIRTABLE_CRED,
+        "credentials": AIRTABLE_CRED, "alwaysOutputData": True,
     }
     build_dd = {
         "parameters": {"jsCode": BUILD_DROPDOWN_JS},
@@ -110,7 +123,7 @@ def build():
             "operation": "page", "defineForm": "json", "jsonOutput": "={{ $json.formDef }}",
             "options": {
                 "formTitle": "Choose the page to produce",
-                "formDescription": "={{ $json.count }} planned pages in this pillar. Pick one and confirm the CTA brand.",
+                "formDescription": "={{ $json.count }} planned pages{{ $json.note }}. Pick one and confirm the CTA brand.",
                 "buttonLabel": "Send to production",
             },
         },
