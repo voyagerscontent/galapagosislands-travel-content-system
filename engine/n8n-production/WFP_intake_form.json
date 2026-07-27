@@ -4,14 +4,14 @@
     {
       "parameters": {
         "formTitle": "Produce a Page — GalapagosIslands.travel",
-        "formDescription": "Type part of the page title to find it. Leave the pillar on “Any pillar” to search everything, or pick a pillar to narrow. Next you'll choose the exact page from a list.",
+        "formDescription": "Type part of the page title to find a planned page. Leave the pillar on “Any pillar” to search everything. You'll review and confirm before it's produced.",
         "formFields": {
           "values": [
             {
-              "fieldLabel": "Search by page title",
+              "fieldLabel": "Page title",
               "fieldType": "text",
-              "placeholder": "e.g. honeymoon, 3-day itinerary, Bartolomé",
-              "requiredField": false
+              "placeholder": "e.g. 3-day itinerary, honeymoon cruise, Bartolomé",
+              "requiredField": true
             },
             {
               "fieldLabel": "Pillar",
@@ -55,18 +55,33 @@
                 ]
               },
               "requiredField": true
+            },
+            {
+              "fieldLabel": "CTA Brand",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Voyagers Travel"
+                  },
+                  {
+                    "option": "Latin Trails"
+                  }
+                ]
+              }
             }
           ]
         },
         "options": {
           "path": "new-page",
-          "buttonLabel": "Find pages",
+          "buttonLabel": "Find page",
           "appendAttribution": false,
           "ignoreBots": true
         }
       },
       "id": "form-trigger",
-      "name": "Start — Pick Pillar",
+      "name": "New Page Form",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.6,
       "position": [
@@ -88,11 +103,11 @@
           "mode": "id",
           "value": "tblUgxSGGfeJIL5GD"
         },
-        "filterByFormula": "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), {Draft Content} = BLANK(), {Polished Content} = BLANK(), {Published URL} = BLANK(), {Publish Status} = BLANK(), OR( '{{ $('Start — Pick Pillar').item.json.Pillar }}' = 'Any pillar (search all)', {Pillar} = '{{ $('Start — Pick Pillar').item.json.Pillar }}' ) )",
+        "filterByFormula": "=AND( OR({Status} = BLANK(), {Status} = 'Backlog'), {Draft Content} = BLANK(), {Polished Content} = BLANK(), {Published URL} = BLANK(), {Publish Status} = BLANK(), OR( '{{ $('New Page Form').item.json.Pillar }}' = 'Any pillar (search all)', {Pillar} = '{{ $('New Page Form').item.json.Pillar }}' ) )",
         "returnAll": true,
         "options": {}
       },
-      "id": "form-list-pages",
+      "id": "form-list",
       "name": "List Available Pages",
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
@@ -110,10 +125,10 @@
     },
     {
       "parameters": {
-        "jsCode": "\n// Build page-2 dynamically. Keyword filtering happens HERE (not in the Airtable query) so a\n// too-narrow keyword can never dead-end the form: if it matches nothing we show all pillar\n// pages. Normalize hyphens/spaces so \"3 night\" matches \"3-Night\". Encode the record id at the\n// end of each option so we can parse it back after submit.\n// accent- and punctuation-insensitive: \"bartolome\" matches \"Bartolomé\", \"3 day\" matches \"3-Day\"\nconst norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')\n  .toLowerCase().replace(/[-–—_/]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst rows = $input.all().filter(r => r.json && r.json.id);\nconst kwRaw = String(($('Start — Pick Pillar').first().json['Search by page title']) || '').trim();\nconst kw = norm(kwRaw);\nlet matched = rows, note = '';\nif (kw) {\n  const f = rows.filter(r => norm(r.json['Meta Title']).includes(kw));\n  if (f.length) { matched = f; note = ` matching “${kwRaw}”`; }\n  else { note = ` — nothing matched “${kwRaw}”, so showing all ${rows.length}`; }\n}\nconst CAP = 100;\nlet truncated = false;\nif (matched.length > CAP) { matched = matched.slice(0, CAP); truncated = true; }\nif (truncated) note += ` — showing the first ${CAP}; type part of the title to narrow`;\nconst options = matched.map(r => `${String(r.json['Meta Title'] || '(untitled)').replace(/\\s+/g, ' ').trim()}  ·  ${r.json.id}`);\nconst pageField = options.length\n  ? { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true, fieldOptions: options }\n  : { fieldLabel: 'Page to produce', fieldType: 'dropdown', requiredField: true,\n      fieldOptions: ['— no planned pages left in this pillar —'] };\nconst def = [\n  pageField,\n  { fieldLabel: 'CTA Brand', fieldType: 'dropdown', requiredField: true,\n    fieldOptions: ['Voyagers Travel', 'Latin Trails'] },\n];\nreturn [{ json: { formDef: JSON.stringify(def), count: options.length, note } }];\n"
+        "jsCode": "\nconst norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')\n  .toLowerCase().replace(/[-–—_/]/g, ' ').replace(/\\s+/g, ' ').trim();\nconst trig = $('New Page Form').first().json;\nconst kwRaw = String(trig['Page title'] || '').trim();\nconst cta = String(trig['CTA Brand'] || '');\nconst kw = norm(kwRaw);\nconst rows = $input.all().filter(r => r.json && r.json.id)\n  .map(r => ({ id: r.json.id, title: String(r.json['Meta Title'] || '(untitled)').replace(/\\s+/g,' ').trim() }));\nrows.forEach(r => r.n = norm(r.title));\nif (!kw) return [{ json: { status: 'none', retryMsg: 'Please type part of the page title, then submit again.' } }];\nconst exact = rows.filter(r => r.n === kw);\nconst starts = rows.filter(r => r.n.startsWith(kw));\nconst contains = rows.filter(r => r.n.includes(kw));\nlet pick = null, pool = null;\nif (exact.length === 1) pick = exact[0];\nelse if (exact.length > 1) pool = exact;\nelse if (starts.length === 1) pick = starts[0];\nelse if (contains.length === 1) pick = contains[0];\nelse pool = contains;\nif (pick) return [{ json: { status: 'one', recordId: pick.id, title: pick.title, ctaBrand: cta } }];\nif (!pool || pool.length === 0)\n  return [{ json: { status: 'none', retryMsg: `No planned page matched “${kwRaw}”. Reopen the form and try different or more exact words.` } }];\nconst list = pool.slice(0, 15).map(r => '• ' + r.title).join('\\n');\nconst more = pool.length > 15 ? `\\n…and ${pool.length - 15} more` : '';\nreturn [{ json: { status: 'many', retryMsg: `${pool.length} planned pages match “${kwRaw}”. Reopen and type the exact title of the one you want:\\n${list}${more}` } }];\n"
       },
-      "id": "form-build-dd",
-      "name": "Build Page Dropdown",
+      "id": "form-match",
+      "name": "Match",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -123,35 +138,112 @@
     },
     {
       "parameters": {
-        "operation": "page",
-        "defineForm": "json",
-        "jsonOutput": "={{ $('Build Page Dropdown').first().json.formDef }}",
-        "options": {
-          "formTitle": "Choose the page to produce",
-          "formDescription": "={{ $('Build Page Dropdown').first().json.count }} planned pages{{ $('Build Page Dropdown').first().json.note }}. Pick one and confirm the CTA brand.",
-          "buttonLabel": "Send to production"
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "one"
+            }
+          ]
         }
       },
-      "id": "form-pick-page",
-      "name": "Pick the Page",
-      "type": "n8n-nodes-base.form",
-      "typeVersion": 2.5,
+      "id": "form-found",
+      "name": "Found one?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
       "position": [
-        660,
+        640,
         0
       ]
     },
     {
       "parameters": {
-        "jsCode": "\nconst sel = String($json['Page to produce'] || '');\nconst m = sel.match(/(rec[0-9A-Za-z]{14})\\s*$/);\n// Guard: the empty-pillar placeholder has no record id — never fire intake on it.\nif (!m) throw new Error('No real page was selected. Please reopen the form and choose a page from the list.');\nreturn [{ json: { recordId: m[1], ctaBrand: String($json['CTA Brand'] || ''), selection: sel } }];\n"
+        "operation": "page",
+        "defineForm": "fields",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "html": "=<div style=\"font-size:15px;line-height:1.5\"><p>You're about to send this page into production:</p><p style=\"font-size:18px\"><b>{{ $('Match').first().json.title }}</b></p><p>CTA brand: <b>{{ $('Match').first().json.ctaBrand }}</b></p><p>Confirm below to produce it, or choose “No” to cancel.</p></div>"
+            },
+            {
+              "fieldType": "hiddenField",
+              "fieldName": "recordId",
+              "fieldValue": "={{ $('Match').first().json.recordId }}"
+            },
+            {
+              "fieldType": "hiddenField",
+              "fieldName": "ctaBrand",
+              "fieldValue": "={{ $('Match').first().json.ctaBrand }}"
+            },
+            {
+              "fieldType": "hiddenField",
+              "fieldName": "pageTitle",
+              "fieldValue": "={{ $('Match').first().json.title }}"
+            },
+            {
+              "fieldLabel": "Confirm",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes, produce this page"
+                  },
+                  {
+                    "option": "No, cancel"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Confirm the page",
+          "buttonLabel": "Continue"
+        }
       },
-      "id": "form-resolve",
-      "name": "Resolve Selection",
+      "id": "form-confirm",
+      "name": "Confirm Page",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        860,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Resume pass — use ONLY the submitted hidden fields + the confirm choice ($json), never upstream.\nconst j = $json;\nreturn [{ json: {\n  recordId: String(j.recordId || ''), ctaBrand: String(j.ctaBrand || ''),\n  pageTitle: String(j.pageTitle || ''), confirm: String(j.Confirm || ''),\n} }];\n"
+      },
+      "id": "form-read",
+      "name": "Read Confirm",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        880,
-        0
+        1080,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.confirm }}",
+              "operation": "contains",
+              "value2": "Yes"
+            }
+          ]
+        }
+      },
+      "id": "form-confirmed",
+      "name": "Confirmed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        -120
       ]
     },
     {
@@ -195,8 +287,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        1100,
-        0
+        1500,
+        -220
       ],
       "credentials": {
         "airtableTokenApi": {
@@ -219,7 +311,7 @@
             },
             {
               "name": "record_id",
-              "value": "={{ $('Resolve Selection').item.json.recordId }}"
+              "value": "={{ $('Read Confirm').first().json.recordId }}"
             }
           ]
         },
@@ -230,8 +322,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1320,
-        0
+        1720,
+        -220
       ]
     },
     {
@@ -239,20 +331,52 @@
         "operation": "completion",
         "respondWith": "text",
         "completionTitle": "✅ Page queued for production",
-        "completionMessage": "Your page is now in the pipeline and will appear in Airtable under “Editor Review” when ready (typically ~15–30 minutes). Open the form again to produce another page."
+        "completionMessage": "=Producing “{{ $('Read Confirm').first().json.pageTitle }}”. It will appear in Airtable under “Editor Review” when ready (~15–30 minutes). Reopen the form to produce another."
       },
-      "id": "form-done",
-      "name": "Done",
+      "id": "form-produced",
+      "name": "Show Produced",
       "type": "n8n-nodes-base.form",
       "typeVersion": 2.5,
       "position": [
-        1540,
-        0
+        1940,
+        -220
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "text",
+        "completionTitle": "Cancelled",
+        "completionMessage": "Nothing was produced. Reopen the form to search again."
+      },
+      "id": "form-cancelled",
+      "name": "Show Cancelled",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1500,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "text",
+        "completionTitle": "Refine your search",
+        "completionMessage": "={{ $('Match').first().json.retryMsg }}"
+      },
+      "id": "form-retry",
+      "name": "Show Retry",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        860,
+        140
       ]
     }
   ],
   "connections": {
-    "Start — Pick Pillar": {
+    "New Page Form": {
       "main": [
         [
           {
@@ -267,40 +391,76 @@
       "main": [
         [
           {
-            "node": "Build Page Dropdown",
+            "node": "Match",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Build Page Dropdown": {
+    "Match": {
       "main": [
         [
           {
-            "node": "Pick the Page",
+            "node": "Found one?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Pick the Page": {
+    "Found one?": {
       "main": [
         [
           {
-            "node": "Resolve Selection",
+            "node": "Confirm Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Retry",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Resolve Selection": {
+    "Confirm Page": {
+      "main": [
+        [
+          {
+            "node": "Read Confirm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Confirm": {
+      "main": [
+        [
+          {
+            "node": "Confirmed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmed?": {
       "main": [
         [
           {
             "node": "Queue for Production",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Cancelled",
             "type": "main",
             "index": 0
           }
@@ -322,7 +482,7 @@
       "main": [
         [
           {
-            "node": "Done",
+            "node": "Show Produced",
             "type": "main",
             "index": 0
           }
