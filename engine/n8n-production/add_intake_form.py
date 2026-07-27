@@ -68,12 +68,19 @@ else if (starts.length === 1) pick = starts[0];
 else if (contains.length === 1) pick = contains[0];
 else pool = contains;
 if (pick) return [{ json: { status: 'one', recordId: pick.id, title: pick.title, ctaBrand: cta } }];
+// none / ambiguous -> render a CLICKABLE list. Each match links back to the form pre-filled
+// with that EXACT title (n8n prefills fields from query params), so one click -> exact match
+// -> confirm -> produce, instead of retyping.
+const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const enc = encodeURIComponent;
+const link = t => 'https://voyagerscontent.app.n8n.cloud/form/new-page?Page%20title=' + enc(t)
+  + '&Pillar=' + enc('__ANY__') + '&CTA%20Brand=' + enc(cta || 'Voyagers Travel');
 if (!pool || pool.length === 0)
-  return [{ json: { status: 'none', retryMsg: `No planned page matched “${kwRaw}”. Reopen the form and try different or more exact words.` } }];
-const list = pool.slice(0, 15).map(r => '• ' + r.title).join('\n');
-const more = pool.length > 15 ? `\n…and ${pool.length - 15} more` : '';
-return [{ json: { status: 'many', retryMsg: `${pool.length} planned pages match “${kwRaw}”. Reopen and type the exact title of the one you want:\n${list}${more}` } }];
-""".replace("__TRIGGER__", TRIGGER)
+  return [{ json: { status: 'none', retryHtml: `<div style="font-size:15px;line-height:1.5"><p>No planned page matched “${esc(kwRaw)}”.</p><p>Go back and try different or fewer words. (Already-published pages are handled by the separate optimize pipeline.)</p></div>` } }];
+const items = pool.slice(0, 40).map(r => `<li style="margin:7px 0"><a href="${link(r.title)}">${esc(r.title)}</a></li>`).join('');
+const more = pool.length > 40 ? `<p>…and ${pool.length - 40} more — type more of the title to narrow.</p>` : '';
+return [{ json: { status: 'many', retryHtml: `<div style="font-size:15px;line-height:1.5"><p><b>${pool.length}</b> planned pages match “${esc(kwRaw)}”. Click the exact page you want to produce:</p><ul>${items}</ul>${more}</div>` } }];
+""".replace("__TRIGGER__", TRIGGER).replace("__ANY__", ANY_PILLAR)
 
 READ_CONFIRM_JS = r"""
 // Resume pass — use ONLY the submitted hidden fields + the confirm choice ($json), never upstream.
@@ -199,9 +206,8 @@ def build():
     }
     retry = {
         "parameters": {
-            "operation": "completion", "respondWith": "text",
-            "completionTitle": "Refine your search",
-            "completionMessage": "={{ $('Match').first().json.retryMsg }}",
+            "operation": "completion", "respondWith": "showText",
+            "responseText": "={{ $('Match').first().json.retryHtml }}",
         },
         "id": "form-retry", "name": "Show Retry",
         "type": "n8n-nodes-base.form", "typeVersion": 2.5, "position": [860, 140],
