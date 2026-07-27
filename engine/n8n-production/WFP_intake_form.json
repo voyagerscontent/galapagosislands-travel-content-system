@@ -1,0 +1,268 @@
+{
+  "name": "WFP-Intake Form - GalapagosIslands.travel",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "New Page — GalapagosIslands.travel Production",
+        "formDescription": "Queue a new page for the content pipeline. Fill this in and submit; the page runs itself through scoring, brief, draft, truth-check, humanize, polish and audit, then lands in Airtable at <b>Editor Review</b>.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Page Title",
+              "fieldType": "text",
+              "placeholder": "e.g. Best Time to See Whale Sharks in the Galápagos",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Primary Keyword",
+              "fieldType": "text",
+              "placeholder": "e.g. galapagos whale shark season",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Pillar",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Cruises"
+                  },
+                  {
+                    "option": "Wildlife"
+                  },
+                  {
+                    "option": "Islands"
+                  },
+                  {
+                    "option": "Itineraries"
+                  },
+                  {
+                    "option": "Planning"
+                  },
+                  {
+                    "option": "Activities"
+                  },
+                  {
+                    "option": "Visitor Sites"
+                  },
+                  {
+                    "option": "FAQ"
+                  },
+                  {
+                    "option": "Conservation"
+                  },
+                  {
+                    "option": "Blog"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Page Type",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Guide"
+                  },
+                  {
+                    "option": "Hub Page"
+                  },
+                  {
+                    "option": "Pillar Page"
+                  },
+                  {
+                    "option": "Final Answer Page"
+                  },
+                  {
+                    "option": "Blog Post"
+                  },
+                  {
+                    "option": "FAQ Page"
+                  },
+                  {
+                    "option": "Island Page"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Brief / Notes",
+              "fieldType": "textarea",
+              "placeholder": "What should this page cover? Angle, must-include facts, audience, anything the writer needs.",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Target Word Count",
+              "fieldType": "number",
+              "placeholder": "2500",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "CTA Brand",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Voyagers Travel"
+                  },
+                  {
+                    "option": "Latin Trails"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Secondary Keywords",
+              "fieldType": "text",
+              "placeholder": "optional — comma separated",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Hub Page URL",
+              "fieldType": "text",
+              "placeholder": "optional — the pillar hub this belongs under",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Named Author",
+              "fieldType": "text",
+              "placeholder": "optional — persona byline, e.g. Juan Magallanes",
+              "requiredField": false
+            }
+          ]
+        },
+        "responseMode": "onReceived",
+        "options": {
+          "path": "new-page",
+          "buttonLabel": "Queue page for production",
+          "appendAttribution": false,
+          "ignoreBots": true,
+          "respondWithOptions": {
+            "values": {
+              "respondWith": "text",
+              "formSubmittedText": "✅ Your page is queued and now in production. It will appear in Airtable under “Editor Review” when ready (typically ~15–30 minutes). You can submit another page any time."
+            }
+          }
+        }
+      },
+      "id": "form-intake-trigger",
+      "name": "New Page Intake",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "galapagos-new-page-form"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "mode": "id",
+          "value": "appNkUL50eF601ejN"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tblUgxSGGfeJIL5GD"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json['Page Title'] }}",
+            "Meta Title": "={{ $json['Page Title'] }}",
+            "Primary Keyword": "={{ $json['Primary Keyword'] }}",
+            "Pillar": "={{ $json['Pillar'] }}",
+            "Page Type": "={{ $json['Page Type'] }}",
+            "Topic / Brief": "={{ $json['Brief / Notes'] }}",
+            "Suggested Word Count": "={{ $json['Target Word Count'] }}",
+            "CTA Brand": "={{ $json['CTA Brand'] }}",
+            "Secondary Keywords": "={{ $json['Secondary Keywords'] }}",
+            "Hub Page URL": "={{ $json['Hub Page URL'] }}",
+            "Named Author": "={{ $json['Named Author'] }}",
+            "Status": "Backlog"
+          }
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "form-create-row",
+      "name": "Create Page Row",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        260,
+        0
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "mITfEGdTPqCCNrsT",
+          "name": "Airtable API - Weboptimizer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://voyagerscontent.app.n8n.cloud/webhook/galapagos-production/stage/intake",
+        "sendBody": true,
+        "specifyBody": "keypair",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "site_id",
+              "value": "galapagosislands-travel-v1"
+            },
+            {
+              "name": "record_id",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "form-fire-intake",
+      "name": "Fire Intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "New Page Intake": {
+      "main": [
+        [
+          {
+            "node": "Create Page Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Page Row": {
+      "main": [
+        [
+          {
+            "node": "Fire Intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
