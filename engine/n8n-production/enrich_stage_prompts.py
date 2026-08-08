@@ -20,7 +20,7 @@ generic CTAs and no UX. If a rule matters, it lives in a context-pack file and i
 
 Re-run any time a context-pack file changes.
 """
-import json, urllib.request, os
+import json, urllib.request, urllib.error, os, sys, time
 
 N8N = "https://voyagerscontent.app.n8n.cloud"
 PUB = os.environ["N8N_PUB"]
@@ -279,25 +279,65 @@ STAGES = {
 
 
 def put(wid, wf):
+    """Never raise, always return a printable status.
+
+    This used to be a bare urlopen(). Each PUT is ~300 KB, and a single transient
+    timeout / reset raised an exception that was NOT an HTTPError, so it escaped the
+    handler and killed the whole loop — every stage after it was silently never
+    pushed and the run looked like it had merely 'stopped early'.
+    """
     body = {"name": wf["name"], "nodes": wf["nodes"], "connections": wf["connections"],
             "settings": wf.get("settings", {"executionOrder": "v1"})}
-    r = urllib.request.Request(N8N + "/api/v1/workflows/" + wid, data=json.dumps(body).encode(),
+    payload = json.dumps(body).encode()
+    r = urllib.request.Request(N8N + "/api/v1/workflows/" + wid, data=payload,
                                headers={"X-N8N-API-KEY": PUB, "Content-Type": "application/json"}, method="PUT")
-    try:
-        return "ok" if json.load(urllib.request.urlopen(r)).get("id") else "??"
-    except urllib.error.HTTPError as e:
-        return "ERR %d %s" % (e.code, e.read().decode()[:200])
+    for attempt in (1, 2, 3):
+        try:
+            with urllib.request.urlopen(r, timeout=180) as resp:
+                return "ok" if json.load(resp).get("id") else "?? unexpected response body"
+        except urllib.error.HTTPError as e:
+            try:
+                detail = e.read().decode("utf-8", "replace")[:200]
+            except Exception:
+                detail = "(no body)"
+            return "ERR %d %s" % (e.code, detail)          # a real rejection: do not retry
+        except Exception as e:
+            if attempt == 3:
+                return "ERR %s: %s (payload %d bytes, 3 attempts)" % (
+                    type(e).__name__, e, len(payload))
+            time.sleep(3 * attempt)
+    return "ERR unreachable"
 
 
+failures = []
 for fn, (wid, extras, task, bodyref) in STAGES.items():
     p = os.path.join(os.path.dirname(__file__), fn)
-    wf = json.load(open(p))
-    prompt = HEAD + "\n" + "\n\n".join(extras) + "\n\n" + task + "\n\n" + REC + (("\n\n" + bodyref) if bodyref else "")
-    for n in wf["nodes"]:
+    try:
+        with open(p, encoding="utf-8") as fh:
+            wf = json.load(fh)
+        prompt = HEAD + "\n" + "\n\n".join(extras) + "\n\n" + task + "\n\n" + REC + (("\n\n" + bodyref) if bodyref else "")
         # Only the primary stage agent — never secondary anthropic nodes like
         # WFP5's "Reconstruct (Andre-Juan)", which owns its own prompt.
-        if n["type"].endswith("langchain.anthropic") and n["name"] == "Run Stage Agent":
-            n["parameters"]["messages"]["values"][0]["content"] = prompt
-            n["parameters"].setdefault("options", {})["maxTokens"] = 20000
-    open(p, "w").write(json.dumps(wf, indent=2))
-    print("%-22s prompt=%6d chars -> %s" % (fn, len(prompt), put(wid, wf)))
+        hits = [n for n in wf["nodes"]
+                if n["type"].endswith("langchain.anthropic") and n["name"] == "Run Stage Agent"]
+        if len(hits) != 1:
+            raise RuntimeError("expected exactly 1 'Run Stage Agent' anthropic node, found %d" % len(hits))
+        hits[0]["parameters"]["messages"]["values"][0]["content"] = prompt
+        hits[0]["parameters"].setdefault("options", {})["maxTokens"] = 20000
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps(wf, indent=2))
+        status = put(wid, wf)
+    except Exception as e:                                  # one bad stage must not hide the rest
+        status = "ERR %s: %s" % (type(e).__name__, e)
+        prompt = ""
+    if not status.startswith("ok"):
+        failures.append("%s: %s" % (fn, status))
+    print("%-22s prompt=%6d chars -> %s" % (fn, len(prompt), status), flush=True)
+
+if failures:
+    # Printed only on failure. The CI step greps every line for '-> ok', so a summary
+    # on the happy path would read as a failed stage.
+    print("FAILED STAGES (%d):" % len(failures), flush=True)
+    for f in failures:
+        print("  " + f, flush=True)
+    sys.exit(1)
