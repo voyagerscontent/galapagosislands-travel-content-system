@@ -1,0 +1,66 @@
+name: push-stage-prompts
+
+# Rebuilds the six WFP stage prompts from context-pack/ and PUTs them into n8n.
+# Run it by hand from the Actions tab whenever a prompt, guardrail or context-pack file changes.
+#
+# Requires one repository secret:
+#   N8N_PUB  — an n8n API key (n8n -> Settings -> n8n API -> Create an API key)
+#
+# The script uses only the Python standard library, so there is nothing to install.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Push stage prompts to n8n
+        env:
+          N8N_PUB: ${{ secrets.N8N_PUB }}
+        run: |
+          if [ -z "$N8N_PUB" ]; then
+            echo "::error::The N8N_PUB secret is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          python3 engine/n8n-production/enrich_stage_prompts.py | tee /tmp/out.txt
+          echo "---- checking every stage reported ok ----"
+          if grep -qv -- "-> ok" /tmp/out.txt; then
+            echo "::error::At least one stage did not return ok. See the output above."
+            grep -v -- "-> ok" /tmp/out.txt || true
+            exit 1
+          fi
+          echo "All six stage prompts pushed successfully."
+
+      - name: Confirm the evidence block landed
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          checks = {
+              "engine/n8n-production/WFP2_brief.json": ["EVIDENCE PACK", "EVIDENCE & INFORMATION GAIN"],
+              "engine/n8n-production/WFP3_draft.json": ["EVIDENCE PACK", "Evidence Placeholders"],
+          }
+          bad = False
+          for fn, probes in checks.items():
+              wf = json.load(open(fn))
+              node = [n for n in wf["nodes"] if n["name"] == "Run Stage Agent"][0]
+              prompt = node["parameters"]["messages"]["values"][0]["content"]
+              print(f"{fn}: prompt = {len(prompt)} chars")
+              for p in probes:
+                  ok = p in prompt
+                  print(f"   {'OK ' if ok else 'MISSING'}  {p}")
+                  if not ok:
+                      bad = True
+              if "6-10 real PAA questions" in prompt:
+                  print("   MISSING  old PAA line is still present - the old script ran")
+                  bad = True
+          sys.exit(1 if bad else 0)
+          PY
