@@ -122,6 +122,21 @@ MM = ("MARKETMUSE TARGET TERMS (hub/pillar only; empty = none, ignore this block
       "honest place on the page is left out. The Score is a gate and a record: never publish it, "
       "never mention it in copy.")
 
+# Written before Scoring by WFPT (trend) and WFPE (E-E-A-T). Every Proprietary Stats line already
+# carries its own [source: …] tag; the placeholders are CONTENT (yellow blocks a human fills at
+# Editor Review), not markers — Polishing keeps them, the Auditor must not flag them.
+EVIDENCE = ("EVIDENCE PACK (gathered before Scoring — verbatim, never paraphrase; empty = skip):\n"
+            "Information Gain Angle: {{ $json['Information Gain Angle'] }}\n"
+            "Proprietary Stats (each line already carries its [source: …] tag — reproduce the tag "
+            "exactly): {{ $json['Proprietary Stats'] }}\n"
+            "Real PAA Questions (pulled from the live SERP — use these, do not invent your own): "
+            "{{ $json['PAA Questions'] }}\n"
+            "Seasonality: {{ $json['Seasonality Window'] }}\n"
+            "Evidence Placeholders (yellow HTML blocks marking gaps a human fills at Editor Review "
+            "— place them VERBATIM under the heading they belong to; never delete one, never rewrite "
+            "one, and never write copy that pretends the gap is already filled): "
+            "{{ $json['Evidence Placeholders'] }}")
+
 # ── stage table: (workflow id, head-extras, stage framing + task, body refs) ──
 STAGES = {
  "WFP2_brief.json": ("cFY7Tz5q2ih2UCvt", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, ITIN_RULE, MMPROC],
@@ -135,10 +150,10 @@ STAGES = {
    "TASK — Produce the content brief. Lock and state: primary/secondary persona; funnel stage; "
    "primary CTA verbatim from the persona pack's cta_system; objections_to_preempt (ids from the "
    "objection library). Then the section outline (one H1, H2/H3 tree) in the blueprint's canonical "
-   "section order for THIS Page Type; the 40-60 word answer-box target; 6-10 real PAA questions; "
+   "section order for THIS Page Type; the 40-60 word answer-box target; the Real PAA Questions from the evidence pack used VERBATIM (do not invent PAA questions — if the pack supplies none, write 6-10 and mark them unverified); "
    "the required schema profile for this page type; and a bullet list of the SPECIFIC grounded "
-   "facts (with their [source: …]) the page will use. Return STRICT JSON {\"brief_markdown\":\"...\"}.",
-   ""),
+   "facts (with their [source: …]) the page will use.\nThen an EVIDENCE & INFORMATION GAIN section: for EACH Proprietary Stats line, name the exact H2/H3 in your outline where it lands; state the Information Gain Angle as the one thing this page says that no ranking page does; and name the heading each Evidence Placeholder block sits under. Never invent an evidence asset — if the pack is empty, say so and omit the section. Tying each asset to a named heading is what makes the draft place it instead of ignoring it. Return STRICT JSON {\"brief_markdown\":\"...\"}.",
+   EVIDENCE),
 
  "WFP3_draft.json": ("eExgOTVFIoCuJb0D", [REGISTRY, PAGETYPE_NOTE, SPEC_GUIDE, SPEC_HUB, AUDIENCE, FACTS, PROCEDURE, ITIN_RULE],
    "STAGE — Drafting. You run sub-steps C, D (brand-voice drafting) and D2 (human enrichment). "
@@ -148,10 +163,10 @@ STAGES = {
    "and the blueprint for this Page Type. Real substantive grounded content, not placeholders. "
    "Include: meta title (50-60 chars — COUNT THEM, hard gate), meta description (140-160), one H1, "
    "clean H2/H3, a 40-60 word answer box, at least one data table, the full body, a 6-10 question "
-   "FAQ with 40-60 word answers, one primary CTA and internal links. Place any HUMAN ENRICHMENT "
+   "FAQ with 40-60 word answers, one primary CTA and internal links. Place every Proprietary Stats line where the brief assigns it, reproducing its [source: …] tag exactly. Lead with the Information Gain Angle. Place each Evidence Placeholder block VERBATIM under the heading the brief names — they are content, not markers: never delete, never rewrite, never paper over the gap. Place any HUMAN ENRICHMENT "
    "verbatim and attribute it. Obey OUTPUT HYGIENE — never recite a rule as a sentence. "
    "Return STRICT JSON {\"draft_markdown\":\"...\"}.",
-   "BRIEF: {{ $json['Brief Content'] }}\n\n" + MM + "\n\n" + HUMAN),
+   "BRIEF: {{ $json['Brief Content'] }}\n\n" + MM + "\n\n" + HUMAN + "\n\n" + EVIDENCE),
 
  "WFP4_truthcheck.json": ("ZsrCHmeSCy8P4Wb2", [FACTS],
    "STAGE — Truth Check. You are checking an INTERNAL DRAFT, three stages before publication. "
