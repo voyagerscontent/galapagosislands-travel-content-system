@@ -23,7 +23,7 @@ Re-run any time a context-pack file changes.
 import json, urllib.request, urllib.error, os, sys, time
 
 N8N = "https://voyagerscontent.app.n8n.cloud"
-PUB = os.environ["N8N_PUB"]
+PUB = os.environ["N8N_PUB"].strip()
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 CP = "context-pack/"
 
