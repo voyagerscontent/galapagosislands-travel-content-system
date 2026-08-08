@@ -11,6 +11,9 @@ name: push-stage-prompts
 on:
   workflow_dispatch: {}
 
+env:
+  N8N_BASE: https://voyagerscontent.app.n8n.cloud
+
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -23,25 +26,73 @@ jobs:
         with:
           python-version: '3.11'
 
+      # Fail fast with a plain-English reason. A bad key used to surface as six
+      # opaque "ERR 401" lines further down.
+      - name: Preflight - is the n8n API key usable?
+        env:
+          N8N_PUB: ${{ secrets.N8N_PUB }}
+        run: |
+          set -euo pipefail
+          if [ -z "${N8N_PUB:-}" ]; then
+            echo "::error::The N8N_PUB secret is empty or not set."
+            echo "Fix: Settings > Secrets and variables > Actions > New repository secret."
+            echo "     Name it exactly N8N_PUB (capitals, underscore) and paste an n8n API key."
+            exit 1
+          fi
+          echo "Secret is present (${#N8N_PUB} characters)."
+          code=$(curl -sS -o /tmp/api.json -w '%{http_code}' \
+                   -H "X-N8N-API-KEY: $N8N_PUB" \
+                   "$N8N_BASE/api/v1/workflows?limit=1" || echo "000")
+          echo "n8n API responded: HTTP $code"
+          case "$code" in
+            200) echo "The key works." ;;
+            401|403)
+              echo "::error::n8n rejected the key (HTTP $code)."
+              echo "The secret exists but is not a valid n8n API key."
+              echo "Fix: n8n > your avatar (bottom left) > Settings > n8n API > Create an API key,"
+              echo "     then replace the N8N_PUB secret with the new value."
+              exit 1 ;;
+            404)
+              echo "::error::n8n API not found at $N8N_BASE/api/v1 (HTTP 404)."
+              echo "The Public API may be disabled on this instance."
+              exit 1 ;;
+            000)
+              echo "::error::Could not reach $N8N_BASE at all."
+              exit 1 ;;
+            *)
+              echo "::error::Unexpected response from n8n (HTTP $code):"
+              head -c 500 /tmp/api.json || true
+              exit 1 ;;
+          esac
+
       - name: Push stage prompts to n8n
         env:
           N8N_PUB: ${{ secrets.N8N_PUB }}
         run: |
-          if [ -z "$N8N_PUB" ]; then
-            echo "::error::The N8N_PUB secret is not set. Add it under Settings > Secrets and variables > Actions."
+          set -euo pipefail
+          # pipefail matters: without it this pipeline returns tee's exit code, so a
+          # Python crash looked like a clean run with empty output.
+          rc=0
+          python3 engine/n8n-production/enrich_stage_prompts.py 2>&1 | tee /tmp/out.txt || rc=$?
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::The prompt generator exited with code $rc. Its output is above."
             exit 1
           fi
-          python3 engine/n8n-production/enrich_stage_prompts.py | tee /tmp/out.txt
-          echo "---- checking every stage reported ok ----"
-          if grep -qv -- "-> ok" /tmp/out.txt; then
-            echo "::error::At least one stage did not return ok. See the output above."
-            grep -v -- "-> ok" /tmp/out.txt || true
+          if [ ! -s /tmp/out.txt ]; then
+            echo "::error::The generator produced no output at all - treat this as a failure."
+            exit 1
+          fi
+          echo "---- every stage must report '-> ok' ----"
+          if grep -v -- "-> ok" /tmp/out.txt; then
+            echo "::error::The lines above did not return ok."
+            echo "ERR 401 means the API key was rejected. ERR 404 means a workflow ID has moved."
             exit 1
           fi
           echo "All six stage prompts pushed successfully."
 
       - name: Confirm the evidence block landed
         run: |
+          set -euo pipefail
           python3 - <<'PY'
           import json, sys
           checks = {
@@ -56,11 +107,13 @@ jobs:
               print(f"{fn}: prompt = {len(prompt)} chars")
               for p in probes:
                   ok = p in prompt
-                  print(f"   {'OK ' if ok else 'MISSING'}  {p}")
+                  print(f"   {'OK     ' if ok else 'MISSING'}  {p}")
                   if not ok:
                       bad = True
               if "6-10 real PAA questions" in prompt:
-                  print("   MISSING  old PAA line is still present - the old script ran")
+                  print("   PROBLEM  the old PAA line is still present - the old script ran")
                   bad = True
+          print("\nEXPECTED: WFP2 = 131282 chars, WFP3 = 132176 chars.")
+          print("If WFP2 still reads 128505, the old generator ran.")
           sys.exit(1 if bad else 0)
           PY
