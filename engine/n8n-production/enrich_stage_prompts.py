@@ -23,7 +23,7 @@ Re-run any time a context-pack file changes.
 import json, urllib.request, urllib.error, os, sys, time
 
 N8N = "https://voyagerscontent.app.n8n.cloud"
-PUB = os.environ["N8N_PUB"].strip()
+PUB = os.environ["N8N_PUB"].strip()  # a trailing newline in the CI secret makes every PUT raise
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 CP = "context-pack/"
 
@@ -227,7 +227,15 @@ STAGES = {
    "'Book Now'. Link them to CTA_TRAVELER_URL and CTA_TRADE_URL. Keep every "
    "grounded FACT and all human-authored text intact, but make it reader-facing: STRIP every "
    "[source: …] / [VERIFY] / [human: …] marker from body, tables, FAQ and JSON-LD — zero may "
-   "survive. Replace with prose attribution only where a fact is notable, surprising or contested, "
+   "survive.\n"
+   "ONE EXEMPTION, and it is absolute: any <div class=\"human-input-needed\"> block (the yellow "
+   "HUMAN INPUT NEEDED blocks) is CONTENT, not a marker. It marks a gap an editor fills before "
+   "publishing. Reproduce every one of them VERBATIM — same HTML, same inline styles, same "
+   "position relative to its heading. Never delete one, never rewrite one, never merge them, and "
+   "never write a sentence that pretends the gap is already filled. A polished page that has lost "
+   "a yellow block is a FAILED page: the reader would see a confident claim where a human input "
+   "was owed. Everything else about marker stripping still applies.\n"
+   "Replace [source:] tags with prose attribution only where a fact is notable, surprising or contested, "
    "and close with a short 'Sources' line. Keep human text verbatim with its visible attribution. "
    "Delete any sentence that recites a rule (OUTPUT HYGIENE §1).\n"
    "(2) conversion_review — run the CONVERSION EXPERT and return its block. Instructions for the "
@@ -253,7 +261,9 @@ STAGES = {
    "TASK — Run the AUDITOR CHECKLIST, every part, against the right artifact. Additionally:\n"
    "Part H LEAKAGE — HARD FAIL, check FIRST, character by character, on PAGE only: (h1) zero "
    "'[source:' '[VERIFY]' '[human:' '[HT-' '[GC]' '[GCT]' '[CDF]' '[DPNG]' '[MASTER FACTS]' "
-   "anywhere, INCLUDING inside JSON-LD; (h2) no guardrail recited as copy and no stock HT-1/HT-2 "
+   "anywhere, INCLUDING inside JSON-LD. The yellow <div class=\"human-input-needed\"> blocks are "
+   "the ONE exception: they are CONTENT the pipeline placed on purpose, they are supposed to reach "
+   "the editor, and flagging one is itself an error — pass them without comment. (h2) no guardrail recited as copy and no stock HT-1/HT-2 "
    "paragraph on a page whose topic is neither timing nor luxury (OUTPUT HYGIENE §1-2).\n"
    "Part I META PRESENCE — check only that a real <title> ELEMENT and a real "
    "<meta name=\"description\"> EXIST ('<!-- META TITLE ... -->' is a comment, not a tag — that is "
